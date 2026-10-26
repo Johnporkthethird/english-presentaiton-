@@ -148,7 +148,7 @@ async function main() {
     flag: "FaFlag", chart: "FaChartLine", trophy: "FaTrophy", question: "FaQuestion", utensils: "FaUtensils",
     leaf: "FaLeaf", solar: "FaSolarPanel", recycle: "FaRecycle", seedling: "FaSeedling", balance: "FaBalanceScale",
     handheart: "FaHandHoldingHeart", friends: "FaUserFriends", euro: "FaEuroSign", shield: "FaShieldAlt",
-    warning: "FaExclamationTriangle", thumbsup: "FaThumbsUp", globe: "FaGlobeAmericas", store: "FaStore", rocket: "FaRocket", quote: "FaQuoteLeft", file: "FaFileAlt", comments: "FaComments", usercheck: "FaUserCheck", graduate: "FaUserGraduate",
+    warning: "FaExclamationTriangle", thumbsup: "FaThumbsUp", globe: "FaGlobeAmericas", store: "FaStore", rocket: "FaRocket", quote: "FaQuoteLeft", file: "FaFileAlt", lock: "FaLock", eye: "FaRegEye", comments: "FaComments", usercheck: "FaUserCheck", graduate: "FaUserGraduate",
   };
   const colors = { navy: NAVY, mint: MINT, white: "#FFFFFF", coral: CORAL, green: "#2E9E5B" };
   for (const [k, comp] of Object.entries(icons)) {
