@@ -137,6 +137,29 @@ async function main() {
   </svg>`;
   await svg("eco.png", eco, 1000, 1000);
 
+
+  // Ethics centrepiece: capsule inside glowing orbits
+  const eh = `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000">
+    <defs>
+      <radialGradient id="g1" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="${MINT}" stop-opacity="0.55"/><stop offset="0.6" stop-color="${MINT}" stop-opacity="0.12"/><stop offset="1" stop-color="${MINT}" stop-opacity="0"/></radialGradient>
+      <radialGradient id="g2" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.10"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>
+      <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${MINT}" stop-opacity="0.9"/><stop offset="0.5" stop-color="${MINT}" stop-opacity="0.15"/><stop offset="1" stop-color="${CORAL}" stop-opacity="0.8"/></linearGradient>
+      <filter id="s" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="28" stdDeviation="28" flood-color="#000" flood-opacity="0.45"/></filter>
+      <filter id="b"><feGaussianBlur stdDeviation="6"/></filter>
+    </defs>
+    <circle cx="500" cy="500" r="500" fill="url(#g1)"/>
+    <circle cx="500" cy="500" r="432" fill="none" stroke="url(#ring)" stroke-width="5"/>
+    <circle cx="500" cy="500" r="432" fill="none" stroke="${MINT}" stroke-opacity="0.35" stroke-width="16" filter="url(#b)"/>
+    <circle cx="500" cy="500" r="340" fill="url(#g2)" stroke="#FFFFFF" stroke-opacity="0.14" stroke-width="2" stroke-dasharray="3 14"/>
+    <circle cx="500" cy="500" r="250" fill="none" stroke="#FFFFFF" stroke-opacity="0.08" stroke-width="2"/>
+    <g filter="url(#s)" transform="translate(185 374)">${capsule("eh", 630, -35)}</g>
+    <circle cx="500" cy="68" r="12" fill="${MINT}"/><circle cx="932" cy="500" r="9" fill="#FFFFFF" opacity="0.7"/>
+    <circle cx="500" cy="932" r="12" fill="${CORAL}"/><circle cx="68" cy="500" r="9" fill="#FFFFFF" opacity="0.7"/>
+    <g transform="translate(735 225) scale(0.16)">${capsule("eh2", 520, 30)}</g>
+    <g transform="translate(200 720) scale(0.13)">${capsule("eh3", 520, -65)}</g>
+  </svg>`;
+  await svg("ethics-hero.png", eh, 1000, 1000);
+
   // Icons
   const fa = require("react-icons/fa");
   const icons = {

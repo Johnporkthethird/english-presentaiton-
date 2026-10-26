@@ -57,42 +57,50 @@ const card = (slide, x, y, w, h, fill, anim, extra = {}) =>
 let s = pres.addSlide({ masterName: "DARK" });
 s.addText("Workplace Ethics & Social Responsibility", { placeholder: "title" });
 
-// decorative capsule, bottom-left
-s.addImage({ path: A("hero.png"), x: -1.0, y: 5.05, w: 3.9, h: 3.9, transparency: 20, objectName: "a1_deco", altText: "" });
+// centrepiece
+const CX = 6.667, CY = 4.25, R = 2.05;
+s.addImage({ path: A("ethics-hero.png"), x: CX - R, y: CY - R, w: 2 * R, h: 2 * R, objectName: "a1_hero", altText: "NutriPill capsule inside glowing rings" });
 
-// left: statement
-T(s, "HOW WE WORK", { x: 0.6, y: 2.05, w: 5, h: 0.35, fontSize: 13, bold: true, charSpacing: 4, color: HEX.mint, objectName: "a2_k" });
-T(s, [
-  { text: "At NutriPill, how we treat people ", options: { color: "FFFFFF" } },
-  { text: "matters as much as", options: { color: HEX.mint } },
-  { text: " what we sell.", options: { color: "FFFFFF" } },
-], { x: 0.6, y: 2.45, w: 5.1, h: 1.9, fontSize: 30, bold: true, objectName: "a3_quote" });
-s.addImage({ path: A("logo-mark.png"), x: 0.55, y: 4.55, w: 0.7, h: 0.7, objectName: "a4_mark", altText: "NutriPill logo" });
-T(s, [{ text: "William", options: { bold: true, color: "FFFFFF", breakLine: true } }, { text: "HR Manager, NutriPill", options: { color: HEX.mutedDark } }],
-  { x: 1.4, y: 4.55, w: 3.5, h: 0.7, fontSize: 15, valign: "middle", objectName: "a4_sig" });
+const glass = (x, y, w, h, anim) => s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w, h, rectRadius: 0.2, fill: { color: "FFFFFF", transparency: 91 }, line: { color: "FFFFFF", transparency: 78, width: 1 }, objectName: `${anim}_glass` });
+const connector = (x1, x2, y, col, anim) => {
+  s.addShape(pres.shapes.LINE, { x: Math.min(x1, x2), y, w: Math.abs(x2 - x1), h: 0, line: { color: col, width: 1.5, dashType: "dash" }, objectName: `${anim}_line` });
+  const dx = x1 < x2 ? x2 : x2;
+  s.addShape(pres.shapes.OVAL, { x: dx - 0.09, y: y - 0.09, w: 0.18, h: 0.18, fill: { color: col }, line: { color: "FFFFFF", width: 1.5 }, objectName: `${anim}_node` });
+};
 
-// right: three capsule-shaped commitments
+const CW = 3.85, CH = 1.95, LX = 0.6, RX = 13.333 - 0.6 - CW, Y1 = 2.2, Y2 = 4.35;
 const items = [
-  ["friends", "Respect for everyone", "Everyone is treated with respect, whatever their gender or race. No exceptions.", HEX.mint, "navy"],
-  ["shield", "Living our values", "Our team follows our core values: innovation, caring for the planet and accessibility.", "2E9E5B", "white"],
-  ["euro", "Prices for every pocket", "NutriPill is affordable for all income groups, so everyone can try it.", HEX.coral, "white"],
+  [LX, Y1, "friends", "01", "Respect for everyone", "Everyone is treated with respect, whatever their gender or race. No exceptions.", HEX.mint, "navy"],
+  [LX, Y2, "shield", "02", "Living our values", "Our team follows our core values: innovation, caring for the planet and accessibility.", "2E9E5B", "white"],
+  [RX, Y1, "euro", "03", "Fair prices for all", "NutriPill is affordable for all income groups, so everyone can try it.", HEX.coral, "white"],
 ];
-items.forEach(([icn, h, d, col, icol], i) => {
-  const x = 6.15, y = 2.05 + i * 1.45, w = 6.45, hh = 1.2, r = hh / 2;
-  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w, h: hh, rectRadius: r, fill: { color: "FFFFFF" }, line: { type: "none" }, shadow: { type: "outer", color: "000000", blur: 18, offset: 6, angle: 90, opacity: 0.3 }, objectName: `a${5 + i}_body` });
-  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w: 1.7, h: hh, rectRadius: r, fill: { color: col }, line: { type: "none" }, objectName: `a${5 + i}_half` });
-  s.addShape(pres.shapes.RECTANGLE, { x: x + 1.1, y, w: 0.6, h: hh, fill: { color: col }, line: { type: "none" }, objectName: `a${5 + i}_halfsq` });
-  s.addShape(pres.shapes.LINE, { x: x + 1.7, y, w: 0, h: hh, line: { color: "0B1F3A", width: 1, transparency: 85 }, objectName: `a${5 + i}_seam` });
-  s.addImage({ path: ic(icn, icol), x: x + 0.62, y: y + 0.36, w: 0.48, h: 0.48, objectName: `a${5 + i}_icon`, altText: h });
-  T(s, h, { x: x + 1.95, y: y + 0.14, w: 4.25, h: 0.4, fontSize: 19, bold: true, color: HEX.navy, objectName: `a${5 + i}_h` });
-  T(s, d, { x: x + 1.95, y: y + 0.54, w: 4.25, h: 0.55, fontSize: 14, color: HEX.muted, objectName: `a${5 + i}_d` });
+items.forEach(([x, y, icn, num, h, d, col, icol], i) => {
+  const a = `a${2 + i}`;
+  glass(x, y, CW, CH, a);
+  s.addShape(pres.shapes.OVAL, { x: x + 0.3, y: y + 0.3, w: 0.66, h: 0.66, fill: { color: col }, line: { type: "none" }, shadow: { type: "outer", color: col, blur: 16, offset: 0, angle: 90, opacity: 0.6 }, objectName: `${a}_disc` });
+  s.addImage({ path: ic(icn, icol), x: x + 0.46, y: y + 0.46, w: 0.34, h: 0.34, objectName: `${a}_icon`, altText: h });
+  T(s, [{ text: num, options: { color: col, bold: true, fontSize: 12, charSpacing: 2, breakLine: true } }, { text: h, options: { color: "FFFFFF", bold: true, fontSize: 17 } }], { x: x + 1.12, y: y + 0.26, w: CW - 1.3, h: 0.74, valign: "middle", objectName: `${a}_h` });
+  T(s, d, { x: x + 0.3, y: y + 1.1, w: CW - 0.55, h: 0.75, fontSize: 14, color: HEX.mutedDark, objectName: `${a}_d` });
+  // connector to the orbit
+  const my = y + CH / 2, dy = Math.abs(my - CY), ox = Math.sqrt(R * 0.864 * R * 0.864 - dy * dy);
+  if (x < CX) connector(x + CW, CX - ox, my, col, a); else connector(CX + ox, x, my, col, a);
 });
 
-// bottom: slogan chip
-s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 6.15, y: 6.45, w: 6.45, h: 0.55, rectRadius: 0.27, fill: { color: HEX.mint, transparency: 85 }, line: { color: HEX.mint, width: 1.25 }, objectName: "a8_chip" });
-s.addImage({ path: ic("lock", "mint"), x: 6.4, y: 6.58, w: 0.29, h: 0.29, objectName: "a8_lock", altText: "lock" });
-T(s, [{ text: "Everyone can ", options: { color: "FFFFFF" } }, { text: "LOCK IN", options: { color: HEX.mint, bold: true } }, { text: ": 1 pill a day keeps the hunger away!", options: { color: "FFFFFF", italic: true } }],
-  { x: 6.85, y: 6.45, w: 5.6, h: 0.55, fontSize: 15, valign: "middle", objectName: "a8_t" });
+// quote card (bottom right), brand mint
+const qx = RX, qy = Y2;
+s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: qx, y: qy, w: CW, h: CH, rectRadius: 0.2, fill: { color: HEX.mint }, line: { type: "none" }, shadow: { type: "outer", color: HEX.mint, blur: 24, offset: 0, angle: 90, opacity: 0.45 }, objectName: "a5_card" });
+s.addImage({ path: ic("quote", "navy"), x: qx + 0.3, y: qy + 0.25, w: 0.38, h: 0.38, objectName: "a5_q", altText: "" });
+T(s, "How we treat people matters as much as what we sell.", { x: qx + 0.3, y: qy + 0.68, w: CW - 0.55, h: 0.75, fontSize: 17, bold: true, color: HEX.navy, objectName: "a5_t" });
+s.addImage({ path: A("logo-mark.png"), x: qx + 0.24, y: qy + 1.4, w: 0.45, h: 0.45, objectName: "a5_mark", altText: "NutriPill logo" });
+T(s, [{ text: "William", options: { bold: true } }, { text: "  ·  HR Manager", options: {} }], { x: qx + 0.75, y: qy + 1.43, w: 2.6, h: 0.4, fontSize: 14, color: HEX.navy, valign: "middle", objectName: "a5_sig" });
+{ const my = qy + CH / 2, dy = Math.abs(my - CY), ox = Math.sqrt(R * 0.864 * R * 0.864 - dy * dy); connector(CX + ox, qx, my, HEX.mint, "a5"); }
+
+// slogan ribbon under the capsule
+const SW = 6.5, SX = CX - SW / 2, SY = 6.62;
+s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: SX, y: SY, w: SW, h: 0.5, rectRadius: 0.25, fill: { color: "0B1F3A" }, line: { color: HEX.mint, width: 1.25 }, objectName: "a6_chip" });
+s.addImage({ path: ic("lock", "mint"), x: SX + 0.22, y: SY + 0.12, w: 0.26, h: 0.26, objectName: "a6_lock", altText: "lock" });
+T(s, [{ text: "Everyone can ", options: { color: "FFFFFF" } }, { text: "LOCK IN", options: { color: HEX.mint, bold: true } }, { text: "  ·  1 pill a day keeps the hunger away!", options: { color: "FFFFFF", italic: true } }],
+  { x: SX + 0.6, y: SY, w: SW - 0.75, h: 0.5, fontSize: 14, valign: "middle", objectName: "a6_t" });
 
 s.addNotes("As HR Manager, I'm responsible for how people work together at NutriPill, because for us, how we treat people matters as much as what we sell. Our workplace ethics are based on three ideas. First, respect for everyone: every employee is treated with respect, whatever their gender or race, with no exceptions. Second, living our values: we expect our team to follow our core values, which are innovation, caring for the planet and accessibility. And third, our social responsibility doesn't stop with our employees, it includes our customers too. That's why NutriPill is affordable for all income groups, so that everyone can try it and, as our slogan says, lock in.");
 
