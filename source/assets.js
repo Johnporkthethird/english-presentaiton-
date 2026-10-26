@@ -87,6 +87,56 @@ async function main() {
   </svg>`;
   await svg("bg-light.png", light, 1920, 1080);
 
+
+  // Product jar mockup
+  const jar = `<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="1100" viewBox="0 0 1100 1100">
+    <defs>
+      <radialGradient id="glow" cx="0.5" cy="0.55" r="0.5"><stop offset="0" stop-color="${MINT}" stop-opacity="0.35"/><stop offset="1" stop-color="${MINT}" stop-opacity="0"/></radialGradient>
+      <linearGradient id="body" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E6EEF5"/><stop offset="0.35" stop-color="#FFFFFF"/><stop offset="1" stop-color="#D3DFEA"/></linearGradient>
+      <linearGradient id="cap" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="${MINT2}"/><stop offset="0.4" stop-color="#3FE6C0"/><stop offset="1" stop-color="${MINT2}"/></linearGradient>
+      <linearGradient id="lab" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${NAVY}"/><stop offset="1" stop-color="${NAVY2}"/></linearGradient>
+      <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="30" stdDeviation="30" flood-color="${NAVY}" flood-opacity="0.3"/></filter>
+    </defs>
+    <circle cx="550" cy="560" r="520" fill="url(#glow)"/>
+    <ellipse cx="550" cy="960" rx="330" ry="40" fill="${NAVY}" opacity="0.12"/>
+    <g filter="url(#sh)">
+      <rect x="330" y="330" width="440" height="630" rx="70" fill="url(#body)"/>
+      <rect x="360" y="200" width="380" height="160" rx="30" fill="url(#cap)"/>
+      ${Array.from({length: 12}, (_, i) => `<rect x="${380 + i * 30}" y="215" width="8" height="130" rx="4" fill="#FFFFFF" opacity="0.18"/>`).join("")}
+      <rect x="330" y="470" width="440" height="380" fill="url(#lab)"/>
+      <g transform="translate(395 505) scale(0.2)">${capsule("jc", 520, -40)}</g>
+      <text x="550" y="660" text-anchor="middle" font-family="Inter" font-weight="900" font-size="74" fill="#FFFFFF" letter-spacing="-2">Nutri<tspan fill="${MINT}">Pill</tspan></text>
+      <text x="550" y="715" text-anchor="middle" font-family="Inter" font-weight="700" font-size="28" fill="${MINT}" letter-spacing="6">DAILY</text>
+      <rect x="400" y="750" width="300" height="2" fill="#FFFFFF" opacity="0.25"/>
+      <text x="550" y="800" text-anchor="middle" font-family="Inter" font-weight="500" font-size="26" fill="#FFFFFF" opacity="0.85">30 capsules · 1 a day</text>
+      <rect x="350" y="350" width="40" height="560" rx="20" fill="#FFFFFF" opacity="0.5"/>
+    </g>
+    <g transform="translate(130 840) scale(0.42)">${capsule("jp1", 520, -15)}</g>
+    <g transform="translate(760 880) scale(0.36)">${capsule("jp2", 520, 20)}</g>
+    <g transform="translate(820 780) scale(0.26)">${capsule("jp3", 520, -60)}</g>
+    <circle cx="200" cy="300" r="20" fill="${CORAL}"/><circle cx="900" cy="250" r="14" fill="${MINT}"/>
+  </svg>`;
+  await svg("product.png", jar, 1100, 1100);
+
+  // Eco illustration: leaf + capsule on green disc
+  const eco = `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000">
+    <defs><linearGradient id="d" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E4F7EA"/><stop offset="1" stop-color="#CDEFE6"/></linearGradient>
+    <linearGradient id="lf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5BD48A"/><stop offset="1" stop-color="#1F8A4C"/></linearGradient>
+    <linearGradient id="lf2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3FE6C0"/><stop offset="1" stop-color="${MINT2}"/></linearGradient>
+    <filter id="s" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="20" stdDeviation="22" flood-color="#1F5A3A" flood-opacity="0.25"/></filter></defs>
+    <circle cx="500" cy="500" r="440" fill="url(#d)"/>
+    <circle cx="500" cy="500" r="470" fill="none" stroke="#2E9E5B" stroke-opacity="0.3" stroke-width="4" stroke-dasharray="4 16"/>
+    <g filter="url(#s)">
+      <path d="M500 820 C 250 760, 210 450, 470 220 C 560 140, 700 130, 760 140 C 790 330, 760 620, 500 820 Z" fill="url(#lf)"/>
+      <path d="M500 820 C 560 600, 640 380, 740 170" stroke="#FFFFFF" stroke-opacity="0.6" stroke-width="10" fill="none" stroke-linecap="round"/>
+      <path d="M560 600 L 420 520 M600 480 L 480 400 M640 370 L 560 300 M580 560 L 690 470 M630 430 L 720 360" stroke="#FFFFFF" stroke-opacity="0.35" stroke-width="6" stroke-linecap="round"/>
+      <path d="M470 820 C 300 820, 200 700, 220 560 C 330 560, 440 640, 470 820 Z" fill="url(#lf2)"/>
+    </g>
+    <g transform="translate(560 690) scale(0.4)">${capsule("ec", 520, -30)}</g>
+    <circle cx="230" cy="280" r="18" fill="${CORAL}"/><circle cx="800" cy="760" r="14" fill="#2E9E5B"/><circle cx="820" cy="300" r="10" fill="${NAVY}" opacity="0.3"/>
+  </svg>`;
+  await svg("eco.png", eco, 1000, 1000);
+
   // Icons
   const fa = require("react-icons/fa");
   const icons = {
@@ -96,8 +146,11 @@ async function main() {
     camera: "FaCameraRetro", star: "FaStar", gift: "FaGift", users: "FaUsers", check: "FaCheck",
     handshake: "FaHandshake", instagram: "FaInstagram", tiktok: "FaTiktok", youtube: "FaYoutube",
     flag: "FaFlag", chart: "FaChartLine", trophy: "FaTrophy", question: "FaQuestion", utensils: "FaUtensils",
+    leaf: "FaLeaf", solar: "FaSolarPanel", recycle: "FaRecycle", seedling: "FaSeedling", balance: "FaBalanceScale",
+    handheart: "FaHandHoldingHeart", friends: "FaUserFriends", euro: "FaEuroSign", shield: "FaShieldAlt",
+    warning: "FaExclamationTriangle", thumbsup: "FaThumbsUp", globe: "FaGlobeAmericas", store: "FaStore", rocket: "FaRocket", quote: "FaQuoteLeft",
   };
-  const colors = { navy: NAVY, mint: MINT, white: "#FFFFFF", coral: CORAL };
+  const colors = { navy: NAVY, mint: MINT, white: "#FFFFFF", coral: CORAL, green: "#2E9E5B" };
   for (const [k, comp] of Object.entries(icons)) {
     for (const [cn, c] of Object.entries(colors)) {
       const s = renderToStaticMarkup(React.createElement(fa[comp], { color: c, size: 512 }));
