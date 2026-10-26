@@ -286,7 +286,7 @@ s.addText("SWOT Analysis", { placeholder: "title" });
 const swot = [
   ["S", "Strengths", "thumbsup", HEX.mint, ["Small, cheap and easy to carry", "Quick: one pill and you're done", "Natural ingredients"]],
   ["W", "Weaknesses", "warning", HEX.coral, ["It doesn't replace a real meal", "We're a new brand nobody knows yet", "Some people don't trust supplements"]],
-  ["O", "Opportunities", "globe", "2A6BD1", ["More people have busy lives every year", "Healthy living is a big trend on social media", "Partnerships with gyms and supermarkets"]],
+  ["O", "Opportunities", "globe", "2A6BD1", ["More people have busy lives every year", "Healthy living is a big trend on social media", "Selling in supermarkets like Mercadona"]],
   ["T", "Threats", "shield", HEX.navy, ["Big supplement brands", "Energy drinks and protein bars", "Strict health rules for new products"]],
 ];
 swot.forEach(([L, h, icn, col, items], i) => {
@@ -298,7 +298,7 @@ swot.forEach(([L, h, icn, col, items], i) => {
   T(s, h, { x: x + 1.8, y: y + 0.2, w: 3.9, h: 0.45, fontSize: 20, bold: true, color: col === HEX.navy ? HEX.navy : col, objectName: `a${1 + i}_h` });
   T(s, items.map((t, j) => ({ text: t, options: { bullet: true, breakLine: j < items.length - 1 } })), { x: x + 1.8, y: y + 0.7, w: 3.95, h: 1.4, fontSize: 15, color: HEX.navy, paraSpaceAfter: 4, objectName: `a${1 + i}_list` });
 });
-s.addNotes("Before going further, we did a SWOT analysis to look at NutriPill honestly. Our strengths are that it's small, cheap and easy to carry, it's very quick to take, and it uses natural ingredients. But we also have weaknesses: it doesn't replace a real meal, we're a new brand that nobody knows yet, and some people simply don't trust supplements. On the other hand, there are big opportunities: more people have busy lives every year, healthy living is a huge trend on social media, and we could partner with gyms and supermarkets. Finally, the main threats are big supplement brands, energy drinks and protein bars, and the strict health rules for new products.");
+s.addNotes("Before going further, we did a SWOT analysis to look at NutriPill honestly. Our strengths are that it's small, cheap and easy to carry, it's very quick to take, and it uses natural ingredients. But we also have weaknesses: it doesn't replace a real meal, we're a new brand that nobody knows yet, and some people simply don't trust supplements. On the other hand, there are big opportunities: more people have busy lives every year, healthy living is a huge trend on social media, and supermarkets like Mercadona could sell NutriPill to millions of people. Finally, the main threats are big supplement brands, energy drinks and protein bars, and the strict health rules for new products.");
 
 // ================= 8. OUR PROPOSAL =================
 s = pres.addSlide({ masterName: "LIGHT", sectionTitle: "The business" });
@@ -326,7 +326,7 @@ s.addShape(pres.shapes.LINE, { x: 1.05, y: 2.6, w: 0, h: 3.6, line: { color: HEX
 const goals = [
   ["flag", "In 6 months", "Have a group of loyal customers who use NutriPill and talk about it online."],
   ["chart", "In 12 months", "Reach more people online and double the number of customers we have."],
-  ["trophy", "In the long term", "Become a well-known brand in our city first, and then grow across the whole country."],
+  ["trophy", "In 5 to 10 years", "Be on the shelves of big supermarkets like Mercadona in Spain and Walmart in America, and reach customers all over the world."],
 ];
 goals.forEach(([icn, h, d], i) => {
   const y = 2.2 + i * 1.6;
@@ -335,7 +335,12 @@ goals.forEach(([icn, h, d], i) => {
   T(s, h, { x: 1.85, y: y - 0.05, w: 6, h: 0.5, fontSize: 22, bold: true, color: "FFFFFF", objectName: `a${2 + i}_h` });
   T(s, d, { x: 1.85, y: y + 0.42, w: 6.2, h: 0.8, fontSize: 16, color: HEX.mutedDark, objectName: `a${2 + i}_d` });
 });
-s.addNotes("Finally, here's what we hope to achieve. In six months, we want to have a group of loyal customers who use NutriPill and talk about it online. In twelve months, we want to reach more people online and double the number of customers we have. And in the long term, our goal is to become a well-known brand in our city first, and then grow across the whole country. To sum up, NutriPill is a simple answer to a problem that a lot of us have every day. Thank you very much for listening. Do you have any questions?");
+[["Mercadona", 1.85, 1.75], ["Walmart", 3.75, 1.5]].forEach(([t, x, w]) => {
+  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 6.45, w, h: 0.45, rectRadius: 0.22, fill: { color: "FFFFFF" }, line: { type: "none" }, objectName: "a5_chip" });
+  s.addImage({ path: ic("store", "coral"), x: x + 0.15, y: 6.55, w: 0.25, h: 0.25, objectName: "a5_store", altText: "store" });
+  T(s, t, { x: x + 0.45, y: 6.45, w: w - 0.5, h: 0.45, fontSize: 14, bold: true, color: HEX.navy, valign: "middle", objectName: "a5_chiptext" });
+});
+s.addNotes("Finally, here's what we hope to achieve. In six months, we want to have a group of loyal customers who use NutriPill and talk about it online. In twelve months, we want to reach more people online and double the number of customers we have. And in five to ten years, our big dream is to see NutriPill on the shelves of big supermarkets like Mercadona here in Spain and Walmart in America, and to reach customers all over the world, in Europe, Asia, Africa and the Americas. To sum up, NutriPill is a simple answer to a problem that a lot of us have every day. Thank you very much for listening. Do you have any questions?");
 
 (async () => {
   const out = path.join(__dirname, "NutriPill.pptx");
