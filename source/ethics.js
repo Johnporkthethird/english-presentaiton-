@@ -90,7 +90,7 @@ items.forEach(([x, y, icn, num, h, d, col, icol], i) => {
 const qx = RX, qy = Y2;
 s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: qx, y: qy, w: CW, h: CH, rectRadius: 0.2, fill: { color: HEX.mint }, line: { type: "none" }, shadow: { type: "outer", color: HEX.mint, blur: 24, offset: 0, angle: 90, opacity: 0.45 }, objectName: "a5_card" });
 s.addImage({ path: ic("quote", "navy"), x: qx + 0.3, y: qy + 0.25, w: 0.38, h: 0.38, objectName: "a5_q", altText: "" });
-T(s, "If our team isn't happy, our customers won't be either.", { x: qx + 0.3, y: qy + 0.68, w: CW - 0.55, h: 0.75, fontSize: 17, bold: true, color: HEX.navy, objectName: "a5_t" });
+T(s, "Take care of your team, and they'll take care of your customers.", { x: qx + 0.3, y: qy + 0.65, w: CW - 0.45, h: 0.7, fontSize: 15.5, bold: true, italic: true, color: HEX.navy, objectName: "a5_t" });
 s.addImage({ path: A("logo-mark.png"), x: qx + 0.24, y: qy + 1.4, w: 0.45, h: 0.45, objectName: "a5_mark", altText: "NutriPill logo" });
 T(s, [{ text: "William", options: { bold: true } }, { text: "  ·  HR Manager", options: {} }], { x: qx + 0.75, y: qy + 1.43, w: 2.6, h: 0.4, fontSize: 14, color: HEX.navy, valign: "middle", objectName: "a5_sig" });
 { const my = qy + CH / 2, dy = Math.abs(my - CY), ox = Math.sqrt(R * 0.864 * R * 0.864 - dy * dy); connector(CX + ox, qx, my, HEX.mint, "a5"); }
@@ -102,7 +102,7 @@ s.addImage({ path: ic("lock", "mint"), x: SX + 0.22, y: SY + 0.12, w: 0.26, h: 0
 T(s, [{ text: "Everyone can ", options: { color: "FFFFFF" } }, { text: "LOCK IN", options: { color: HEX.mint, bold: true } }, { text: "  ·  1 pill a day keeps the hunger away!", options: { color: "FFFFFF", italic: true } }],
   { x: SX + 0.6, y: SY, w: SW - 0.75, h: 0.5, fontSize: 14, valign: "middle", objectName: "a6_t" });
 
-s.addNotes("As HR Manager, I believe one simple thing: if our team isn't happy, our customers won't be either. So we have three clear rules. First, same job, same pay. Men and women who do the same job earn exactly the same, and we hire people for their skills, never because of their gender or race. Second, everyone has a voice. Once a month, anyone in the company, from the newest worker to the CEO, can pitch an idea to improve NutriPill. That's how we keep innovation alive. And third, nobody is priced out. Our social responsibility includes our customers too, so NutriPill costs just 9.99 a month, and students get 20% off with their student card. That way, anyone can try it and, as our slogan says, lock in.");
+s.addNotes("As HR Manager, I believe one simple thing: take care of your team, and they'll take care of your customers. So we have three clear rules. First, same job, same pay. Men and women who do the same job earn exactly the same, and we hire people for their skills, never because of their gender or race. Second, everyone has a voice. Once a month, anyone in the company, from the newest worker to the CEO, can pitch an idea to improve NutriPill. That's how we keep innovation alive. And third, nobody is priced out. Our social responsibility includes our customers too, so NutriPill costs just 9.99 a month, and students get 20% off with their student card. That way, anyone can try it and, as our slogan says, lock in.");
 
 (async () => {
   const out = path.join(__dirname, "Ethics-slide.pptx");
