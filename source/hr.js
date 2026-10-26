@@ -74,31 +74,33 @@ steps.forEach(([icn, h, d], i) => {
   T(s, d, { x: 1.65, y: y + 0.38, w: 4.9, h: 0.65, fontSize: 14, color: HEX.mutedDark, objectName: `a${3 + i}_d` });
 });
 
-// right: interview questions
+// right: executive board
 card(s, 6.95, 2.5, 5.65, 3.85, "FFFFFF", "a6");
-T(s, "QUESTIONS WE ASK IN INTERVIEWS", { x: 7.3, y: 2.8, w: 5.1, h: 0.35, fontSize: 13, bold: true, charSpacing: 3, color: HEX.coral, objectName: "a6_h" });
-const qs = [
-  "How would you react if a deadline was suddenly moved forward?",
-  "What would you do if a teammate made a big mistake?",
-  "How would you deal with an unhappy customer?",
+T(s, "OUR EXECUTIVE BOARD", { x: 7.3, y: 2.8, w: 5.1, h: 0.35, fontSize: 13, bold: true, charSpacing: 3, color: HEX.coral, objectName: "a6_h" });
+const board = [
+  ["trophy", "Miguel", "CEO", "Leads the pitch and the company's vision"],
+  ["share", "Dani", "CMO", "Runs our advertising and market research"],
+  ["coins", "Max", "CFO", "Manages costs, prices and finances"],
+  ["users", "William", "HR Manager", "Hires our team and looks after our culture"],
 ];
-qs.forEach((q, i) => {
-  const y = 3.35 + i * 0.95;
-  s.addShape(pres.shapes.OVAL, { x: 7.3, y: y + 0.05, w: 0.55, h: 0.55, fill: { color: "FFF0EC" }, line: { type: "none" }, objectName: `a${7 + i}_dot` });
-  T(s, "?", { x: 7.3, y: y + 0.05, w: 0.55, h: 0.55, fontSize: 18, bold: true, color: HEX.coral, align: "center", valign: "middle", objectName: `a${7 + i}_q` });
-  T(s, `“${q}”`, { x: 8.05, y, w: 4.35, h: 0.75, fontSize: 15, italic: true, color: HEX.navy, valign: "middle", objectName: `a${7 + i}_t` });
+board.forEach(([icn, name, role, d], i) => {
+  const y = 3.3 + i * 0.75;
+  s.addShape(pres.shapes.OVAL, { x: 7.3, y: y + 0.05, w: 0.55, h: 0.55, fill: { color: i === 3 ? HEX.coral : HEX.navy }, line: { type: "none" }, objectName: `a${7 + i}_dot` });
+  s.addImage({ path: ic(icn, i === 3 ? "white" : "mint"), x: 7.45, y: y + 0.2, w: 0.25, h: 0.25, objectName: `a${7 + i}_icon`, altText: role });
+  T(s, [{ text: name, options: { bold: true, color: HEX.navy } }, { text: `  ·  ${role}`, options: { bold: true, color: HEX.mint } }], { x: 8.05, y: y - 0.02, w: 4.4, h: 0.35, fontSize: 16, objectName: `a${7 + i}_n` });
+  T(s, d, { x: 8.05, y: y + 0.33, w: 4.4, h: 0.32, fontSize: 14, color: HEX.muted, objectName: `a${7 + i}_d` });
 });
 
 // bottom: what we offer
-T(s, "What we offer:", { x: 0.6, y: 6.6, w: 1.9, h: 0.45, fontSize: 16, bold: true, color: "FFFFFF", valign: "middle", objectName: "a10_h" });
+T(s, "What we offer:", { x: 0.6, y: 6.6, w: 1.9, h: 0.45, fontSize: 16, bold: true, color: "FFFFFF", valign: "middle", objectName: "a11_h" });
 [["graduate", "Training"], ["clock", "Flexible hours"], ["euro", "Fair pay"], ["handshake", "Respect for everyone"]].forEach(([icn, t], i) => {
   const w = [1.65, 2.05, 1.5, 2.6][i], x = [2.5, 4.3, 6.5, 8.15][i];
-  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 6.6, w, h: 0.45, rectRadius: 0.22, fill: { color: "FFFFFF", transparency: 88 }, line: { color: HEX.mint, width: 1 }, objectName: `a${11 + i}_chip` });
-  s.addImage({ path: ic(icn, "mint"), x: x + 0.15, y: 6.7, w: 0.25, h: 0.25, objectName: `a${11 + i}_icon`, altText: t });
-  T(s, t, { x: x + 0.48, y: 6.6, w: w - 0.55, h: 0.45, fontSize: 14, bold: true, color: "FFFFFF", valign: "middle", objectName: `a${11 + i}_t` });
+  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 6.6, w, h: 0.45, rectRadius: 0.22, fill: { color: "FFFFFF", transparency: 88 }, line: { color: HEX.mint, width: 1 }, objectName: `a${12 + i}_chip` });
+  s.addImage({ path: ic(icn, "mint"), x: x + 0.15, y: 6.7, w: 0.25, h: 0.25, objectName: `a${12 + i}_icon`, altText: t });
+  T(s, t, { x: x + 0.48, y: 6.6, w: w - 0.55, h: 0.45, fontSize: 14, bold: true, color: "FFFFFF", valign: "middle", objectName: `a${12 + i}_t` });
 });
 
-s.addNotes("As HR Manager, my job is to find the right people for NutriPill and keep them motivated. Our hiring process has three steps. First, you apply by sending your CV and a short video explaining why you want to join us. Second, we do a live interview. It's not just about your CV; we want to see how you deal with pressure and how you work in a team. For example, we ask questions like: How would you react if a deadline was suddenly moved forward? Or: How would you deal with an unhappy customer? Finally, there's a trial day, so you can work with the team before we both decide. In return, we offer training, flexible hours, fair pay and, of course, respect for everyone in the team.");
+s.addNotes("As HR Manager, my job is to find the right people for NutriPill and keep them motivated. Our hiring process has three steps. First, you apply by sending your CV and a short video explaining why you want to join us. Second, we do a live interview. It's not just about your CV; we want to see how you deal with pressure and how you work in a team. Finally, there's a trial day, so you can work with the team before we both decide. Right now, our team is the four of us: Miguel is our CEO and leads the company, Dani is our CMO and runs the marketing, Max is our CFO and manages the money, and I'm the HR Manager. In return for their hard work, we offer our team training, flexible hours, fair pay and, of course, respect for everyone.");
 
 (async () => {
   const out = path.join(__dirname, "HR-slide.pptx");
