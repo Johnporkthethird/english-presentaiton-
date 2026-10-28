@@ -11,7 +11,8 @@
    "Licorice conveyors",
    "Chocolate crumble"
   ],
-  "instances": 2453,
+  "instances": 2485,
+  "zfights_fixed": 1526,
   "checkpoints": 7,
   "length": 5540.0
  },
@@ -22,14 +23,14 @@
   "sections": [
    "Burger & fries hops",
    "Ketchup & mustard gates",
+   "Milkshake tower",
    "Rolling pickle",
    "Swinging spatulas",
-   "Burger presses",
-   "Milkshake tower",
-   "Grill conveyors"
+   "Burger presses"
   ],
-  "instances": 2206,
-  "checkpoints": 8,
+  "instances": 2091,
+  "zfights_fixed": 1277,
+  "checkpoints": 7,
   "length": 5420.0
  },
  {
@@ -38,15 +39,15 @@
   "theme": "mushroom",
   "sections": [
    "Toadstool hops",
+   "Giant mushroom climb",
    "Hollow log",
    "Swinging leaves",
-   "Giant mushroom climb",
    "Spore-ring drop",
-   "Puffball field",
-   "Spinning bark bridges"
+   "Puffball field"
   ],
-  "instances": 1744,
-  "checkpoints": 8,
+  "instances": 1613,
+  "zfights_fixed": 88,
+  "checkpoints": 7,
   "length": 5620.0
  },
  {
@@ -59,9 +60,10 @@
    "Pawn crushers",
    "Rotating chessboard",
    "Sceptre sweepers",
-   "Knight jumps"
+   "Knight leaps"
   ],
-  "instances": 1307,
+  "instances": 1277,
+  "zfights_fixed": 752,
   "checkpoints": 7,
   "length": 5310.0
  },
@@ -77,7 +79,8 @@
    "Gear-tooth pistons",
    "Cog bridges"
   ],
-  "instances": 1934,
+  "instances": 1862,
+  "zfights_fixed": 1227,
   "checkpoints": 7,
   "length": 5610.0
  },
@@ -93,7 +96,8 @@
    "Hula-hoop leap",
    "Sliding brick walls"
   ],
-  "instances": 1854,
+  "instances": 1865,
+  "zfights_fixed": 685,
   "checkpoints": 7,
   "length": 5440.0
  },
@@ -110,6 +114,7 @@
    "Meteor drop"
   ],
   "instances": 1425,
+  "zfights_fixed": 853,
   "checkpoints": 7,
   "length": 5440.0
  },
@@ -125,7 +130,8 @@
    "Magma pistons",
    "Caldera drop"
   ],
-  "instances": 1231,
+  "instances": 1204,
+  "zfights_fixed": 734,
   "checkpoints": 7,
   "length": 5440.0
  },
@@ -141,7 +147,8 @@
    "Snowflake bridges",
    "Snowman slalom"
   ],
-  "instances": 2908,
+  "instances": 3123,
+  "zfights_fixed": 855,
   "checkpoints": 7,
   "length": 5440.0
  },
@@ -150,7 +157,7 @@
   "title": "High Score",
   "theme": "arcade",
   "sections": [
-   "Coin lanes",
+   "Coin wave",
    "Pinball bumpers",
    "Laser rhythm",
    "Pixel path",
@@ -158,7 +165,8 @@
    "Equaliser bars",
    "Invader walls"
   ],
-  "instances": 1428,
+  "instances": 1487,
+  "zfights_fixed": 401,
   "checkpoints": 8,
   "length": 5440.0
  },
@@ -175,6 +183,7 @@
    "split"
   ],
   "instances": 1564,
+  "zfights_fixed": 3711,
   "checkpoints": 7,
   "length": 6280.0
  },
@@ -191,6 +200,7 @@
    "long_jump"
   ],
   "instances": 1094,
+  "zfights_fixed": 550,
   "checkpoints": 7,
   "length": 5730.0
  },
@@ -207,6 +217,7 @@
    "split"
   ],
   "instances": 2076,
+  "zfights_fixed": 423,
   "checkpoints": 7,
   "length": 5640.0
  },
@@ -225,6 +236,7 @@
    "lasers"
   ],
   "instances": 1601,
+  "zfights_fixed": 569,
   "checkpoints": 9,
   "length": 5740.0
  },
@@ -240,6 +252,7 @@
    "hop_wave"
   ],
   "instances": 744,
+  "zfights_fixed": 630,
   "checkpoints": 6,
   "length": 5260.0
  },
@@ -255,6 +268,7 @@
    "hop_lanes"
   ],
   "instances": 934,
+  "zfights_fixed": 332,
   "checkpoints": 6,
   "length": 5710.0
  },
@@ -271,6 +285,7 @@
    "zigzag"
   ],
   "instances": 806,
+  "zfights_fixed": 528,
   "checkpoints": 7,
   "length": 5620.0
  },
@@ -287,6 +302,7 @@
    "crumble"
   ],
   "instances": 1005,
+  "zfights_fixed": 525,
   "checkpoints": 7,
   "length": 5240.0
  },
@@ -303,6 +319,7 @@
    "lasers"
   ],
   "instances": 1653,
+  "zfights_fixed": 201,
   "checkpoints": 7,
   "length": 5380.0
  },
@@ -319,6 +336,7 @@
    "log"
   ],
   "instances": 1017,
+  "zfights_fixed": 298,
   "checkpoints": 7,
   "length": 5400.0
  },
@@ -335,6 +353,7 @@
    "bumpers"
   ],
   "instances": 773,
+  "zfights_fixed": 257,
   "checkpoints": 7,
   "length": 5480.0
  },
@@ -351,6 +370,7 @@
    "crumble"
   ],
   "instances": 1101,
+  "zfights_fixed": 495,
   "checkpoints": 7,
   "length": 5640.0
  },
@@ -368,6 +388,7 @@
    "cross"
   ],
   "instances": 994,
+  "zfights_fixed": 782,
   "checkpoints": 8,
   "length": 5640.0
  },
@@ -385,6 +406,7 @@
    "log"
   ],
   "instances": 1343,
+  "zfights_fixed": 756,
   "checkpoints": 8,
   "length": 5680.0
  },
@@ -401,6 +423,7 @@
    "windmill"
   ],
   "instances": 1057,
+  "zfights_fixed": 141,
   "checkpoints": 7,
   "length": 5540.0
  },
@@ -417,6 +440,7 @@
    "split"
   ],
   "instances": 1119,
+  "zfights_fixed": 163,
   "checkpoints": 7,
   "length": 5770.0
  },
@@ -433,6 +457,7 @@
    "conveyors"
   ],
   "instances": 980,
+  "zfights_fixed": 253,
   "checkpoints": 7,
   "length": 5690.0
  },
@@ -450,6 +475,7 @@
    "cross"
   ],
   "instances": 1190,
+  "zfights_fixed": 655,
   "checkpoints": 8,
   "length": 5640.0
  },
@@ -466,6 +492,7 @@
    "limbo"
   ],
   "instances": 981,
+  "zfights_fixed": 794,
   "checkpoints": 7,
   "length": 5650.0
  },
@@ -482,6 +509,7 @@
    "slalom"
   ],
   "instances": 1117,
+  "zfights_fixed": 453,
   "checkpoints": 7,
   "length": 5690.0
  },
@@ -498,6 +526,7 @@
    "bumpers"
   ],
   "instances": 962,
+  "zfights_fixed": 209,
   "checkpoints": 7,
   "length": 5720.0
  },
@@ -514,6 +543,7 @@
    "log"
   ],
   "instances": 1048,
+  "zfights_fixed": 183,
   "checkpoints": 7,
   "length": 5700.0
  },
@@ -531,6 +561,7 @@
    "rot_door"
   ],
   "instances": 1099,
+  "zfights_fixed": 640,
   "checkpoints": 8,
   "length": 5680.0
  },
@@ -547,6 +578,7 @@
    "conveyors"
   ],
   "instances": 1224,
+  "zfights_fixed": 4840,
   "checkpoints": 7,
   "length": 5670.0
  },
@@ -563,6 +595,7 @@
    "split"
   ],
   "instances": 871,
+  "zfights_fixed": 869,
   "checkpoints": 7,
   "length": 5640.0
  },
@@ -579,6 +612,7 @@
    "conveyors"
   ],
   "instances": 1240,
+  "zfights_fixed": 1913,
   "checkpoints": 7,
   "length": 5600.0
  },
@@ -595,6 +629,7 @@
    "slide"
   ],
   "instances": 1091,
+  "zfights_fixed": 609,
   "checkpoints": 7,
   "length": 5640.0
  },
@@ -610,6 +645,7 @@
    "hop_line"
   ],
   "instances": 1628,
+  "zfights_fixed": 447,
   "checkpoints": 6,
   "length": 5740.0
  },
@@ -626,6 +662,7 @@
    "turntable"
   ],
   "instances": 1431,
+  "zfights_fixed": 435,
   "checkpoints": 7,
   "length": 5600.0
  },
@@ -643,6 +680,7 @@
    "turntable"
   ],
   "instances": 1058,
+  "zfights_fixed": 979,
   "checkpoints": 8,
   "length": 5660.0
  },
@@ -661,6 +699,7 @@
    "cross"
   ],
   "instances": 1150,
+  "zfights_fixed": 411,
   "checkpoints": 9,
   "length": 5870.0
  },
@@ -678,6 +717,7 @@
    "rot_door"
   ],
   "instances": 1160,
+  "zfights_fixed": 308,
   "checkpoints": 8,
   "length": 5640.0
  },
@@ -694,6 +734,7 @@
    "turntable"
   ],
   "instances": 995,
+  "zfights_fixed": 530,
   "checkpoints": 7,
   "length": 5730.0
  },
@@ -711,6 +752,7 @@
    "cross"
   ],
   "instances": 1299,
+  "zfights_fixed": 171,
   "checkpoints": 8,
   "length": 5580.0
  },
@@ -728,6 +770,7 @@
    "windmill"
   ],
   "instances": 1348,
+  "zfights_fixed": 455,
   "checkpoints": 8,
   "length": 5580.0
  },
@@ -744,6 +787,7 @@
    "zigzag"
   ],
   "instances": 740,
+  "zfights_fixed": 224,
   "checkpoints": 7,
   "length": 5600.0
  },
@@ -759,6 +803,7 @@
    "hop_lanes"
   ],
   "instances": 795,
+  "zfights_fixed": 266,
   "checkpoints": 6,
   "length": 5580.0
  },
@@ -775,6 +820,7 @@
    "sweepers"
   ],
   "instances": 817,
+  "zfights_fixed": 548,
   "checkpoints": 7,
   "length": 5600.0
  },
@@ -792,6 +838,7 @@
    "pendulums"
   ],
   "instances": 1574,
+  "zfights_fixed": 696,
   "checkpoints": 8,
   "length": 5600.0
  },
@@ -809,6 +856,7 @@
    "spin_bridges"
   ],
   "instances": 897,
+  "zfights_fixed": 127,
   "checkpoints": 8,
   "length": 5600.0
  },
@@ -825,6 +873,7 @@
    "turntable"
   ],
   "instances": 1005,
+  "zfights_fixed": 168,
   "checkpoints": 7,
   "length": 5760.0
  },
@@ -841,6 +890,7 @@
    "crumble"
   ],
   "instances": 846,
+  "zfights_fixed": 469,
   "checkpoints": 7,
   "length": 5680.0
  },
@@ -857,6 +907,7 @@
    "log"
   ],
   "instances": 879,
+  "zfights_fixed": 415,
   "checkpoints": 7,
   "length": 5680.0
  },
@@ -873,6 +924,7 @@
    "rot_door"
   ],
   "instances": 1303,
+  "zfights_fixed": 605,
   "checkpoints": 7,
   "length": 5600.0
  },
@@ -889,6 +941,7 @@
    "lasers"
   ],
   "instances": 1093,
+  "zfights_fixed": 464,
   "checkpoints": 7,
   "length": 5640.0
  },
@@ -905,6 +958,7 @@
    "slalom"
   ],
   "instances": 1194,
+  "zfights_fixed": 213,
   "checkpoints": 7,
   "length": 5760.0
  },
@@ -920,6 +974,7 @@
    "hop_tiny"
   ],
   "instances": 1217,
+  "zfights_fixed": 144,
   "checkpoints": 6,
   "length": 5680.0
  },
@@ -937,6 +992,7 @@
    "log"
   ],
   "instances": 1367,
+  "zfights_fixed": 502,
   "checkpoints": 8,
   "length": 5670.0
  },
@@ -954,6 +1010,7 @@
    "log"
   ],
   "instances": 1115,
+  "zfights_fixed": 2848,
   "checkpoints": 8,
   "length": 5670.0
  },
@@ -970,6 +1027,7 @@
    "zigzag"
   ],
   "instances": 848,
+  "zfights_fixed": 820,
   "checkpoints": 7,
   "length": 5600.0
  },
@@ -985,6 +1043,7 @@
    "hop_fall"
   ],
   "instances": 1328,
+  "zfights_fixed": 2337,
   "checkpoints": 6,
   "length": 5570.0
  },
@@ -1001,6 +1060,7 @@
    "lasers"
   ],
   "instances": 1289,
+  "zfights_fixed": 664,
   "checkpoints": 7,
   "length": 5600.0
  },
@@ -1017,6 +1077,7 @@
    "slalom"
   ],
   "instances": 2300,
+  "zfights_fixed": 472,
   "checkpoints": 7,
   "length": 5670.0
  },
@@ -1032,6 +1093,7 @@
    "hop_tiny"
   ],
   "instances": 1099,
+  "zfights_fixed": 888,
   "checkpoints": 6,
   "length": 5800.0
  },
@@ -1049,6 +1111,7 @@
    "cross"
   ],
   "instances": 1159,
+  "zfights_fixed": 620,
   "checkpoints": 8,
   "length": 5700.0
  },
@@ -1065,6 +1128,7 @@
    "limbo"
   ],
   "instances": 760,
+  "zfights_fixed": 387,
   "checkpoints": 7,
   "length": 5640.0
  },
@@ -1081,6 +1145,7 @@
    "conveyors"
   ],
   "instances": 877,
+  "zfights_fixed": 458,
   "checkpoints": 7,
   "length": 5600.0
  },
@@ -1097,6 +1162,7 @@
    "zigzag"
   ],
   "instances": 1051,
+  "zfights_fixed": 483,
   "checkpoints": 7,
   "length": 5640.0
  },
@@ -1114,6 +1180,7 @@
    "turntable"
   ],
   "instances": 1421,
+  "zfights_fixed": 255,
   "checkpoints": 8,
   "length": 5610.0
  },
@@ -1132,6 +1199,7 @@
    "turntable"
   ],
   "instances": 1642,
+  "zfights_fixed": 503,
   "checkpoints": 9,
   "length": 5630.0
  },
@@ -1147,6 +1215,7 @@
    "hop_lanes"
   ],
   "instances": 673,
+  "zfights_fixed": 207,
   "checkpoints": 6,
   "length": 5560.0
  },
@@ -1162,6 +1231,7 @@
    "hop_tiny"
   ],
   "instances": 652,
+  "zfights_fixed": 247,
   "checkpoints": 6,
   "length": 5490.0
  },
@@ -1178,6 +1248,7 @@
    "split"
   ],
   "instances": 952,
+  "zfights_fixed": 943,
   "checkpoints": 7,
   "length": 5710.0
  },
@@ -1193,6 +1264,7 @@
    "hop_line"
   ],
   "instances": 1294,
+  "zfights_fixed": 519,
   "checkpoints": 6,
   "length": 5620.0
  },
@@ -1209,6 +1281,7 @@
    "cross"
   ],
   "instances": 811,
+  "zfights_fixed": 137,
   "checkpoints": 7,
   "length": 5260.0
  },
@@ -1225,6 +1298,7 @@
    "lasers"
   ],
   "instances": 784,
+  "zfights_fixed": 168,
   "checkpoints": 7,
   "length": 5610.0
  },
@@ -1241,6 +1315,7 @@
    "conveyors"
   ],
   "instances": 1034,
+  "zfights_fixed": 284,
   "checkpoints": 7,
   "length": 5600.0
  },
@@ -1257,6 +1332,7 @@
    "limbo"
   ],
   "instances": 1052,
+  "zfights_fixed": 745,
   "checkpoints": 7,
   "length": 5670.0
  },
@@ -1274,6 +1350,7 @@
    "cross"
   ],
   "instances": 1154,
+  "zfights_fixed": 541,
   "checkpoints": 8,
   "length": 5340.0
  },
@@ -1290,6 +1367,7 @@
    "zigzag"
   ],
   "instances": 1269,
+  "zfights_fixed": 477,
   "checkpoints": 7,
   "length": 5670.0
  },
@@ -1306,6 +1384,7 @@
    "limbo"
   ],
   "instances": 1240,
+  "zfights_fixed": 217,
   "checkpoints": 7,
   "length": 5640.0
  },
@@ -1321,6 +1400,7 @@
    "hop_lanes"
   ],
   "instances": 1107,
+  "zfights_fixed": 168,
   "checkpoints": 6,
   "length": 5200.0
  },
@@ -1338,6 +1418,7 @@
    "rot_door"
   ],
   "instances": 1102,
+  "zfights_fixed": 600,
   "checkpoints": 8,
   "length": 5640.0
  },
@@ -1353,6 +1434,7 @@
    "hop_rise"
   ],
   "instances": 1037,
+  "zfights_fixed": 3467,
   "checkpoints": 6,
   "length": 5540.0
  },
@@ -1369,6 +1451,7 @@
    "spiral_tower"
   ],
   "instances": 864,
+  "zfights_fixed": 570,
   "checkpoints": 7,
   "length": 5180.0
  },
@@ -1385,6 +1468,7 @@
    "ice_rink"
   ],
   "instances": 1351,
+  "zfights_fixed": 1830,
   "checkpoints": 7,
   "length": 5640.0
  },
@@ -1403,6 +1487,7 @@
    "turntable"
   ],
   "instances": 1391,
+  "zfights_fixed": 717,
   "checkpoints": 9,
   "length": 5460.0
  },
@@ -1419,6 +1504,7 @@
    "windmill"
   ],
   "instances": 1956,
+  "zfights_fixed": 583,
   "checkpoints": 7,
   "length": 5760.0
  },
@@ -1434,6 +1520,7 @@
    "hop_lanes"
   ],
   "instances": 1109,
+  "zfights_fixed": 859,
   "checkpoints": 6,
   "length": 5700.0
  },
@@ -1451,6 +1538,7 @@
    "cross"
   ],
   "instances": 945,
+  "zfights_fixed": 545,
   "checkpoints": 8,
   "length": 5640.0
  },
@@ -1468,6 +1556,7 @@
    "spiral_tower"
   ],
   "instances": 914,
+  "zfights_fixed": 682,
   "checkpoints": 8,
   "length": 5640.0
  },
@@ -1484,6 +1573,7 @@
    "slalom"
   ],
   "instances": 788,
+  "zfights_fixed": 445,
   "checkpoints": 7,
   "length": 5640.0
  },
@@ -1501,6 +1591,7 @@
    "log"
   ],
   "instances": 1107,
+  "zfights_fixed": 478,
   "checkpoints": 8,
   "length": 5440.0
  },
@@ -1517,6 +1608,7 @@
    "turntable"
   ],
   "instances": 1251,
+  "zfights_fixed": 375,
   "checkpoints": 7,
   "length": 5340.0
  },
@@ -1534,6 +1626,7 @@
    "log"
   ],
   "instances": 1368,
+  "zfights_fixed": 402,
   "checkpoints": 8,
   "length": 5700.0
  },
@@ -1549,6 +1642,7 @@
    "hop_wave"
   ],
   "instances": 631,
+  "zfights_fixed": 206,
   "checkpoints": 6,
   "length": 5240.0
  },
@@ -1565,6 +1659,7 @@
    "conveyors"
   ],
   "instances": 873,
+  "zfights_fixed": 357,
   "checkpoints": 7,
   "length": 5490.0
  },
@@ -1581,6 +1676,7 @@
    "zigzag"
   ],
   "instances": 982,
+  "zfights_fixed": 847,
   "checkpoints": 7,
   "length": 5550.0
  },
@@ -1597,6 +1693,7 @@
    "crumble"
   ],
   "instances": 1171,
+  "zfights_fixed": 740,
   "checkpoints": 7,
   "length": 5400.0
  },
@@ -1613,6 +1710,7 @@
    "lasers"
   ],
   "instances": 1045,
+  "zfights_fixed": 274,
   "checkpoints": 7,
   "length": 5640.0
  }

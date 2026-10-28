@@ -15,6 +15,7 @@ from geom import CF, look_frame
 from builder import LevelBuilder, X0, ZC, Y0
 import levels3
 import showcase
+import polish
 
 sys.setrecursionlimit(1000000)
 threading.stack_size(512 * 1024 * 1024)
@@ -178,6 +179,7 @@ def main():
         length = rbxl.attrs(unit)["Length"]
         builder_ = showcase.build_level if lid in SHOWCASE else levels3.build_level
         b, used, title, theme = builder_(fac, unit, lvl, lid, length, tpl)
+        zf0, zf1 = polish.fix(lvl)
         cpath, cpts = b.course_path_ordered()
         unit.find("CoursePath").set("Value", cpath.encode())
         n = len(lvl.descendants())
@@ -188,12 +190,13 @@ def main():
                                j[3], j[4]] for j in b.jumps],
                     "gaps": [[g0 - X0, g1 - X0] for g0, g1 in b.gaps]}
             meta["flags"] = "".join(p[3] for p in cpts)
+            meta["straight"] = lid in SHOWCASE
             meta["pieces"] = [[lab, [lo[0] - X0, lo[1] - Y0, lo[2] - ZC], [hi[0] - X0, hi[1] - Y0, hi[2] - ZC]]
                               for lab, lo, hi in getattr(b, "pieces", [])]
             export_level(lvl, "%s/L%03d.json" % (EXPORT, lid), cpath, meta)
-        report.append({"id": lid, "title": title, "theme": theme, "sections": used, "instances": n,
+        report.append({"id": lid, "title": title, "theme": theme, "sections": used, "instances": n, "zfights_fixed": zf0,
                        "checkpoints": len(b.cps), "length": length})
-        print("L%03d %-22s %-10s %5d inst  %2d cps  %s" % (lid, title, theme, n, len(b.cps), " ".join(used)))
+        print("L%03d %-22s %-10s %5d inst  %2d cps  z-fights %d -> %d  %s" % (lid, title, theme, n, len(b.cps), zf0, zf1, " ".join(used)))
 
     # the packed course in Workspace: OBBY1..10 = levels 1..10, laid end to end from X0
     mix = [int(s) for s in rbxl.attrs(ws)["ObbyMix"].split(",")]

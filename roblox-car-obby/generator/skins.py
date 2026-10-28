@@ -168,7 +168,7 @@ class Skin:
         self.plat(b, top, s, rng)
 
     def hub(self, b, c, d):
-        cyl(b, "Hub", sub(c, (0, 5, 0)), 10, d, self.top, self.top_mat, collide=True)
+        cyl(b, "Hub", sub(c, (0, 5, 0)), 10, d, self.top, self.top_mat, collide=True)  # (polish lifts it clear of the sectors)
         cyl(b, "HubRim", sub(c, (0, 0.5, 0)), 1.0, d + 1, self.edge, "Neon")
 
     # ------------------------------------------------------------ pads and hoops
@@ -201,7 +201,7 @@ class Skin:
             a = TAU * (i + 0.5) / k
             dv = (math.cos(a), 0, math.sin(a))
             mid = add(c, mul(dv, R / 2 + 8))
-            Pt(b, "Sector", deck_frame(sub(mid, (0, THICK / 2, 0)), dv), (2 * R * math.sin(math.pi / k) + 1, THICK, R - 16),
+            Pt(b, "Sector", deck_frame(sub(mid, (0, THICK / 2, 0)), dv), (2 * R * math.sin(math.pi / k) - 0.4, THICK, R - 16),
                self.top if i % 2 else self.body, self.top_mat, rig, collide=True)
 
     def spin_deck(self, b, rig, c, L, w):
@@ -295,6 +295,7 @@ class Skin:
         ringz(b, c, R + 9, self.edge, "Neon", th=2.0, axis=(0, 0, 1), name="Halo")
 
     def pipe_wall(self, b, m, cf, size, i, k):
+        size = (size[0], size[1], size[2] - (0.0 if i % 2 == 0 else 0.6))
         floor_ = i in (0, 1, k - 1)
         Pt(b, "PipeWall", cf, size, self.top if floor_ else self.glass, self.top_mat if floor_ else "Glass", m,
            collide=True, transp=0.0 if floor_ else 0.45)
@@ -471,7 +472,7 @@ class SugarRush(Skin):
             dv = (math.cos(a), 0, math.sin(a))
             mid = add(c, mul(dv, R / 2 + 8))
             col = self.PASTEL[i % len(self.PASTEL)]
-            Pt(b, "Sector", deck_frame(sub(mid, (0, 2.5, 0)), dv), (2 * R * math.sin(math.pi / k) + 1, 5, R - 16), col,
+            Pt(b, "Sector", deck_frame(sub(mid, (0, 2.5, 0)), dv), (2 * R * math.sin(math.pi / k) - 0.4, 5, R - 16), col,
                "SmoothPlastic", rig, collide=True, refl=0.12)
             Pt(b, "SectorSwirl", deck_frame(add(mid, (0, 0.04, 0)), dv) * rot_y(0.5),
                (2.5, 0.08, R - 22), (255, 255, 255), "SmoothPlastic", rig)
@@ -540,9 +541,9 @@ class DriveThru(Skin):
     body, top, edge, padc, danger = (205, 30, 42), (246, 246, 242), (214, 220, 230), (255, 200, 40), (230, 40, 30)
     gate_post, gate_board, gate_text = (214, 220, 230), (205, 30, 42), (255, 220, 70)
     CHROME, RED, BLACK = (214, 220, 230), (205, 30, 42), (28, 28, 32)
-    recipe = [("hops", "Burger & fries hops", {"layout": "lanes", "n": 3}), ("gates", "Ketchup & mustard gates", {}),
-              ("log", "Rolling pickle", {}), ("swings", "Swinging spatulas", {}), ("crushers", "Burger presses", {}),
-              ("tower", "Milkshake tower", {}), ("belts", "Grill conveyors", {})]
+    recipe = [("hops", "Burger & fries hops", {"layout": "steps", "n": 3}), ("gates", "Ketchup & mustard gates", {}),
+              ("tower", "Milkshake tower", {}), ("log", "Rolling pickle", {}), ("swings", "Swinging spatulas", {}),
+              ("crushers", "Burger presses", {}), ("belts", "Grill conveyors", {})]
     extra = [("hops", "Fry box hops", {"layout": "straight"})]
 
     def under(self, b, top, w, i):
@@ -730,8 +731,8 @@ class SporeSprings(Skin):
     gate_post, gate_board, gate_text = (110, 76, 50), (60, 40, 30), (150, 255, 210)
     BARK, BARK_DK, WOOD, MOSS = (104, 72, 48), (74, 50, 34), (205, 165, 110), (84, 140, 58)
     GLOW = [(120, 255, 210), (190, 130, 255), (110, 200, 255)]
-    recipe = [("hops", "Toadstool hops", {"layout": "straight", "n": 3}), ("pipe", "Hollow log", {}),
-              ("swings", "Swinging leaves", {}), ("tower", "Giant mushroom climb", {}),
+    recipe = [("hops", "Toadstool hops", {"layout": "straight", "n": 3}), ("tower", "Giant mushroom climb", {}),
+              ("pipe", "Hollow log", {}), ("swings", "Swinging leaves", {}),
               ("drop", "Spore-ring drop", {}), ("bumpers", "Puffball field", {}),
               ("spin_bridges", "Spinning bark bridges", {})]
     extra = [("hops", "Toadstool wave", {"layout": "wave"})]
@@ -809,6 +810,7 @@ class SporeSprings(Skin):
             V2.chevron(b, add(start, add(mul(f, -7 + k * 7), (0, 0.3, 0))), f, 14, self.padc)
 
     def pipe_wall(self, b, m, cf, size, i, k):
+        size = (size[0], size[1], size[2] - (0.0 if i % 2 == 0 else 0.6))
         top_ = i in (7, 8, 9)
         Pt(b, "PipeWall", cf, size, (150, 230, 190) if top_ else self.BARK, "Glass" if top_ else "Wood", m, collide=True,
            transp=0.6 if top_ else 0.0)
@@ -888,7 +890,7 @@ class Checkmate(Skin):
     gate_post, gate_board, gate_text = (242, 238, 228), (34, 32, 38), (232, 190, 90)
     recipe = [("hops", "Rook hops", {"layout": "straight", "n": 3}), ("doors", "Sliding castle walls", {}),
               ("crushers", "Pawn crushers", {}), ("cross", "Rotating chessboard", {}),
-              ("sweepers", "Sceptre sweepers", {}), ("hops", "Knight jumps", {"layout": "lanes"})]
+              ("sweepers", "Sceptre sweepers", {}), ("hops", "Knight leaps", {"layout": "wave"})]
     extra = [("hops", "Pawn steps", {"layout": "falling"})]
     hoop_mat = "Metal"
 
@@ -1223,7 +1225,7 @@ class ToyBox(Skin):
     WOOD = (232, 200, 150)
     recipe = [("hops", "Alphabet block steps", {"layout": "steps", "n": 3}), ("bumpers", "Spinning tops", {}),
               ("crumble", "Domino path", {}), ("swings", "Toy swings", {}), ("long_jump", "Hula-hoop leap", {}),
-              ("doors", "Sliding brick walls", {}), ("hops", "Brick lanes", {"layout": "lanes"})]
+              ("doors", "Sliding brick walls", {}), ("hops", "Brick climb", {"layout": "rising"})]
     extra = [("hops", "Block hops", {"layout": "straight"})]
 
     def brick(self, b, top, sx, sz, h, col, parent=None, studs=True, collide=True):
@@ -1705,7 +1707,7 @@ class HighScore(Skin):
     gate_post, gate_board, gate_text = (26, 22, 44), (16, 14, 28), (255, 230, 60)
     finish_cols = ((255, 255, 255), (20, 18, 30))
     NEON = [(255, 60, 200), (60, 230, 255), (255, 230, 60), (90, 255, 120), (255, 120, 40), (170, 90, 255)]
-    recipe = [("hops", "Coin lanes", {"layout": "lanes", "n": 3}), ("bumpers", "Pinball bumpers", {}),
+    recipe = [("hops", "Coin wave", {"layout": "wave", "n": 3}), ("bumpers", "Pinball bumpers", {}),
               ("gates", "Laser rhythm", {}), ("crumble", "Pixel path", {}), ("loop", "Neon loop", {}),
               ("pistons", "Equaliser bars", {}), ("doors", "Invader walls", {})]
     extra = [("hops", "Coin hops", {"layout": "straight"})]

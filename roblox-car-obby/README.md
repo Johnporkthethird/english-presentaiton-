@@ -7,15 +7,19 @@ Levels 1-10 (the boot course, `Workspace.OBBY1`-`OBBY10`) are now ten hand-desig
 | # | Level | Theme | Set pieces |
 |---|-------|-------|------------|
 | 1 | Sugar Rush | Candy land | Gumdrop climb, candy-cane sweepers on cookies, lollipop turntable, frosted donut loop, licorice conveyors, chocolate crumble |
-| 2 | Drive Thru | 50s diner | Burger & fries hops, ketchup & mustard gates, rolling pickle, swinging spatulas, burger presses, milkshake tower, grill conveyors |
-| 3 | Spore Springs | Glowing mushroom forest | Toadstool hops, hollow log, swinging leaves, giant mushroom climb, spore-ring drop, puffball field, bark bridges |
-| 4 | Checkmate | Chess board | Rook hops, sliding castle walls, pawn crushers, rotating chessboard, sceptre sweepers, knight jumps |
+| 2 | Drive Thru | 50s diner | Burger & fries hops, ketchup & mustard gates, milkshake tower, rolling pickle, swinging spatulas, burger presses |
+| 3 | Spore Springs | Glowing mushroom forest | Toadstool hops, giant mushroom climb, hollow log, swinging leaves, spore-ring drop, puffball field |
+| 4 | Checkmate | Chess board | Rook hops, sliding castle walls, pawn crushers, rotating chessboard, sceptre sweepers, knight leaps |
 | 5 | Tick Tock | Clockwork | Gear climb, clock-hand sweepers, brass pendulums, clock tower, gear-tooth pistons, cog bridges |
 | 6 | Toy Box | Toy box | Alphabet block steps, spinning tops, domino path, toy swings, hula-hoop leap, sliding brick walls |
 | 7 | Orbit | Outer space | Planet hops, satellite bridges, asteroid field, ring loop, moonshot, meteor drop |
 | 8 | Eruption | Volcano | Obsidian descent, lava geysers, crumbling crust, flame sweepers, magma pistons, caldera drop (over a lava sea) |
 | 9 | Frostbite | Ice and snow | Snowflake hops, ice rink, icicle crushers, glacier wall ride, snowflake bridges, snowman slalom |
-| 10 | High Score | Neon arcade | Coin lanes, pinball bumpers, laser rhythm, pixel path, neon loop, equaliser bars, invader walls |
+| 10 | High Score | Neon arcade | Coin wave, pinball bumpers, laser rhythm, pixel path, neon loop, equaliser bars, invader walls |
+
+Polish pass:
+- Every launch pad in levels 1-10 fires straight down the course. There are no sideways lane-change hops; the tower climbs go straight up beside their tower, and the loop exit steers back into lane on a wide deck. The validator checks this.
+- No flickering surfaces. `generator/polish.py` finds every pair of visible faces that share a plane and overlap (z-fighting), and pushes the decoration (or the smaller face) 0.15 studs clear. Levels 1-10 had 80-1,500 of these each and now have none. The pass runs on all 100 levels.
 
 `generator/skins.py` holds the ten themes (every hop target, deck, pad, hoop and moving hazard is drawn by the theme); `generator/showcase.py` holds the set pieces and the level order. Levels 11-100 are still the earlier object-world versions below.
 

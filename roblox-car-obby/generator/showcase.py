@@ -41,6 +41,7 @@ def spin(b, centre, axis, speed, phase=0.0, name="Spin"):
 # ===================================================================== pads, links, rests
 def pad(b, src, tgt, apex=None, rings=0):
     """Exact launch pad at src (a surface top) landing on tgt, drawn by the skin."""
+    assert abs(tgt[2] - src[2]) < 0.01 and tgt[0] > src[0], ("pad must fire straight down the course", src, tgt)
     while b.path and b.path[-1][3] == "r" and b.path[-1][0] > src[0] - 1:
         b.path.pop()
     dy = tgt[1] - src[1]
@@ -58,15 +59,9 @@ def pad(b, src, tgt, apex=None, rings=0):
 
 def link(b, st, rng, dy):
     src = (st.x - 16, st.y, st.z)
-    lane = b.look["lane"]
-    k = round((st.z - ZC) / lane)
-    if rng.random() < 0.35:
-        k += rng.choice([-1, 1])
-    k = max(-2, min(2, k))
-    tz = ZC + k * lane
-    tgt = (src[0] + 200, st.y + dy, tz)
+    tgt = (src[0] + 200, st.y + dy, st.z)
     pad(b, src, tgt)
-    st.x, st.y, st.z = tgt[0] - 22, tgt[1], tz
+    st.x, st.y = tgt[0] - 22, tgt[1]
     b.pending_landing = True
 
 
@@ -78,7 +73,7 @@ def finale(b, st, rng, x_end, y_end, z_end):
     for i in range(1, n + 1):
         t = i / n
         if i < n:
-            tgt = (prev[0] + step, K.snap(st.y + (y_end - st.y) * K.ease(t), 15), st.z + (z_end - st.z) * K.ease(t))
+            tgt = (prev[0] + step, K.snap(st.y + (y_end - st.y) * K.ease(t), 15), z_end)
         else:
             tgt = (x_end, y_end, z_end)
         pad(b, prev, tgt)
@@ -94,7 +89,7 @@ def m_hops(b, st, d, rng, layout="straight", n=None, s=None, plat=None):
     s = s or K.W(b, 50)
     plat = plat or b.skin.plat
     src = (st.x - 16, st.y, st.z)
-    tg = K.hop_targets(b, St(src[0], src[1], src[2], 0, b.zc), rng, n, d, layout)
+    tg = [(t[0], t[1], src[2]) for t in K.hop_targets(b, St(src[0], src[1], src[2], 0, b.zc), rng, n, d, layout)]
     for t in tg:
         pad(b, src, t)
         plat(b, t, s, rng)
@@ -105,20 +100,20 @@ def m_hops(b, st, d, rng, layout="straight", n=None, s=None, plat=None):
 
 
 def m_tower(b, st, d, rng):
-    """Hop round a themed tower, climbing a level each hop."""
+    """Climb a straight line of hops up the side of a themed tower, a level each hop."""
     K.rest(b, st)
-    R = 95.0
-    c = (st.x + R + 30, st.y, st.z)
-    n = 5
+    n = 4
+    step = 135.0
     src = (st.x - 16, st.y, st.z)
-    b.skin.tower(b, c, st.y - 60, st.y + 40 * n + 50)
+    c = (src[0] + step * (n + 1) / 2, st.y, st.z + 90)
+    b.skin.tower(b, c, st.y - 60, st.y + 45 * n + 60)
+    x0 = src[0]
     for i in range(n):
-        a = math.pi + (i + 1) * (TAU / 6)
-        t = (K.snap(c[0] + R * math.cos(a), 1), st.y + 40 * (i + 1), K.snap(c[2] + R * math.sin(a), 1))
+        t = (x0 + step * (i + 1), st.y + 45 * (i + 1), st.z)
         pad(b, src, t)
-        b.skin.tower_plat(b, t, K.W(b, 48), rng)
+        b.skin.tower_plat(b, t, K.W(b, 50), rng)
         src = t
-    tgt = (src[0] + 210, src[1] - 40, st.z)
+    tgt = (src[0] + 220, st.y + 45, st.z)  # a big drop off the top, back down near where the climb began
     pad(b, src, tgt)
     K.landing(b, st, *tgt)
 
@@ -363,7 +358,7 @@ def m_crumble(b, st, d, rng):
     for i in range(n):
         m = b.model("CrumbleTile", b.hazards, {"ObbyCrumble": float(delay)})
         c = (st.x + i * (s - 2) + s / 2, st.y, st.z)
-        b.skin.crumble_tile(b, m, c, s, i)
+        b.skin.crumble_tile(b, m, c, s - 1.6, i)  # a small gap between tiles so no two faces share a plane
         b.samples.append((c[0], st.y, st.z, s))
         b.line(c[0], st.y, st.z)
     st.x += n * (s - 2)
@@ -456,10 +451,13 @@ def m_loop(b, st, d, rng):
     for p, nrm in pts[::3]:
         b.path.append((p[0] + nrm[0] * CAR_UP, p[1] + nrm[1] * CAR_UP, p[2], "s"))
     b.skin.loop_deco(b, (cx, cy, z0 + dz / 2), R, w)
-    st.z = z0 + dz
-    K.run(b, st.x, st.x + 120, st.y, st.z, w)
-    b.line(st.x + 114, st.y, st.z)
-    st.x += 120
+    # one wide deck to steer back into the lane the loop started in, so every pad after it fires straight
+    K.run(b, st.x, st.x + 150, st.y, z0 + dz / 2, w + dz)
+    b.line(st.x + 20, st.y, z0 + dz)
+    b.line(st.x + 90, st.y, z0)
+    b.line(st.x + 144, st.y, z0)
+    st.z = z0
+    st.x += 150
 
 
 def m_wallride(b, st, d, rng):
@@ -616,6 +614,7 @@ def build_level(fac, unit_, level_folder, level_id, length, templates):
         link(b, st, rng, dy)
     if X1 - 110 - st.x < 60:
         raise RuntimeError("L%03d overran by %.0f" % (level_id, st.x - (X1 - 110)))
+    assert abs(st.z - ZC) < 0.01, ("course left its lane", st.z - ZC)
     if getattr(b, "pending_landing", False):
         K.run(b, st.x, st.x + 80, st.y, st.z, K.W(b, 52))
         b.line(st.x + 22, st.y, st.z)

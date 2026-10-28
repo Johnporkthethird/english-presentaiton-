@@ -110,6 +110,8 @@ def check(lv):
     # 3. jumps: fly them at a few speeds and see where they come down
     for j in lv.jumps:
         kind, s, tg, H, V = j
+        if lv.meta.get("straight") and (abs(tg[2] - s[2]) > 0.01 or tg[0] <= s[0]):
+            issues.append(("pad not straight", list(np.round(s, 0)), list(np.round(tg, 0))))
         s, tg = np.array(s), np.array(tg)
         f = tg - s
         f[1] = 0
