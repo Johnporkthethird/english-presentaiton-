@@ -14,7 +14,7 @@ from factory import Factory, transform_tree
 from geom import CF, look_frame
 from builder import LevelBuilder, X0, ZC, Y0
 from sections import St, SECTIONS
-import levels2
+import levels3
 
 sys.setrecursionlimit(1000000)
 threading.stack_size(512 * 1024 * 1024)
@@ -102,7 +102,9 @@ def export_level(lvl, path, course, meta):
         if not is_basepart(d):
             continue
         tr = d.get("Transparency", 0.0)
-        if tr >= 0.99:
+        if tr >= 0.99 and d.get("CanCollide") and d.name in ("Floor",):
+            tr = 1.0  # an invisible floor: kept for the validator, skipped by the viewer
+        elif tr >= 0.99:
             # the invisible but important ones (triggers, volumes, pads) go to the validator only
             a = rbxl.attrs(d)
             cf = CF.from_prop(d.get("CFrame"))
@@ -113,6 +115,12 @@ def export_level(lvl, path, course, meta):
         cf = CF.from_prop(d.get("CFrame"))
         if d.cls == "WedgePart":
             kind = 3
+        elif d.cls == "MeshPart":
+            mc = d.get("MeshContent")
+            uri = mc[1] if mc else b""
+            kind = 5 if b"5438174455" in uri else 6 if b"1254392112" in uri else 1
+        elif any(c.cls == "SpecialMesh" and c.get("MeshType") == 3 for c in d.children):
+            kind = 4
         else:
             kind = {0: 0, 1: 1, 2: 2}.get(d.get("shape", 1), 1)
         moving = 0
@@ -173,7 +181,7 @@ def main():
         for c in list(lvl.children):
             detach(c)
         length = rbxl.attrs(unit)["Length"]
-        b, used, title, theme = levels2.build_level(fac, unit, lvl, lid, length, tpl)
+        b, used, title, theme = levels3.build_level(fac, unit, lvl, lid, length, tpl)
         cpath, cpts = b.course_path_ordered()
         unit.find("CoursePath").set("Value", cpath.encode())
         n = len(lvl.descendants())

@@ -37,6 +37,15 @@ class Factory:
                 self.templates[d.cls] = d
         part = self.templates["Part"]
         self.uid_time = part.get("UniqueId")[4:8]
+        # 3D pieces: a sphere SpecialMesh, and the scalable mesh parts the place already ships
+        self.meshes = {}
+        names = {"Hollow Circle / Ring": "ring", "Meshes/diamond": "gem", "Rounded Rectangle Mesh": "rounded",
+                 "Octagon": "octagon"}
+        for d in self.place.all():
+            if d.cls == "SpecialMesh" and d.get("MeshType") == 3 and "SpecialMesh" not in self.templates:
+                self.templates["SpecialMesh"] = d
+            if d.cls == "MeshPart" and d.name in names and names[d.name] not in self.meshes:
+                self.meshes[names[d.name]] = d
 
     def new_uid(self):
         self.uid_counter += 1
