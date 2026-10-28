@@ -26,7 +26,7 @@ shows them in the preview), plus its own stars, sun and moon size and a haze tin
 script (`ObbyWorldLight`) now lets a level carry its own `Lt_Sky_*` set; the lobby and levels 11-100 keep the lobby's
 blue sky. The images still have to be uploaded to Roblox: bulk-import `skies/upload` in Studio's Asset Manager, put the
 ids into `skies/apply_sky_ids.lua` and run it once in the command bar (or send the ids and they go into
-`generator/sky_ids.json` for the build). Every face border of every sky depends on height only, so the faces line up
+`generator/sky_ids.json` for the build). Faces are rendered at 2048 and averaged down to 1024 (the largest image Roblox keeps), so edges, stars and cloud borders are smooth. Every face border of every sky depends on height only, so the faces line up
 whichever way Roblox orders or flips them.
 
 `generator/skins.py` holds the ten themes (every hop target, deck, pad, hoop and moving hazard is drawn by the theme); `generator/showcase.py` holds the set pieces and the level order. Levels 11-100 are still the earlier object-world versions below.

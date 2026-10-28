@@ -118,7 +118,12 @@ def field(fn, d):
     (the cube-symmetric version), so the border looks the same whichever way the faces are put together."""
     if _W is None:
         return fn(d)
-    return fn(d) * _W + fn(fold(d)) * (1 - _W)
+    out = fn(d)
+    m = _W < 0.9999
+    if m.any():
+        w = _W[m]
+        out[m] = out[m] * w + fn(fold(d[m])) * (1 - w)
+    return out
 
 
 def clouds(d, e, lo, hi, scale, cover, seed, flat=3.0, soft=0.18, warp=0.6):
@@ -131,6 +136,24 @@ def clouds(d, e, lo, hi, scale, cover, seed, flat=3.0, soft=0.18, warp=0.6):
     n = field(noise, d)
     band = smooth(lo, lo + (hi - lo) * 0.3, e) * (1 - smooth(hi - (hi - lo) * 0.3, hi, e))
     return np.clip((n - (1 - cover)) / soft, 0, 1) * band
+
+
+def lit_clouds(d, e, lo, hi, scale, cover, seed, flat=3.0, soft=0.18, warp=0.6, lift=0.03, k=7.0):
+    """Clouds with light from above: (density, light). Light is high where the cloud thins upward (sunlit tops) and low
+    where it thickens upward (shaded undersides)."""
+    def noise(dd):
+        q = np.stack([dd[..., 0] * scale, dd[..., 1] * scale * flat, dd[..., 2] * scale], -1)
+        w = fbm(q * 0.5 + 11.3, 3, seed + 5)
+        return fbm(q + warp * w[..., None], 6, seed)
+    n = field(noise, d)
+    du = d + np.array([0.0, lift, 0.0])
+    du = du / np.linalg.norm(du, axis=-1, keepdims=True)
+    nu = field(noise, du)
+    band = smooth(lo, lo + (hi - lo) * 0.3, e) * (1 - smooth(hi - (hi - lo) * 0.3, hi, e))
+    dens = np.clip((n - (1 - cover)) / soft, 0, 1) * band
+    light = np.clip(0.55 + (n - nu) * k, 0, 1)
+    light = light * 0.75 + 0.25 * smooth(lo, hi, e)  # higher clouds sit in brighter light
+    return dens, light
 
 
 def sea(d, scale, cover, seed, soft=0.2):
@@ -175,26 +198,24 @@ def lit(c, k):
 
 # ------------------------------------------------------------------ the ten skies: fn(d, e) -> (colour, seam-safe extra or None)
 def sky_candy(d, e):
-    c = ramp(e, [(-90, "#d9a6e6"), (-25, "#f2bde3"), (-3, "#ffd3e6"), (3, "#ffd6ea"), (14, "#f3cdf6"), (40, "#c4c8ff"),
-                 (90, "#9ab8ff")])
-    c = c + hexc("#fff0f6") * 0.12 * np.exp(-(e / 4.0) ** 2)[..., None]
-    cl = clouds(d, e, 1, 34, 3.0, 0.5, 3, flat=2.2, soft=0.1)
-    top = smooth(1, 34, e)
-    ccol = mix(hexc("#ff9fcb"), hexc("#fff3fa"), np.clip(cl * 1.2, 0, 1) * 0.6 + top * 0.4)
-    c = mix(c, ccol, cl * 0.95)
-    cl2 = clouds(d, e, 8, 30, 2.4, 0.42, 4, flat=2.0, soft=0.1)
-    c = mix(c, mix(hexc("#a9d8ff"), hexc("#e8f6ff"), cl2), cl2 * 0.7)
-    sc = sea(d, 0.6, 0.6, 5, soft=0.12)
+    c = ramp(e, [(-90, "#d9a6e6"), (-25, "#f2bde3"), (-3, "#ffd3e6"), (3, "#ffd8ec"), (14, "#f1cdf7"), (40, "#bcc4ff"),
+                 (90, "#8eaeff")])
+    c = c + hexc("#fff0f6") * 0.1 * np.exp(-(e / 4.0) ** 2)[..., None]
+    dn, li = lit_clouds(d, e, 1, 36, 3.0, 0.5, 3, flat=2.2, soft=0.08)
+    c = mix(c, mix(hexc("#f08cbe"), hexc("#fff8fc"), li), dn * 0.97)
+    dn2, li2 = lit_clouds(d, e, 8, 32, 2.4, 0.42, 4, flat=2.0, soft=0.08)
+    c = mix(c, mix(hexc("#8fc0f0"), hexc("#f4fbff"), li2), dn2 * 0.85)
+    sc = sea(d, 1.4, 0.58, 5, soft=0.12)
     c = mix(c, mix(hexc("#ffb8da"), hexc("#fff2f8"), sc), sc * 0.95)
     c = c + stars(d, 0.004, 11, 1.4, (1.0, 0.8, 0.95)) * 0.5 * (e > 10)[..., None]
     return c, None
 
 
 def sky_diner(d, e):
-    c = ramp(e, [(-90, "#86a7c9"), (-10, "#b9cfe4"), (0, "#f7e7cf"), (8, "#cfe3f6"), (35, "#6aa6ec"), (90, "#2f72d8")])
-    cl = clouds(d, e, 2, 38, 3.2, 0.5, 21, flat=1.6, soft=0.1)
-    c = mix(c, mix(hexc("#c9d6e8"), hexc("#ffffff"), np.clip(cl * 1.5, 0, 1)), cl * 0.97)
-    sc = sea(d, 0.5, 0.52, 23, soft=0.12)
+    c = ramp(e, [(-90, "#86a7c9"), (-10, "#b9cfe4"), (0, "#f7e7cf"), (8, "#c9e0f6"), (35, "#5f9eea"), (90, "#2468d2")])
+    dn, li = lit_clouds(d, e, 2, 40, 3.2, 0.5, 21, flat=1.6, soft=0.08)
+    c = mix(c, mix(hexc("#9fb2cc"), hexc("#ffffff"), li), dn * 0.98)
+    sc = sea(d, 1.2, 0.5, 23, soft=0.12)
     c = mix(c, mix(hexc("#d9e4f2"), hexc("#ffffff"), sc), sc * 0.9)
     return c, None
 
@@ -211,29 +232,30 @@ def sky_spores(d, e):
 
 
 def sky_chess(d, e):
-    c = ramp(e, [(-90, "#8d8aa0"), (-8, "#c4b8ad"), (0, "#f6d39a"), (6, "#f6dcb4"), (25, "#a3b5d6"), (90, "#4766b0")])
-    c = c + hexc("#ffcf80") * 0.2 * np.exp(-((e - 2) / 7.0) ** 2)[..., None]
-    cl = clouds(d, e, 5, 55, 2.2, 0.45, 41, flat=7.0, soft=0.3, warp=1.2)  # long cirrus streaks
-    c = mix(c, mix(hexc("#ffd8a8"), hexc("#fff6ea"), smooth(5, 55, e)), cl * 0.7)
+    c = ramp(e, [(-90, "#8a86a0"), (-8, "#c0b2a6"), (0, "#f4c98a"), (5, "#f2d2a8"), (22, "#97acd4"), (60, "#4f6fb8"),
+                 (90, "#3a5aa8")])
+    c = c + hexc("#ffc070") * 0.22 * np.exp(-((e - 2) / 6.0) ** 2)[..., None]
+    dn, li = lit_clouds(d, e, 5, 58, 2.2, 0.45, 41, flat=7.0, soft=0.25, warp=1.2, k=5.0)  # golden cirrus
+    c = mix(c, mix(hexc("#d99a6a"), hexc("#fff1dc"), li), dn * 0.8)
     return c, None
 
 
 def sky_clock(d, e):
-    c = ramp(e, [(-90, "#4a4038"), (-10, "#8a6a4a"), (0, "#f4b46a"), (7, "#e8a868"), (28, "#6e8798"), (90, "#2f4f66")])
+    c = ramp(e, [(-90, "#4a4038"), (-10, "#8a6a4a"), (0, "#f4b46a"), (7, "#e8a868"), (28, "#678297"), (90, "#284a62")])
     c = c + hexc("#ffb060") * 0.35 * np.exp(-((e - 1) / 6.0) ** 2)[..., None]
     smoke = clouds(d, e, -4, 16, 3.0, 0.55, 51, flat=2.0, soft=0.35)
     c = mix(c, hexc("#b08060"), smoke * 0.45)
-    cl = clouds(d, e, 10, 55, 2.4, 0.45, 53, flat=5.0, soft=0.2)
-    c = mix(c, mix(hexc("#f0b070"), hexc("#e2d2bc"), smooth(10, 55, e)), cl * 0.7)
+    dn, li = lit_clouds(d, e, 10, 58, 2.4, 0.45, 53, flat=5.0, soft=0.18)
+    c = mix(c, mix(hexc("#a8683c"), hexc("#ffe2b6"), li), dn * 0.8)
     return c, None
 
 
 def sky_toys(d, e):
-    c = ramp(e, [(-90, "#9fc8ff"), (-6, "#d6ecff"), (1, "#e6f6ff"), (12, "#9fd2ff"), (45, "#3f96ff"), (90, "#1c6cf0")])
-    cl = clouds(d, e, 3, 38, 3.6, 0.47, 61, flat=1.4, soft=0.04)  # crisp cartoon puffs
-    shade = smooth(-0.2, 0.6, fbm(d * 9.0, 3, 62) - 0.2 + smooth(3, 38, e) * 0.4)
-    c = mix(c, mix(hexc("#cfe0fb"), hexc("#ffffff"), shade), cl)
-    sc = sea(d, 0.55, 0.55, 63, soft=0.04)
+    c = ramp(e, [(-90, "#9fc8ff"), (-6, "#d6ecff"), (1, "#e6f6ff"), (12, "#9ad0ff"), (45, "#3a92ff"), (90, "#1766ee")])
+    dn, li = lit_clouds(d, e, 3, 40, 3.6, 0.47, 61, flat=1.4, soft=0.035, k=9.0)  # crisp cartoon puffs
+    toon = smooth(0.42, 0.5, li) * 0.75 + 0.25 * li  # two-tone cartoon shading
+    c = mix(c, mix(hexc("#b4cdf2"), hexc("#ffffff"), toon), dn)
+    sc = sea(d, 1.3, 0.55, 63, soft=0.05)
     c = mix(c, hexc("#ffffff"), sc * 0.97)
     return c, None
 
@@ -270,10 +292,10 @@ def sky_volcano(d, e):
 
 
 def sky_ice(d, e):
-    c = ramp(e, [(-90, "#b8d8f0"), (-6, "#dff1fb"), (1, "#f2fbff"), (10, "#bfe3fa"), (40, "#5aa2e6"), (90, "#2f6fc8")])
-    cl = clouds(d, e, 4, 60, 2.0, 0.42, 95, flat=8.0, soft=0.28, warp=1.4)  # icy cirrus
-    c = mix(c, hexc("#ffffff"), cl * 0.75)
-    sc = sea(d, 0.45, 0.6, 97, soft=0.18)
+    c = ramp(e, [(-90, "#b4d4ee"), (-6, "#d9eefa"), (1, "#eef9ff"), (10, "#b0dcf8"), (35, "#4b96e0"), (90, "#245fbe")])
+    dn, li = lit_clouds(d, e, 4, 62, 2.0, 0.42, 95, flat=8.0, soft=0.25, warp=1.4, k=5.0)  # icy cirrus
+    c = mix(c, mix(hexc("#b8d4ee"), hexc("#ffffff"), li), dn * 0.8)
+    sc = sea(d, 1.1, 0.58, 97, soft=0.18)
     c = mix(c, hexc("#ffffff"), sc * 0.85)
     c = c + stars(d, 0.006, 99, 1.2, (0.7, 0.95, 1.0)) * 0.45 * (e > 0)[..., None]  # diamond dust
     return c, None
@@ -330,21 +352,54 @@ SKIES = {1: ("sugar_rush", sky_candy), 2: ("drive_thru", sky_diner), 3: ("spore_
          8: ("eruption", sky_volcano), 9: ("frostbite", sky_ice), 10: ("high_score", sky_arcade)}
 
 
-def render(lid, outdir, n):
-    name, fn = SKIES[lid]
+def face_dirs(face, n, r0, r1):
+    f, r, up = (np.array(a, dtype=np.float64) for a in FACES[face])
+    s_ = (np.arange(n) + 0.5) / n * 2 - 1
+    u, v = np.meshgrid(s_, -s_[r0:r1])
+    d = f[None, None, :] + u[..., None] * r[None, None, :] + v[..., None] * up[None, None, :]
+    return d / np.linalg.norm(d, axis=-1, keepdims=True)
+
+
+def render_face(job):
+    """One face at n x n in strips; returns the float image."""
+    lid, face, n = job
+    fn = SKIES[lid][1]
+    img = np.zeros((n, n, 3))
+    step = 256
+    for r0 in range(0, n, step):
+        img[r0:r0 + step] = evaluate(fn, face_dirs(face, n, r0, min(n, r0 + step)))
+    return img
+
+
+def save(img, path, seed):
+    img = img + (np.random.default_rng(seed).random(img.shape) - 0.5) / 255.0  # sub-LSB dither: no banding
+    Image.fromarray((np.clip(img, 0, 1) * 255 + 0.5).astype(np.uint8)).save(path, optimize=True)
+
+
+def render_job(job):
+    lid, face, n, outdir = job
+    name = SKIES[lid][0]
+    img = render_face((lid, face, n))
     folder = os.path.join(outdir, "L%02d_%s" % (lid, name))
-    os.makedirs(folder, exist_ok=True)
-    for face, d in directions(n).items():
-        c = evaluate(fn, d)
-        c = c + (np.random.default_rng(lid * 7 + len(face)).random(c.shape) - 0.5) / 255.0  # dither: no banding
-        Image.fromarray((np.clip(c, 0, 1) * 255).astype(np.uint8)).save(os.path.join(folder, "%s.png" % face), optimize=True)
-    return folder
+    os.makedirs(os.path.join(folder, "master"), exist_ok=True)
+    save(img, os.path.join(folder, "master", "%s.png" % face), lid * 31 + ord(face[0]))
+    k = n // 1024
+    game = img.reshape(1024, k, 1024, k, 3).mean((1, 3)) if k > 1 else img  # box-filter the supersamples
+    save(game, os.path.join(folder, "%s.png" % face), lid * 37 + ord(face[1]))
+    return lid, face
+
+
+def render(lid, outdir, n):
+    for face in FACES:
+        render_job((lid, face, n, outdir))
 
 
 if __name__ == "__main__":
+    from multiprocessing import Pool
     out = sys.argv[1]
-    n = int(sys.argv[2]) if len(sys.argv) > 2 else 1024
+    n = int(sys.argv[2]) if len(sys.argv) > 2 else 2048
     ids = [int(a) for a in sys.argv[3:]] or list(SKIES)
-    for lid in ids:
-        render(lid, out, n)
-        print("sky", lid, SKIES[lid][0])
+    jobs = [(lid, face, n, out) for lid in ids for face in FACES]
+    with Pool(int(os.environ.get("SKY_PROCS", "4"))) as pool:
+        for lid, face in pool.imap_unordered(render_job, jobs):
+            print("done", lid, face, flush=True)

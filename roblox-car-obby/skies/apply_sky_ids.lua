@@ -1,6 +1,6 @@
 -- Puts the uploaded showcase skyboxes into levels 1-10. Run once in Roblox Studio's command bar, then save the place.
 --
--- 1. Upload the 60 images in skies/upload (Asset Manager > Bulk Import). Each file is named <level>_<face>.jpg.
+-- 1. Upload the 60 images in skies/upload (Asset Manager > Bulk Import). Each file is named <level>_<face>.png (or .jpg).
 -- 2. Either paste each image's asset id below (Asset Manager > right-click the image > Copy Asset ID),
 --    or drag the uploaded images into the place as Decals and leave their names as they are: any Decal or Texture
 --    named like "L01_sugar_rush_bk" is picked up automatically.
