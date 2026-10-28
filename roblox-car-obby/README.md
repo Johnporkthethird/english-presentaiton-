@@ -2,39 +2,32 @@
 
 ## Showcase build: levels 1-10 (awaiting approval)
 
-Levels 1-10 (the boot course, `Workspace.OBBY1`-`OBBY10`) are now ten hand-designed themed levels, each with 6-7 set pieces drawn in its theme, Roblox's textured materials instead of flat plastic, and themed structures under every deck. `showcase-preview.jpg` shows one set piece from each.
+Levels 1-10 (the boot course, `Workspace.OBBY1`-`OBBY10`) are ten hand-designed themed levels. Each one is a journey
+through its world rather than a flat line: spiral ramps up and down round a themed centrepiece, tunnels with boost
+strips, caves (a craggy mountain you drive into, with a deadly floor and rocks to hop across), long ramps that climb and
+dive, banked walled slides, narrow beams, big launches onto high ground and big drops, between the obstacle set pieces.
+Heights change by 250-420 studs within a level and road widths run from 12 to 90 studs. `showcase-preview.jpg` shows one
+piece from each.
 
-| # | Level | Theme | Set pieces |
-|---|-------|-------|------------|
-| 1 | Sugar Rush | Candy land | Gumdrop climb, candy-cane sweepers on cookies, lollipop turntable, frosted donut loop, licorice conveyors, chocolate crumble |
-| 2 | Drive Thru | 50s diner | Burger & fries hops, ketchup & mustard gates, milkshake tower, rolling pickle, swinging spatulas, burger presses |
-| 3 | Spore Springs | Glowing mushroom forest | Toadstool hops, giant mushroom climb, hollow log, swinging leaves, spore-ring drop, puffball field |
-| 4 | Checkmate | Chess board | Rook hops, sliding castle walls, pawn crushers, rotating chessboard, sceptre sweepers, knight leaps |
-| 5 | Tick Tock | Clockwork | Gear climb, clock-hand sweepers, brass pendulums, clock tower, gear-tooth pistons, cog bridges |
-| 6 | Toy Box | Toy box | Alphabet block steps, spinning tops, domino path, toy swings, hula-hoop leap, sliding brick walls |
-| 7 | Orbit | Outer space | Planet hops, satellite bridges, asteroid field, ring loop, moonshot, meteor drop |
-| 8 | Eruption | Volcano | Obsidian descent, lava geysers, crumbling crust, flame sweepers, magma pistons, caldera drop (over a lava sea) |
-| 9 | Frostbite | Ice and snow | Snowflake hops, ice rink, icicle crushers, glacier wall ride, snowflake bridges, snowman slalom |
-| 10 | High Score | Neon arcade | Coin wave, pinball bumpers, laser rhythm, pixel path, neon loop, equaliser bars, invader walls |
+| # | Level | Journey |
+|---|-------|---------|
+| 1 | Sugar Rush | Candy-cane spiral climb, candy-cane tube dive, gumdrop hops, candy-cane sweepers, cake-top launch, licorice tightrope, whipped-cream dive, frosted donut loop |
+| 2 | Drive Thru | Drive-thru lane, ketchup ramp down, burger & fries hops, spatula catapult, straw bridge, milkshake spiral down, rolling pickle |
+| 3 | Spore Springs | Hollow-trunk dive, glowroot cavern, vine climb, swinging leaves, mushroom bounce, toadstool tops |
+| 4 | Checkmate | Castle gate, tower stair climb, rook leaps from the battlements, great board slide, pawn crushers, rotating chessboard, sceptre sweepers |
+| 5 | Tick Tock | Clock tower climb, minute-hand walk, pendulum shaft drop, brass pendulums, gear tunnel, clock-hand sweepers, gear-tooth pistons |
+| 6 | Toy Box | Race-track slide, track loop, spring launcher, alphabet block steps, playground slide, spinning tops |
+| 7 | Orbit | Launch tube, zero-g planet hops, moonshot, station corridor, asteroid field, ring loop, satellite bridges |
+| 8 | Eruption | Canyon descent, obsidian ledge, geyser blast, obsidian descent, lava geysers, crumbling crust |
+| 9 | Frostbite | Bobsled run, ski jump, ice cavern, frozen lake, icicle crushers, glacier climb |
+| 10 | High Score | Wormhole, pinball bumpers, plunger launch, coin climb, pixel tightrope, laser rhythm, neon loop |
 
-Polish pass:
-- Every launch pad in levels 1-10 fires straight down the course. There are no sideways lane-change hops; the tower climbs go straight up beside their tower, and the loop exit steers back into lane on a wide deck. The validator checks this.
-- No flickering surfaces. `generator/polish.py` finds every pair of visible faces that share a plane and overlap (z-fighting), and pushes the decoration (or the smaller face) 0.15 studs clear. Levels 1-10 had 80-1,500 of these each and now have none. The pass runs on all 100 levels.
-
-Skies: each of the ten levels has its own painted skybox (`skies/upload`, 6 faces each, `skies/skies-preview.jpg`
-shows them in the preview), plus its own stars, sun and moon size and a haze tinted to its horizon. The client light
-script (`ObbyWorldLight`) now lets a level carry its own `Lt_Sky_*` set; the lobby and levels 11-100 keep the lobby's
-blue sky. The images still have to be uploaded to Roblox: bulk-import `skies/upload` in Studio's Asset Manager, put the
-ids into `skies/apply_sky_ids.lua` and run it once in the command bar (or send the ids and they go into
-`generator/sky_ids.json` for the build). Faces are rendered at 2048 and averaged down to 1024 (the largest image Roblox keeps), so edges, stars and cloud borders are smooth. Every face border of every sky depends on height only, so the faces line up
-whichever way Roblox orders or flips them.
-
-`generator/skins.py` holds the ten themes (every hop target, deck, pad, hoop and moving hazard is drawn by the theme); `generator/showcase.py` holds the set pieces and the level order. Levels 11-100 are still the earlier object-world versions below.
-
-
-`good-redesigned.rbxl` is the uploaded place with all 100 levels in `ServerStorage.OBBY_POOL` (L001-L100) rebuilt as clean parkour courses. The boot course in `Workspace` (OBBY1-OBBY10) and `RACING_START.CoursePath` are rebuilt from the new levels 1-10. Scripts, lobby, garage, stadium and UI are unchanged.
-
-`levels.json` lists every level's title, style and modules in order.
+- Every launch pad fires straight along its deck; roads may bend, pads never fire sideways (the validator checks it).
+- Roads never get steeper than 19.5 degrees; spirals and slides have rails.
+- `generator/polish.py` removes every pair of overlapping coplanar faces (the flicker), on all 100 levels.
+- `generator/journey.py` has the journey pieces, `generator/journey_skins.py` how each theme draws them and each
+  level's route, `generator/skins.py` the themes' objects and obstacles, `generator/showcase.py` the set pieces and level
+  assembly. Levels 11-100 are still the earlier object-world versions below.
 
 ## How the levels are built
 

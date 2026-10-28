@@ -146,34 +146,6 @@ def export_level(lvl, path, course, meta):
         json.dump({"hidden": hidden, "jumps": meta.get("jumps", [])}, f, separators=(",", ":"))
 
 
-LIGHT_OLD = """		-- LOBBY SKY 10-16 (user: "I don't like all these different skyboxes, just use
-		-- the original blue one from the lobby"): levels never change the Sky
-		local inst = group and group ~= "Sky" and t[group]"""
-LIGHT_NEW = """		-- LOBBY SKY 10-16 (user: "I don't like all these different skyboxes, just use
-		-- the original blue one from the lobby"): the lobby keeps its blue sky.
-		-- SHOWCASE SKIES 10-28 (user: "can u make perfect skies for each of these"): a level that carries
-		-- its own Lt_Sky_* set (the ten showcase levels) wears that sky while your car is over it; every
-		-- other level names no Sky property, so the lobby's blue sky stays (the snapshot puts it back).
-		-- An empty skybox string means "not uploaded yet": the current skybox stays.
-		local inst = group and t[group]
-		if group == "Sky" and type(value) == "string" and value == "" then inst = nil end"""
-
-
-def patch_light_script(place):
-    """Let a level's own Lt_Sky_* attributes reach the Sky (the client used to ignore them)."""
-    for i in place.all():
-        if i.cls == "LocalScript" and i.name == "ObbyWorldLight":
-            src = i.get("Source")
-            text = src.decode("utf-8") if isinstance(src, bytes) else src
-            if LIGHT_NEW in text:
-                return
-            assert LIGHT_OLD in text, "ObbyWorldLight changed: sky patch does not apply"
-            text = text.replace(LIGHT_OLD, LIGHT_NEW)
-            i.set("Source", text.encode("utf-8") if isinstance(src, bytes) else text)
-            return
-    raise RuntimeError("ObbyWorldLight not found")
-
-
 def main():
     with open(sys.argv[2], "rb") as f:
         place = pickle.load(f)
@@ -219,9 +191,6 @@ def main():
                     "gaps": [[g0 - X0, g1 - X0] for g0, g1 in b.gaps]}
             meta["flags"] = "".join(p[3] for p in cpts)
             meta["straight"] = lid in SHOWCASE
-            if lid in SHOWCASE:
-                meta["sky"] = "skies/L%02d" % lid
-                meta["sky_horizon"] = showcase.SKY[lid][0]
             meta["pieces"] = [[lab, [lo[0] - X0, lo[1] - Y0, lo[2] - ZC], [hi[0] - X0, hi[1] - Y0, hi[2] - ZC]]
                               for lab, lo, hi in getattr(b, "pieces", [])]
             export_level(lvl, "%s/L%03d.json" % (EXPORT, lid), cpath, meta)
@@ -254,7 +223,6 @@ def main():
     rs = ws.find("RACING_START")
     rs.find("CoursePath").set("Value", "|".join(lines).encode())
 
-    patch_light_script(place)
     with open(sys.argv[3] + ".report.json", "w") as f:
         json.dump(report, f, indent=1)
     rbxl.save(place, sys.argv[3])

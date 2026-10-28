@@ -4,16 +4,18 @@
   "title": "Sugar Rush",
   "theme": "candy",
   "sections": [
-   "Gumdrop climb",
+   "Candy-cane spiral climb",
+   "Candy-cane tube dive",
+   "Gumdrop hops",
    "Candy-cane sweepers",
-   "Lollipop turntable",
-   "Frosted donut loop",
-   "Licorice conveyors",
-   "Chocolate crumble"
+   "Cake-top launch",
+   "Licorice tightrope",
+   "Whipped-cream dive",
+   "Frosted donut loop"
   ],
-  "instances": 2485,
-  "zfights_fixed": 1526,
-  "checkpoints": 7,
+  "instances": 3724,
+  "zfights_fixed": 1387,
+  "checkpoints": 9,
   "length": 5540.0
  },
  {
@@ -21,16 +23,17 @@
   "title": "Drive Thru",
   "theme": "diner",
   "sections": [
+   "Drive-thru lane",
+   "Ketchup ramp down",
    "Burger & fries hops",
-   "Ketchup & mustard gates",
-   "Milkshake tower",
-   "Rolling pickle",
-   "Swinging spatulas",
-   "Burger presses"
+   "Spatula catapult",
+   "Straw bridge",
+   "Milkshake spiral down",
+   "Rolling pickle"
   ],
-  "instances": 2091,
-  "zfights_fixed": 1277,
-  "checkpoints": 7,
+  "instances": 2582,
+  "zfights_fixed": 1603,
+  "checkpoints": 8,
   "length": 5420.0
  },
  {
@@ -38,15 +41,15 @@
   "title": "Spore Springs",
   "theme": "mushroom",
   "sections": [
-   "Toadstool hops",
-   "Giant mushroom climb",
-   "Hollow log",
+   "Hollow-trunk dive",
+   "Glowroot cavern",
+   "Vine climb",
    "Swinging leaves",
-   "Spore-ring drop",
-   "Puffball field"
+   "Mushroom bounce",
+   "Toadstool tops"
   ],
-  "instances": 1613,
-  "zfights_fixed": 88,
+  "instances": 1978,
+  "zfights_fixed": 296,
   "checkpoints": 7,
   "length": 5620.0
  },
@@ -55,16 +58,17 @@
   "title": "Checkmate",
   "theme": "chess",
   "sections": [
-   "Rook hops",
-   "Sliding castle walls",
+   "Castle gate",
+   "Tower stair climb",
+   "Rook leaps from the battlements",
+   "Great board slide",
    "Pawn crushers",
    "Rotating chessboard",
-   "Sceptre sweepers",
-   "Knight leaps"
+   "Sceptre sweepers"
   ],
-  "instances": 1277,
-  "zfights_fixed": 752,
-  "checkpoints": 7,
+  "instances": 1811,
+  "zfights_fixed": 1343,
+  "checkpoints": 8,
   "length": 5310.0
  },
  {
@@ -72,16 +76,17 @@
   "title": "Tick Tock",
   "theme": "clocks",
   "sections": [
-   "Gear climb",
-   "Clock-hand sweepers",
+   "Clock tower climb",
+   "Minute-hand walk",
+   "Pendulum shaft drop",
    "Brass pendulums",
-   "Clock tower",
-   "Gear-tooth pistons",
-   "Cog bridges"
+   "Gear tunnel",
+   "Clock-hand sweepers",
+   "Gear-tooth pistons"
   ],
-  "instances": 1862,
-  "zfights_fixed": 1227,
-  "checkpoints": 7,
+  "instances": 2994,
+  "zfights_fixed": 2535,
+  "checkpoints": 8,
   "length": 5610.0
  },
  {
@@ -89,15 +94,15 @@
   "title": "Toy Box",
   "theme": "toys",
   "sections": [
+   "Race-track slide",
+   "Track loop",
+   "Spring launcher",
    "Alphabet block steps",
-   "Spinning tops",
-   "Domino path",
-   "Toy swings",
-   "Hula-hoop leap",
-   "Sliding brick walls"
+   "Playground slide",
+   "Spinning tops"
   ],
-  "instances": 1865,
-  "zfights_fixed": 685,
+  "instances": 2800,
+  "zfights_fixed": 983,
   "checkpoints": 7,
   "length": 5440.0
  },
@@ -106,16 +111,17 @@
   "title": "Orbit",
   "theme": "space",
   "sections": [
-   "Planet hops",
-   "Satellite bridges",
+   "Launch tube",
+   "Zero-g planet hops",
+   "Moonshot",
+   "Station corridor",
    "Asteroid field",
    "Ring loop",
-   "Moonshot",
-   "Meteor drop"
+   "Satellite bridges"
   ],
-  "instances": 1425,
-  "zfights_fixed": 853,
-  "checkpoints": 7,
+  "instances": 1901,
+  "zfights_fixed": 1684,
+  "checkpoints": 8,
   "length": 5440.0
  },
  {
@@ -123,15 +129,15 @@
   "title": "Eruption",
   "theme": "volcano",
   "sections": [
+   "Canyon descent",
+   "Obsidian ledge",
+   "Geyser blast",
    "Obsidian descent",
    "Lava geysers",
-   "Crumbling crust",
-   "Flame sweepers",
-   "Magma pistons",
-   "Caldera drop"
+   "Crumbling crust"
   ],
-  "instances": 1204,
-  "zfights_fixed": 734,
+  "instances": 1651,
+  "zfights_fixed": 1298,
   "checkpoints": 7,
   "length": 5440.0
  },
@@ -140,15 +146,15 @@
   "title": "Frostbite",
   "theme": "snow",
   "sections": [
-   "Snowflake hops",
-   "Ice rink",
+   "Bobsled run",
+   "Ski jump",
+   "Ice cavern",
+   "Frozen lake",
    "Icicle crushers",
-   "Glacier wall ride",
-   "Snowflake bridges",
-   "Snowman slalom"
+   "Glacier climb"
   ],
-  "instances": 3123,
-  "zfights_fixed": 855,
+  "instances": 3751,
+  "zfights_fixed": 1848,
   "checkpoints": 7,
   "length": 5440.0
  },
@@ -157,16 +163,16 @@
   "title": "High Score",
   "theme": "arcade",
   "sections": [
-   "Coin wave",
+   "Wormhole",
    "Pinball bumpers",
+   "Plunger launch",
+   "Coin climb",
+   "Pixel tightrope",
    "Laser rhythm",
-   "Pixel path",
-   "Neon loop",
-   "Equaliser bars",
-   "Invader walls"
+   "Neon loop"
   ],
-  "instances": 1487,
-  "zfights_fixed": 401,
+  "instances": 1740,
+  "zfights_fixed": 553,
   "checkpoints": 8,
   "length": 5440.0
  },

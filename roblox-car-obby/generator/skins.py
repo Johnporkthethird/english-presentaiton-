@@ -345,7 +345,7 @@ class SugarRush(Skin):
 
     def __init__(self):
         self.recipe = [(k, l, dict(kw, plat=self.cupcake) if "plat" in kw else kw) for k, l, kw in self.recipe]
-        self.extra = [(k, l, dict(kw, plat=self.macaron)) for k, l, kw in self.extra]
+        self.extra = [(k, l, dict(kw, plat=self.macaron) if k == "hops" else kw) for k, l, kw in self.extra]
 
     def under(self, b, top, w, i):
         """A striped candy stick with a gumdrop on its end."""
