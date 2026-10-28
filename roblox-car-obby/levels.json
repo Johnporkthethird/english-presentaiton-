@@ -1,0 +1,1702 @@
+[
+ {
+  "id": 1,
+  "title": "Neon Launch",
+  "theme": "neon_city",
+  "sections": [
+   "runway",
+   "scurve",
+   "gaps",
+   "spinners",
+   "kicker",
+   "lasers",
+   "turntable"
+  ],
+  "instances": 2375,
+  "checkpoints": 9,
+  "length": 5540.0
+ },
+ {
+  "id": 2,
+  "title": "Sugar Rush",
+  "theme": "candy",
+  "sections": [
+   "runway",
+   "zigzag",
+   "bumpers",
+   "wave",
+   "hills",
+   "islands"
+  ],
+  "instances": 1649,
+  "checkpoints": 8,
+  "length": 5420.0
+ },
+ {
+  "id": 3,
+  "title": "Magma Run",
+  "theme": "volcano",
+  "sections": [
+   "runway",
+   "lava",
+   "crushers",
+   "stairs",
+   "kicker",
+   "scurve"
+  ],
+  "instances": 1640,
+  "checkpoints": 8,
+  "length": 5620.0
+ },
+ {
+  "id": 4,
+  "title": "Frostbite Pass",
+  "theme": "glacier",
+  "sections": [
+   "runway",
+   "ice",
+   "gaps",
+   "sweepers",
+   "coaster",
+   "wave"
+  ],
+  "instances": 1661,
+  "checkpoints": 8,
+  "length": 5310.0
+ },
+ {
+  "id": 5,
+  "title": "Canopy Chaos",
+  "theme": "jungle",
+  "sections": [
+   "runway",
+   "beam",
+   "hammers",
+   "islands",
+   "climb",
+   "slalom"
+  ],
+  "instances": 1748,
+  "checkpoints": 7,
+  "length": 5610.0
+ },
+ {
+  "id": 6,
+  "title": "Mesa Madness",
+  "theme": "desert",
+  "sections": [
+   "runway",
+   "kicker",
+   "banked",
+   "pistons",
+   "gaps",
+   "slalom"
+  ],
+  "instances": 1436,
+  "checkpoints": 8,
+  "length": 5440.0
+ },
+ {
+  "id": 7,
+  "title": "Orbit Station",
+  "theme": "space",
+  "sections": [
+   "runway",
+   "turntable",
+   "lasers",
+   "tower",
+   "drop",
+   "beam",
+   "turntable",
+   "bumpers"
+  ],
+  "instances": 2122,
+  "checkpoints": 10,
+  "length": 5440.0
+ },
+ {
+  "id": 8,
+  "title": "Outrun 84",
+  "theme": "synthwave",
+  "sections": [
+   "runway",
+   "coaster",
+   "doors",
+   "lasers",
+   "kicker",
+   "zigzag",
+   "beam"
+  ],
+  "instances": 2370,
+  "checkpoints": 9,
+  "length": 5440.0
+ },
+ {
+  "id": 9,
+  "title": "Tidal Rush",
+  "theme": "ocean",
+  "sections": [
+   "runway",
+   "bridges",
+   "wave",
+   "scurve",
+   "islands",
+   "conveyor",
+   "bumpers"
+  ],
+  "instances": 1621,
+  "checkpoints": 9,
+  "length": 5440.0
+ },
+ {
+  "id": 10,
+  "title": "Gravecrawl",
+  "theme": "haunted",
+  "sections": [
+   "runway",
+   "crumble",
+   "hammers",
+   "beam",
+   "windmills",
+   "stairs",
+   "wave"
+  ],
+  "instances": 1843,
+  "checkpoints": 9,
+  "length": 5440.0
+ },
+ {
+  "id": 11,
+  "title": "Sun Temple",
+  "theme": "golden",
+  "sections": [
+   "runway",
+   "climb",
+   "crushers",
+   "zigzag",
+   "drop",
+   "spinners",
+   "runway",
+   "slalom",
+   "turntable"
+  ],
+  "instances": 1607,
+  "checkpoints": 11,
+  "length": 6280.0
+ },
+ {
+  "id": 12,
+  "title": "Scrapheap Sprint",
+  "theme": "factory",
+  "sections": [
+   "runway",
+   "conveyor",
+   "pistons",
+   "crushers",
+   "gaps",
+   "banked",
+   "slalom",
+   "turntable"
+  ],
+  "instances": 1867,
+  "checkpoints": 9,
+  "length": 5730.0
+ },
+ {
+  "id": 13,
+  "title": "Cloudhopper",
+  "theme": "cloud",
+  "sections": [
+   "runway",
+   "islands",
+   "beam",
+   "bridges",
+   "hills",
+   "kicker",
+   "turntable"
+  ],
+  "instances": 2041,
+  "checkpoints": 8,
+  "length": 5640.0
+ },
+ {
+  "id": 14,
+  "title": "Amethyst Depths",
+  "theme": "crystal",
+  "sections": [
+   "runway",
+   "stairs",
+   "sweepers",
+   "crumble",
+   "coaster",
+   "lasers",
+   "beam",
+   "turntable"
+  ],
+  "instances": 2267,
+  "checkpoints": 9,
+  "length": 5740.0
+ },
+ {
+  "id": 15,
+  "title": "Aurora Drift",
+  "theme": "aurora",
+  "sections": [
+   "runway",
+   "ice",
+   "banked",
+   "gaps",
+   "windmills",
+   "scurve",
+   "turntable"
+  ],
+  "instances": 1915,
+  "checkpoints": 8,
+  "length": 5260.0
+ },
+ {
+  "id": 16,
+  "title": "Biohazard Bypass",
+  "theme": "toxic",
+  "sections": [
+   "runway",
+   "mud",
+   "pistons",
+   "lava",
+   "slalom",
+   "kicker",
+   "wave",
+   "runway"
+  ],
+  "instances": 1583,
+  "checkpoints": 10,
+  "length": 5710.0
+ },
+ {
+  "id": 17,
+  "title": "Petal Storm",
+  "theme": "sakura",
+  "sections": [
+   "runway",
+   "scurve",
+   "crumble",
+   "hammers",
+   "islands",
+   "hills"
+  ],
+  "instances": 1882,
+  "checkpoints": 8,
+  "length": 5620.0
+ },
+ {
+  "id": 18,
+  "title": "Pixel Panic",
+  "theme": "arcade",
+  "sections": [
+   "runway",
+   "bumpers",
+   "zigzag",
+   "doors",
+   "wave",
+   "tower",
+   "slalom"
+  ],
+  "instances": 1437,
+  "checkpoints": 9,
+  "length": 5240.0
+ },
+ {
+  "id": 19,
+  "title": "Thunderhead",
+  "theme": "storm",
+  "sections": [
+   "runway",
+   "windmills",
+   "gaps",
+   "lasers",
+   "drop",
+   "coaster"
+  ],
+  "instances": 1826,
+  "checkpoints": 8,
+  "length": 5380.0
+ },
+ {
+  "id": 20,
+  "title": "Golden Coast",
+  "theme": "sunset",
+  "sections": [
+   "runway",
+   "banked",
+   "kicker",
+   "slalom",
+   "hills",
+   "bridges"
+  ],
+  "instances": 1898,
+  "checkpoints": 8,
+  "length": 5400.0
+ },
+ {
+  "id": 21,
+  "title": "Abyssal Trench",
+  "theme": "deepsea",
+  "sections": [
+   "runway",
+   "stairs",
+   "wave",
+   "sweepers",
+   "turntable",
+   "climb"
+  ],
+  "instances": 2210,
+  "checkpoints": 8,
+  "length": 5480.0
+ },
+ {
+  "id": 22,
+  "title": "Red Planet Rally",
+  "theme": "mars",
+  "sections": [
+   "runway",
+   "kicker",
+   "islands",
+   "mud",
+   "crushers",
+   "beam"
+  ],
+  "instances": 1501,
+  "checkpoints": 8,
+  "length": 5640.0
+ },
+ {
+  "id": 23,
+  "title": "Crown Circuit",
+  "theme": "royal",
+  "sections": [
+   "runway",
+   "doors",
+   "halfpipe",
+   "hammers",
+   "scurve",
+   "gaps",
+   "runway"
+  ],
+  "instances": 1479,
+  "checkpoints": 9,
+  "length": 5640.0
+ },
+ {
+  "id": 24,
+  "title": "Code Runner",
+  "theme": "matrix",
+  "sections": [
+   "runway",
+   "lasers",
+   "zigzag",
+   "crumble",
+   "tower",
+   "sweepers",
+   "slalom"
+  ],
+  "instances": 1784,
+  "checkpoints": 9,
+  "length": 5680.0
+ },
+ {
+  "id": 25,
+  "title": "Prism Highway",
+  "theme": "rainbow",
+  "sections": [
+   "runway",
+   "coaster",
+   "islands",
+   "spinners",
+   "drop",
+   "hills"
+  ],
+  "instances": 2297,
+  "checkpoints": 8,
+  "length": 5540.0
+ },
+ {
+  "id": 26,
+  "title": "Midnight Grid",
+  "theme": "neon_city",
+  "sections": [
+   "runway",
+   "halfpipe",
+   "lasers",
+   "split",
+   "crushers",
+   "coaster",
+   "beam",
+   "turntable"
+  ],
+  "instances": 2914,
+  "checkpoints": 10,
+  "length": 5770.0
+ },
+ {
+  "id": 27,
+  "title": "Gumdrop Gauntlet",
+  "theme": "candy",
+  "sections": [
+   "runway",
+   "hammers",
+   "crumble",
+   "scurve",
+   "kicker",
+   "turntable",
+   "bumpers",
+   "wave"
+  ],
+  "instances": 1605,
+  "checkpoints": 10,
+  "length": 5690.0
+ },
+ {
+  "id": 28,
+  "title": "Caldera Leap",
+  "theme": "volcano",
+  "sections": [
+   "runway",
+   "islands",
+   "lava",
+   "windmills",
+   "stairs",
+   "turntable"
+  ],
+  "instances": 1724,
+  "checkpoints": 8,
+  "length": 5640.0
+ },
+ {
+  "id": 29,
+  "title": "Avalanche Alley",
+  "theme": "glacier",
+  "sections": [
+   "runway",
+   "drop",
+   "ice",
+   "slalom",
+   "tower",
+   "beam",
+   "runway",
+   "slalom"
+  ],
+  "instances": 1710,
+  "checkpoints": 10,
+  "length": 5650.0
+ },
+ {
+  "id": 30,
+  "title": "Vine Swing",
+  "theme": "jungle",
+  "sections": [
+   "runway",
+   "split",
+   "hammers",
+   "gaps",
+   "coaster",
+   "climb"
+  ],
+  "instances": 1960,
+  "checkpoints": 8,
+  "length": 5690.0
+ },
+ {
+  "id": 31,
+  "title": "Dune Drifter",
+  "theme": "desert",
+  "sections": [
+   "runway",
+   "hills",
+   "sweepers",
+   "bridges",
+   "kicker",
+   "zigzag",
+   "turntable"
+  ],
+  "instances": 1504,
+  "checkpoints": 9,
+  "length": 5720.0
+ },
+ {
+  "id": 32,
+  "title": "Zero-G Docks",
+  "theme": "space",
+  "sections": [
+   "runway",
+   "islands",
+   "crushers",
+   "wave",
+   "doors",
+   "drop",
+   "beam"
+  ],
+  "instances": 1783,
+  "checkpoints": 9,
+  "length": 5700.0
+ },
+ {
+  "id": 33,
+  "title": "Laser Boulevard",
+  "theme": "synthwave",
+  "sections": [
+   "runway",
+   "lasers",
+   "sweepers",
+   "coaster",
+   "lasers",
+   "kicker",
+   "bumpers",
+   "wave"
+  ],
+  "instances": 2220,
+  "checkpoints": 10,
+  "length": 5680.0
+ },
+ {
+  "id": 34,
+  "title": "Reef Racer",
+  "theme": "ocean",
+  "sections": [
+   "runway",
+   "beam",
+   "islands",
+   "bumpers",
+   "stairs",
+   "turntable"
+  ],
+  "instances": 1525,
+  "checkpoints": 8,
+  "length": 5670.0
+ },
+ {
+  "id": 35,
+  "title": "Phantom Mile",
+  "theme": "haunted",
+  "sections": [
+   "runway",
+   "doors",
+   "stairs",
+   "crumble",
+   "halfpipe",
+   "gaps",
+   "runway"
+  ],
+  "instances": 1405,
+  "checkpoints": 9,
+  "length": 5640.0
+ },
+ {
+  "id": 36,
+  "title": "Pharaoh's Ascent",
+  "theme": "golden",
+  "sections": [
+   "runway",
+   "tower",
+   "spinners",
+   "scurve",
+   "pistons",
+   "drop",
+   "slalom"
+  ],
+  "instances": 1651,
+  "checkpoints": 9,
+  "length": 5600.0
+ },
+ {
+  "id": 37,
+  "title": "Assembly Line",
+  "theme": "factory",
+  "sections": [
+   "runway",
+   "conveyor",
+   "slalom",
+   "conveyor",
+   "crushers",
+   "kicker",
+   "turntable",
+   "beam",
+   "bumpers"
+  ],
+  "instances": 1883,
+  "checkpoints": 11,
+  "length": 5640.0
+ },
+ {
+  "id": 38,
+  "title": "Skybridge Sprint",
+  "theme": "cloud",
+  "sections": [
+   "runway",
+   "bridges",
+   "hammers",
+   "coaster",
+   "gaps",
+   "drop"
+  ],
+  "instances": 1997,
+  "checkpoints": 8,
+  "length": 5740.0
+ },
+ {
+  "id": 39,
+  "title": "Geode Grinder",
+  "theme": "crystal",
+  "sections": [
+   "runway",
+   "turntable",
+   "windmills",
+   "beam",
+   "lasers",
+   "stairs",
+   "bumpers"
+  ],
+  "instances": 1599,
+  "checkpoints": 9,
+  "length": 5600.0
+ },
+ {
+  "id": 40,
+  "title": "Polar Express",
+  "theme": "aurora",
+  "sections": [
+   "runway",
+   "coaster",
+   "ice",
+   "pistons",
+   "islands",
+   "banked"
+  ],
+  "instances": 1948,
+  "checkpoints": 8,
+  "length": 5660.0
+ },
+ {
+  "id": 41,
+  "title": "Acid Rain",
+  "theme": "toxic",
+  "sections": [
+   "runway",
+   "lava",
+   "crumble",
+   "doors",
+   "scurve",
+   "gaps",
+   "runway"
+  ],
+  "instances": 1734,
+  "checkpoints": 9,
+  "length": 5870.0
+ },
+ {
+  "id": 42,
+  "title": "Lantern Run",
+  "theme": "sakura",
+  "sections": [
+   "runway",
+   "zigzag",
+   "hammers",
+   "bridges",
+   "tower",
+   "slalom"
+  ],
+  "instances": 1307,
+  "checkpoints": 8,
+  "length": 5640.0
+ },
+ {
+  "id": 43,
+  "title": "Coin-Op Chaos",
+  "theme": "arcade",
+  "sections": [
+   "runway",
+   "turntable",
+   "bumpers",
+   "lasers",
+   "kicker",
+   "wave",
+   "turntable",
+   "beam",
+   "bumpers"
+  ],
+  "instances": 1522,
+  "checkpoints": 11,
+  "length": 5730.0
+ },
+ {
+  "id": 44,
+  "title": "Eye of the Storm",
+  "theme": "storm",
+  "sections": [
+   "runway",
+   "banked",
+   "sweepers",
+   "crushers",
+   "islands",
+   "beam"
+  ],
+  "instances": 2055,
+  "checkpoints": 8,
+  "length": 5580.0
+ },
+ {
+  "id": 45,
+  "title": "Boulevard of Palms",
+  "theme": "sunset",
+  "sections": [
+   "runway",
+   "kicker",
+   "conveyor",
+   "coaster",
+   "slalom",
+   "split",
+   "bumpers"
+  ],
+  "instances": 1798,
+  "checkpoints": 9,
+  "length": 5580.0
+ },
+ {
+  "id": 46,
+  "title": "Pressure Drop",
+  "theme": "deepsea",
+  "sections": [
+   "runway",
+   "drop",
+   "wave",
+   "crushers",
+   "beam",
+   "turntable",
+   "wave",
+   "runway"
+  ],
+  "instances": 2258,
+  "checkpoints": 10,
+  "length": 5600.0
+ },
+ {
+  "id": 47,
+  "title": "Dust Devil",
+  "theme": "mars",
+  "sections": [
+   "runway",
+   "sweepers",
+   "gaps",
+   "tower",
+   "mud",
+   "scurve"
+  ],
+  "instances": 1551,
+  "checkpoints": 8,
+  "length": 5580.0
+ },
+ {
+  "id": 48,
+  "title": "Throne Room",
+  "theme": "royal",
+  "sections": [
+   "runway",
+   "crushers",
+   "zigzag",
+   "doors",
+   "islands",
+   "hills",
+   "slalom"
+  ],
+  "instances": 1467,
+  "checkpoints": 8,
+  "length": 5600.0
+ },
+ {
+  "id": 49,
+  "title": "Firewall",
+  "theme": "matrix",
+  "sections": [
+   "runway",
+   "doors",
+   "lasers",
+   "wave",
+   "windmills",
+   "drop",
+   "turntable",
+   "beam"
+  ],
+  "instances": 2310,
+  "checkpoints": 10,
+  "length": 5600.0
+ },
+ {
+  "id": 50,
+  "title": "Spectrum Spiral",
+  "theme": "rainbow",
+  "sections": [
+   "runway",
+   "banked",
+   "islands",
+   "crumble",
+   "hammers",
+   "turntable"
+  ],
+  "instances": 2086,
+  "checkpoints": 8,
+  "length": 5600.0
+ },
+ {
+  "id": 51,
+  "title": "Rooftop Rush",
+  "theme": "neon_city",
+  "sections": [
+   "runway",
+   "gaps",
+   "tower",
+   "conveyor",
+   "sweepers",
+   "scurve",
+   "turntable"
+  ],
+  "instances": 2787,
+  "checkpoints": 9,
+  "length": 5760.0
+ },
+ {
+  "id": 52,
+  "title": "Taffy Twister",
+  "theme": "candy",
+  "sections": [
+   "runway",
+   "coaster",
+   "pistons",
+   "islands",
+   "bumpers",
+   "climb"
+  ],
+  "instances": 1783,
+  "checkpoints": 8,
+  "length": 5680.0
+ },
+ {
+  "id": 53,
+  "title": "Obsidian Teeth",
+  "theme": "volcano",
+  "sections": [
+   "runway",
+   "crushers",
+   "drop",
+   "hammers",
+   "lava",
+   "banked",
+   "runway",
+   "slalom"
+  ],
+  "instances": 1984,
+  "checkpoints": 10,
+  "length": 5680.0
+ },
+ {
+  "id": 54,
+  "title": "Iceberg Hop",
+  "theme": "glacier",
+  "sections": [
+   "runway",
+   "islands",
+   "ice",
+   "gaps",
+   "hammers",
+   "wave",
+   "slalom"
+  ],
+  "instances": 1696,
+  "checkpoints": 8,
+  "length": 5600.0
+ },
+ {
+  "id": 55,
+  "title": "Temple of Vines",
+  "theme": "jungle",
+  "sections": [
+   "runway",
+   "stairs",
+   "bridges",
+   "crushers",
+   "kicker",
+   "coaster",
+   "turntable"
+  ],
+  "instances": 2153,
+  "checkpoints": 9,
+  "length": 5640.0
+ },
+ {
+  "id": 56,
+  "title": "Canyon Cannon",
+  "theme": "desert",
+  "sections": [
+   "runway",
+   "kicker",
+   "kicker",
+   "slalom",
+   "sweepers",
+   "beam",
+   "bumpers"
+  ],
+  "instances": 1569,
+  "checkpoints": 9,
+  "length": 5760.0
+ },
+ {
+  "id": 57,
+  "title": "Nebula Run",
+  "theme": "space",
+  "sections": [
+   "runway",
+   "beam",
+   "lasers",
+   "islands",
+   "turntable",
+   "hills",
+   "bumpers"
+  ],
+  "instances": 2123,
+  "checkpoints": 9,
+  "length": 5680.0
+ },
+ {
+  "id": 58,
+  "title": "Chrome Sunset",
+  "theme": "synthwave",
+  "sections": [
+   "runway",
+   "split",
+   "coaster",
+   "hammers",
+   "crushers",
+   "gaps",
+   "wave"
+  ],
+  "instances": 2515,
+  "checkpoints": 9,
+  "length": 5670.0
+ },
+ {
+  "id": 59,
+  "title": "Shipwreck Shoals",
+  "theme": "ocean",
+  "sections": [
+   "runway",
+   "wave",
+   "hammers",
+   "bridges",
+   "stairs",
+   "kicker"
+  ],
+  "instances": 1405,
+  "checkpoints": 8,
+  "length": 5670.0
+ },
+ {
+  "id": 60,
+  "title": "Witching Hour",
+  "theme": "haunted",
+  "sections": [
+   "runway",
+   "windmills",
+   "crumble",
+   "sweepers",
+   "tower",
+   "scurve",
+   "slalom"
+  ],
+  "instances": 1998,
+  "checkpoints": 9,
+  "length": 5600.0
+ },
+ {
+  "id": 61,
+  "title": "Gilded Gauntlet",
+  "theme": "golden",
+  "sections": [
+   "runway",
+   "pistons",
+   "doors",
+   "gaps",
+   "coaster",
+   "drop",
+   "turntable"
+  ],
+  "instances": 1714,
+  "checkpoints": 9,
+  "length": 5570.0
+ },
+ {
+  "id": 62,
+  "title": "Rust Belt",
+  "theme": "factory",
+  "sections": [
+   "runway",
+   "crushers",
+   "conveyor",
+   "windmills",
+   "islands",
+   "hills",
+   "turntable"
+  ],
+  "instances": 1819,
+  "checkpoints": 9,
+  "length": 5600.0
+ },
+ {
+  "id": 63,
+  "title": "Sky Ferry",
+  "theme": "cloud",
+  "sections": [
+   "runway",
+   "bridges",
+   "bridges",
+   "kicker",
+   "spinners",
+   "banked",
+   "bumpers"
+  ],
+  "instances": 1645,
+  "checkpoints": 8,
+  "length": 5670.0
+ },
+ {
+  "id": 64,
+  "title": "Shard Storm",
+  "theme": "crystal",
+  "sections": [
+   "runway",
+   "sweepers",
+   "stairs",
+   "lasers",
+   "coaster",
+   "crumble",
+   "wave"
+  ],
+  "instances": 2228,
+  "checkpoints": 9,
+  "length": 5800.0
+ },
+ {
+  "id": 65,
+  "title": "Northern Lights",
+  "theme": "aurora",
+  "sections": [
+   "runway",
+   "tower",
+   "ice",
+   "spinners",
+   "drop",
+   "zigzag",
+   "runway",
+   "turntable"
+  ],
+  "instances": 1692,
+  "checkpoints": 10,
+  "length": 5700.0
+ },
+ {
+  "id": 66,
+  "title": "Meltdown",
+  "theme": "toxic",
+  "sections": [
+   "runway",
+   "lava",
+   "pistons",
+   "mud",
+   "crushers",
+   "kicker",
+   "slalom",
+   "turntable"
+  ],
+  "instances": 1727,
+  "checkpoints": 10,
+  "length": 5640.0
+ },
+ {
+  "id": 67,
+  "title": "Bamboo Rapids",
+  "theme": "sakura",
+  "sections": [
+   "runway",
+   "conveyor",
+   "islands",
+   "hammers",
+   "hills",
+   "crumble"
+  ],
+  "instances": 1773,
+  "checkpoints": 8,
+  "length": 5600.0
+ },
+ {
+  "id": 68,
+  "title": "High Score",
+  "theme": "arcade",
+  "sections": [
+   "runway",
+   "wave",
+   "zigzag",
+   "turntable",
+   "doors",
+   "gaps",
+   "beam",
+   "bumpers"
+  ],
+  "instances": 1550,
+  "checkpoints": 10,
+  "length": 5640.0
+ },
+ {
+  "id": 69,
+  "title": "Lightning Ladder",
+  "theme": "storm",
+  "sections": [
+   "runway",
+   "tower",
+   "windmills",
+   "lasers",
+   "stairs",
+   "coaster",
+   "bumpers"
+  ],
+  "instances": 1786,
+  "checkpoints": 9,
+  "length": 5610.0
+ },
+ {
+  "id": 70,
+  "title": "Sunset Strip",
+  "theme": "sunset",
+  "sections": [
+   "runway",
+   "slalom",
+   "kicker",
+   "banked",
+   "bridges",
+   "drop"
+  ],
+  "instances": 2353,
+  "checkpoints": 8,
+  "length": 5630.0
+ },
+ {
+  "id": 71,
+  "title": "Kraken's Reach",
+  "theme": "deepsea",
+  "sections": [
+   "runway",
+   "hammers",
+   "wave",
+   "islands",
+   "sweepers",
+   "runway",
+   "slalom"
+  ],
+  "instances": 2163,
+  "checkpoints": 9,
+  "length": 5560.0
+ },
+ {
+  "id": 72,
+  "title": "Olympus Mons",
+  "theme": "mars",
+  "sections": [
+   "runway",
+   "climb",
+   "tower",
+   "kicker",
+   "drop",
+   "crushers"
+  ],
+  "instances": 1647,
+  "checkpoints": 8,
+  "length": 5490.0
+ },
+ {
+  "id": 73,
+  "title": "Knight Run",
+  "theme": "royal",
+  "sections": [
+   "runway",
+   "halfpipe",
+   "spinners",
+   "split",
+   "stairs",
+   "coaster"
+  ],
+  "instances": 1600,
+  "checkpoints": 8,
+  "length": 5710.0
+ },
+ {
+  "id": 74,
+  "title": "Glitch Garden",
+  "theme": "matrix",
+  "sections": [
+   "runway",
+   "crumble",
+   "wave",
+   "lasers",
+   "bumpers",
+   "islands",
+   "beam"
+  ],
+  "instances": 1830,
+  "checkpoints": 8,
+  "length": 5620.0
+ },
+ {
+  "id": 75,
+  "title": "Hyperprism",
+  "theme": "rainbow",
+  "sections": [
+   "runway",
+   "turntable",
+   "gaps",
+   "doors",
+   "kicker",
+   "banked"
+  ],
+  "instances": 1817,
+  "checkpoints": 8,
+  "length": 5260.0
+ },
+ {
+  "id": 76,
+  "title": "Night Shift",
+  "theme": "neon_city",
+  "sections": [
+   "runway",
+   "crushers",
+   "zigzag",
+   "sweepers",
+   "drop",
+   "hills",
+   "wave",
+   "turntable"
+  ],
+  "instances": 3128,
+  "checkpoints": 9,
+  "length": 5610.0
+ },
+ {
+  "id": 77,
+  "title": "Marshmallow Mayhem",
+  "theme": "candy",
+  "sections": [
+   "runway",
+   "gaps",
+   "windmills",
+   "halfpipe",
+   "crumble",
+   "scurve",
+   "runway",
+   "turntable"
+  ],
+  "instances": 1695,
+  "checkpoints": 10,
+  "length": 5600.0
+ },
+ {
+  "id": 78,
+  "title": "Hell's Kitchen",
+  "theme": "volcano",
+  "sections": [
+   "runway",
+   "sweepers",
+   "lava",
+   "kicker",
+   "pistons",
+   "coaster",
+   "slalom",
+   "turntable"
+  ],
+  "instances": 1849,
+  "checkpoints": 10,
+  "length": 5670.0
+ },
+ {
+  "id": 79,
+  "title": "Whiteout",
+  "theme": "glacier",
+  "sections": [
+   "runway",
+   "ice",
+   "zigzag",
+   "crushers",
+   "islands",
+   "stairs"
+  ],
+  "instances": 1751,
+  "checkpoints": 8,
+  "length": 5340.0
+ },
+ {
+  "id": 80,
+  "title": "Temple Rush",
+  "theme": "jungle",
+  "sections": [
+   "runway",
+   "doors",
+   "climb",
+   "spinners",
+   "bridges",
+   "kicker",
+   "turntable"
+  ],
+  "instances": 1800,
+  "checkpoints": 8,
+  "length": 5670.0
+ },
+ {
+  "id": 81,
+  "title": "Sandstorm Slalom",
+  "theme": "desert",
+  "sections": [
+   "runway",
+   "slalom",
+   "mud",
+   "slalom",
+   "drop",
+   "wave",
+   "bumpers",
+   "runway",
+   "turntable"
+  ],
+  "instances": 1787,
+  "checkpoints": 10,
+  "length": 5640.0
+ },
+ {
+  "id": 82,
+  "title": "Event Horizon",
+  "theme": "space",
+  "sections": [
+   "runway",
+   "drop",
+   "islands",
+   "lasers",
+   "windmills",
+   "beam"
+  ],
+  "instances": 1802,
+  "checkpoints": 8,
+  "length": 5200.0
+ },
+ {
+  "id": 83,
+  "title": "Vaporwave Valley",
+  "theme": "synthwave",
+  "sections": [
+   "runway",
+   "hills",
+   "hammers",
+   "turntable",
+   "conveyor",
+   "kicker",
+   "runway",
+   "slalom"
+  ],
+  "instances": 2259,
+  "checkpoints": 10,
+  "length": 5640.0
+ },
+ {
+  "id": 84,
+  "title": "Riptide",
+  "theme": "ocean",
+  "sections": [
+   "runway",
+   "conveyor",
+   "gaps",
+   "halfpipe",
+   "islands",
+   "slalom"
+  ],
+  "instances": 1317,
+  "checkpoints": 8,
+  "length": 5540.0
+ },
+ {
+  "id": 85,
+  "title": "Bone Bridge",
+  "theme": "haunted",
+  "sections": [
+   "runway",
+   "bridges",
+   "hammers",
+   "stairs",
+   "lasers",
+   "crumble",
+   "turntable"
+  ],
+  "instances": 1736,
+  "checkpoints": 9,
+  "length": 5180.0
+ },
+ {
+  "id": 86,
+  "title": "Golden Ratio",
+  "theme": "golden",
+  "sections": [
+   "runway",
+   "spinners",
+   "coaster",
+   "doors",
+   "tower",
+   "drop",
+   "beam",
+   "bumpers"
+  ],
+  "instances": 1775,
+  "checkpoints": 10,
+  "length": 5640.0
+ },
+ {
+  "id": 87,
+  "title": "Steel Jaws",
+  "theme": "factory",
+  "sections": [
+   "runway",
+   "pistons",
+   "crushers",
+   "pistons",
+   "gaps",
+   "scurve",
+   "bumpers"
+  ],
+  "instances": 1848,
+  "checkpoints": 9,
+  "length": 5460.0
+ },
+ {
+  "id": 88,
+  "title": "Stratosphere",
+  "theme": "cloud",
+  "sections": [
+   "runway",
+   "tower",
+   "islands",
+   "drop",
+   "bridges",
+   "hills"
+  ],
+  "instances": 2157,
+  "checkpoints": 8,
+  "length": 5760.0
+ },
+ {
+  "id": 89,
+  "title": "Crystal Maze",
+  "theme": "crystal",
+  "sections": [
+   "runway",
+   "zigzag",
+   "doors",
+   "sweepers",
+   "turntable",
+   "kicker",
+   "runway",
+   "wave"
+  ],
+  "instances": 2212,
+  "checkpoints": 10,
+  "length": 5700.0
+ },
+ {
+  "id": 90,
+  "title": "Frozen Fury",
+  "theme": "aurora",
+  "sections": [
+   "runway",
+   "hammers",
+   "ice",
+   "windmills",
+   "gaps",
+   "coaster",
+   "slalom",
+   "turntable"
+  ],
+  "instances": 2137,
+  "checkpoints": 9,
+  "length": 5640.0
+ },
+ {
+  "id": 91,
+  "title": "Radioactive Rally",
+  "theme": "toxic",
+  "sections": [
+   "runway",
+   "sweepers",
+   "lava",
+   "bumpers",
+   "tower",
+   "stairs",
+   "turntable"
+  ],
+  "instances": 1570,
+  "checkpoints": 9,
+  "length": 5640.0
+ },
+ {
+  "id": 92,
+  "title": "Moonlit Gardens",
+  "theme": "sakura",
+  "sections": [
+   "runway",
+   "beam",
+   "crumble",
+   "coaster",
+   "spinners",
+   "islands",
+   "turntable"
+  ],
+  "instances": 2062,
+  "checkpoints": 9,
+  "length": 5640.0
+ },
+ {
+  "id": 93,
+  "title": "Bonus Stage",
+  "theme": "arcade",
+  "sections": [
+   "runway",
+   "bumpers",
+   "kicker",
+   "zigzag",
+   "lasers",
+   "wave",
+   "bumpers",
+   "runway"
+  ],
+  "instances": 1678,
+  "checkpoints": 10,
+  "length": 5440.0
+ },
+ {
+  "id": 94,
+  "title": "Superstorm",
+  "theme": "storm",
+  "sections": [
+   "runway",
+   "windmills",
+   "hammers",
+   "sweepers",
+   "drop",
+   "banked",
+   "wave"
+  ],
+  "instances": 2053,
+  "checkpoints": 9,
+  "length": 5340.0
+ },
+ {
+  "id": 95,
+  "title": "Last Exit",
+  "theme": "sunset",
+  "sections": [
+   "runway",
+   "split",
+   "lasers",
+   "crushers",
+   "kicker",
+   "hills",
+   "runway",
+   "slalom"
+  ],
+  "instances": 2435,
+  "checkpoints": 10,
+  "length": 5700.0
+ },
+ {
+  "id": 96,
+  "title": "Deep Pressure",
+  "theme": "deepsea",
+  "sections": [
+   "runway",
+   "crushers",
+   "turntable",
+   "stairs",
+   "bridges",
+   "coaster",
+   "slalom"
+  ],
+  "instances": 2108,
+  "checkpoints": 8,
+  "length": 5240.0
+ },
+ {
+  "id": 97,
+  "title": "Dust to Dust",
+  "theme": "mars",
+  "sections": [
+   "runway",
+   "mud",
+   "islands",
+   "pistons",
+   "climb"
+  ],
+  "instances": 1491,
+  "checkpoints": 7,
+  "length": 5490.0
+ },
+ {
+  "id": 98,
+  "title": "Royal Gauntlet",
+  "theme": "royal",
+  "sections": [
+   "runway",
+   "hammers",
+   "doors",
+   "spinners",
+   "crushers",
+   "gaps",
+   "beam",
+   "bumpers"
+  ],
+  "instances": 1566,
+  "checkpoints": 10,
+  "length": 5550.0
+ },
+ {
+  "id": 99,
+  "title": "Kernel Panic",
+  "theme": "matrix",
+  "sections": [
+   "runway",
+   "lasers",
+   "crumble",
+   "windmills",
+   "sweepers",
+   "zigzag",
+   "bumpers",
+   "wave"
+  ],
+  "instances": 1999,
+  "checkpoints": 10,
+  "length": 5400.0
+ },
+ {
+  "id": 100,
+  "title": "Infinity Run",
+  "theme": "rainbow",
+  "sections": [
+   "runway",
+   "islands",
+   "hammers",
+   "lasers",
+   "crushers",
+   "drop",
+   "wave"
+  ],
+  "instances": 2090,
+  "checkpoints": 9,
+  "length": 5640.0
+ }
+]
