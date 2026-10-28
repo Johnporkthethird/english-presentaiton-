@@ -535,6 +535,45 @@ MODULES = {"hops": m_hops, "tower": m_tower, "long_jump": m_long_jump, "drop": m
            "belts": m_belts, "bumpers": m_bumpers, "rink": m_rink, "loop": m_loop, "wallride": m_wallride, "pipe": m_pipe}
 
 
+# ===================================================================== the sky
+# (horizon colour, upper-sky colour) of each painted skybox: the Atmosphere wears them so the far course melts into
+# its own sky; star count and sun / moon size suit the time of day.
+SKY = {
+    1: ("#ffd6ea", "#c4c8ff", 0, 14, 11), 2: ("#f7e7cf", "#6aa6ec", 0, 12, 11), 3: ("#ff8a6a", "#2a1d66", 1500, 22, 14),
+    4: ("#f6d39a", "#a3b5d6", 0, 18, 11), 5: ("#f4b46a", "#6e8798", 0, 20, 11), 6: ("#e6f6ff", "#3f96ff", 0, 12, 11),
+    7: ("#1a1640", "#03040c", 5000, 10, 26), 8: ("#ff6a28", "#4a1a20", 300, 28, 11), 9: ("#f2fbff", "#5aa2e6", 0, 10, 11),
+    10: ("#ff3aa8", "#3a0a5a", 3000, 10, 20),
+}
+SKY_FACES = (("bk", "SkyboxBk"), ("dn", "SkyboxDn"), ("ft", "SkyboxFt"), ("lf", "SkyboxLf"), ("rt", "SkyboxRt"),
+             ("up", "SkyboxUp"))
+
+
+def sky_ids():
+    """Uploaded skybox image ids, {"1": {"bk": 123, ...}, ...} (sky_ids.json next to this file, if present)."""
+    import json
+    import os
+    p = os.environ.get("SKY_IDS") or os.path.join(os.path.dirname(os.path.abspath(__file__)), "sky_ids.json")
+    if not os.path.exists(p):
+        return {}
+    with open(p) as f:
+        return json.load(f)
+
+
+def sky_attrs(level_id, skin):
+    def c3(h):
+        h = h.lstrip("#")
+        return ("Color3",) + tuple(int(h[i:i + 2], 16) / 255.0 for i in (0, 2, 4))
+    hor, top, stars_, sun, moon = SKY[level_id]
+    a = {"Lt_Sky_StarCount": float(stars_), "Lt_Sky_SunAngularSize": float(sun), "Lt_Sky_MoonAngularSize": float(moon),
+         "Lt_Sky_CelestialBodiesShown": True, "Lt_Atmosphere_Color": c3(hor), "Lt_Atmosphere_Decay": c3(top),
+         "Lt_Atmosphere_Density": 0.05, "Lt_Atmosphere_Offset": 0.25, "ObbySky": skin.key}
+    ids = sky_ids().get(str(level_id), {})
+    for face, prop in SKY_FACES:
+        if ids.get(face):
+            a["Lt_Sky_" + prop] = "rbxassetid://%d" % int(ids[face])
+    return a
+
+
 # ===================================================================== the level
 def build_level(fac, unit_, level_folder, level_id, length, templates):
     import skins
@@ -631,6 +670,7 @@ def build_level(fac, unit_, level_folder, level_id, length, templates):
     for k in [k for k in a if k.startswith("Lt_")]:
         del a[k]
     a.update(skin.light())
+    a.update(sky_attrs(level_id, skin))
     a["ObbyLevelTitle"] = skin.title
     a["ObbyLook"] = "sc%03d" % level_id
     rbxl.set_attrs(level_folder, a)

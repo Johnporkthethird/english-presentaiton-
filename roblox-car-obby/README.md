@@ -21,6 +21,14 @@ Polish pass:
 - Every launch pad in levels 1-10 fires straight down the course. There are no sideways lane-change hops; the tower climbs go straight up beside their tower, and the loop exit steers back into lane on a wide deck. The validator checks this.
 - No flickering surfaces. `generator/polish.py` finds every pair of visible faces that share a plane and overlap (z-fighting), and pushes the decoration (or the smaller face) 0.15 studs clear. Levels 1-10 had 80-1,500 of these each and now have none. The pass runs on all 100 levels.
 
+Skies: each of the ten levels has its own painted skybox (`skies/upload`, 6 faces each, `skies/skies-preview.jpg`
+shows them in the preview), plus its own stars, sun and moon size and a haze tinted to its horizon. The client light
+script (`ObbyWorldLight`) now lets a level carry its own `Lt_Sky_*` set; the lobby and levels 11-100 keep the lobby's
+blue sky. The images still have to be uploaded to Roblox: bulk-import `skies/upload` in Studio's Asset Manager, put the
+ids into `skies/apply_sky_ids.lua` and run it once in the command bar (or send the ids and they go into
+`generator/sky_ids.json` for the build). Every face border of every sky depends on height only, so the faces line up
+whichever way Roblox orders or flips them.
+
 `generator/skins.py` holds the ten themes (every hop target, deck, pad, hoop and moving hazard is drawn by the theme); `generator/showcase.py` holds the set pieces and the level order. Levels 11-100 are still the earlier object-world versions below.
 
 
