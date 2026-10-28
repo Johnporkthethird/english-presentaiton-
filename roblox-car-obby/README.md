@@ -1,33 +1,29 @@
-# Car obby: 100 redesigned levels
+# Car obby: 100 parkour levels
 
-`good-redesigned.rbxl` is the uploaded place with all 100 levels in `ServerStorage.OBBY_POOL` (L001–L100) rebuilt from scratch. The packed boot course in `Workspace` (OBBY1–OBBY10) and `RACING_START.CoursePath` are rebuilt from the new levels 1–10. Nothing outside the levels is touched: scripts, lobby, garage, stadium and UI are unchanged.
+`good-redesigned.rbxl` is the uploaded place with all 100 levels in `ServerStorage.OBBY_POOL` (L001-L100) rebuilt as clean parkour courses. The boot course in `Workspace` (OBBY1-OBBY10) and `RACING_START.CoursePath` are rebuilt from the new levels 1-10. Scripts, lobby, garage, stadium and UI are unchanged.
 
-`levels.json` lists every level's title, world and obstacle sections.
+`levels.json` lists every level's title, style and modules in order.
 
-## What each level is made of
+## How the levels are built
 
-- **25 worlds** (neon city, candy, volcano, glacier, jungle, desert, space, synthwave, ocean, haunted, golden temple, factory, cloud kingdom, crystal cavern, aurora, toxic, sakura, arcade, storm, sunset strip, deep sea, mars, royal, matrix, rainbow). Each world is used four times with different glow colours, scenery mix, time of day and set piece.
-- **34 obstacle sections**: gap jumps, launch-pad island hopping, kicker ramps, big drops, pad tower climbs, zigzag beams, weaving beams, coaster ribbons, banked sweepers, half-pipe, camelback hills, drop-off stairs, spinning bars, swinging hammers, side rams, crushers, timed laser gates, sweeping floor lasers (jump them), crumbling floors, sideways conveyors, black ice, pinball bumpers, sliding bridges, piston wave road, holey turntable, windmill blades, lava causeway, split routes, slalom gates, moving doors, mud bogs, and boost runways.
-- Every level has its own title gate, one landmark set piece, its own lighting (`ObbyLook` + `Lt_*`), and 6–10 checkpoints. No two levels share an obstacle sequence.
+- No scenery. Only the course: two-tone platforms, pillars and cubes with neon trim, one palette per level (10 material styles x 100 hues).
+- Most jumps are exact launch pads (`CarLaunchPad` + `LaunchExact`), so a hop lands in the same place at any car speed. Modules are joined by pad hops that change height, and each level ends on a pillar-hop finale.
+- 28 modules: pillar bounce, cube climb / descent, big-air kicker through hoops, ring drop, windmill launch, loop-de-loop, double loop, barrel roll, wall ride, glass pipe (with a spinning bar), corkscrew, spiral, half-pipe, rotating cross, spinning bridges, sweeper discs, holey turntable, swinging platforms, sliding bridges, piston wave, crushers, laser rhythm gates, laser limbo beam, moving doors, crumbling checkerboard, tilt runs, zigzag beams.
+- Each level has a signature module that appears twice, plus a flight, a rotating, a stunt and a skill module. No two levels share a sequence.
+- Loops, rolls, wall rides, pipes and the corkscrew carry `WallRide`, which is what lets the car controller hold a car on steep and upside-down surfaces.
 
-All mechanics use the systems the place already has: `ObbyHazard` (Knock, Crush, Burn, Zap, Slip, Slow), `PropMotion` rigs (Spin, Hinge, Slide), `ObbyCrumble`, `Conveyor`, exact `CarLaunchPad`s, `BoostStack` strips, `CarObbyCheckpoint` + `CHECKPOINT_FLAG`, and `HazardKill` floors.
-
-Every level keeps its original `Length` and starts and ends on the course centre line at road height, so the WorldRotation / ObbyAssembler shuffle and the stadium placement work exactly as before.
+Every level keeps its original `Length` and starts and ends on the course centre line at road height, so the WorldRotation / ObbyAssembler shuffle and the stadium placement work as before.
 
 ## Rebuilding
 
-The generator is plain Python 3 (`pip install lz4 zstandard numpy`):
+Plain Python 3 (`pip install lz4 zstandard numpy`):
 
 ```bash
 python3 generator/cache.py generator place.rbxl place.pkl
 ```
 
 ```bash
-python3 generator/build.py generator place.pkl out.rbxl
-```
-
-```bash
 EXPORT_DIR=preview python3 generator/build.py generator place.pkl out.rbxl && python3 generator/validate.py preview
 ```
 
-`levels.py` holds the 100 level recipes, `sections.py` the obstacle library, `themes.py` the worlds, and `decor.py` / `landmarks.py` the scenery. `validate.py` checks road under the racing line, jumps at three speeds, line obstructions, checkpoint safety, kill floors and slopes.
+`levels2.py` holds the palettes and recipes, `parkour.py` the module kit, `validate.py` the geometry checks (road under the racing line, every pad flight lands, nothing solid on the line, safe checkpoints, kill floors, slopes).

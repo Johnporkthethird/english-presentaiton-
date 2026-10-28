@@ -14,7 +14,7 @@ from factory import Factory, transform_tree
 from geom import CF, look_frame
 from builder import LevelBuilder, X0, ZC, Y0
 from sections import St, SECTIONS
-import levels
+import levels2
 
 sys.setrecursionlimit(1000000)
 threading.stack_size(512 * 1024 * 1024)
@@ -165,9 +165,6 @@ def main():
     tpl["pad_ref"] = body * CF((0, -0.55 / 2, 0))
     bb = CF.from_prop(boost.find("UniBoostBody").get("CFrame"))
     tpl["boost_ref"] = bb * CF((0, -0.17, 0))
-    sandbox = rbxl.Inst("Folder")
-    max_len = measure(fac, tpl, sandbox)
-    print("section max lengths:", json.dumps({k: round(v) for k, v in sorted(max_len.items())}))
 
     report = []
     for lid in only:
@@ -176,8 +173,9 @@ def main():
         for c in list(lvl.children):
             detach(c)
         length = rbxl.attrs(unit)["Length"]
-        b, used, title, theme = levels.build_level(fac, unit, lvl, lid, length, tpl, max_len)
-        unit.find("CoursePath").set("Value", b.course_path().encode())
+        b, used, title, theme = levels2.build_level(fac, unit, lvl, lid, length, tpl)
+        cpath, cpts = b.course_path_ordered()
+        unit.find("CoursePath").set("Value", cpath.encode())
         n = len(lvl.descendants())
         if EXPORT:
             meta = {"id": lid, "title": title, "theme": theme, "sections": used, "length": length,
@@ -185,7 +183,8 @@ def main():
                     "jumps": [[j[0], [j[1][0] - X0, j[1][1] - Y0, j[1][2] - ZC], [j[2][0] - X0, j[2][1] - Y0, j[2][2] - ZC],
                                j[3], j[4]] for j in b.jumps],
                     "gaps": [[g0 - X0, g1 - X0] for g0, g1 in b.gaps]}
-            export_level(lvl, "%s/L%03d.json" % (EXPORT, lid), b.course_path(), meta)
+            meta["flags"] = "".join(p[3] for p in cpts)
+            export_level(lvl, "%s/L%03d.json" % (EXPORT, lid), cpath, meta)
         report.append({"id": lid, "title": title, "theme": theme, "sections": used, "instances": n,
                        "checkpoints": len(b.cps), "length": length})
         print("L%03d %-22s %-10s %5d inst  %2d cps  %s" % (lid, title, theme, n, len(b.cps), " ".join(used)))

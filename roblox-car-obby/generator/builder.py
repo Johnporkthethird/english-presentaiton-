@@ -48,6 +48,7 @@ class LevelBuilder:
         self.gaps = []        # (x0, x1) stretches flown over (arcs)
         self.jumps = []       # (kind, start, target, H, V) for the validator
         self.notes = []
+        self.ylo, self.yhi = Y0 - 420, Y0 + 420
 
     # ------------------------------------------------------------ raw instances
     def model(self, name, parent, attrs=None):
@@ -337,6 +338,16 @@ class LevelBuilder:
                 self.part("KillSheet", cf, (xb - x, 4, zmax - zmin), (98, 94, 80), parent=self.track, transp=1,
                           collide=False, query=True, touch=True, attrs={"HazardKill": True, "ObbyHazard": "Fall"})
             x = xb
+
+    def course_path_ordered(self):
+        """The racing line in travel order (loops and spirals double back in x)."""
+        out, last = [], None
+        for p in self.path:
+            if last is not None and math.dist(p[:3], last[:3]) < 6:
+                continue
+            out.append(p)
+            last = p
+        return "|".join("%.2f,%.1f,%.1f" % p[:3] for p in out), out
 
     def course_path(self):
         """The racing line: road points, minus any that fall inside a flown arc (an island's far end under

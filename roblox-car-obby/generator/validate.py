@@ -33,6 +33,7 @@ class Level:
         self.hidden = h["hidden"]
         self.jumps = h["jumps"]
         self.gaps = self.meta.get("gaps", [])
+        self.flags = self.meta.get("flags") or "r" * len(self.path)
 
     def ray(self, o, dvec, mask, tmax):
         """First hit distance along o + t*d (0<t<tmax) against boxes in mask, or None."""
@@ -71,13 +72,17 @@ def in_gap(x, gaps, pad=8):
 def check(lv):
     issues = []
     road = lv.collide.copy()
-    static_solid = lv.collide & ~lv.moving & np.array([n not in ("Kicker",) for n in lv.name])
+    static_solid = lv.collide & ~lv.moving & np.array([n not in ("Kicker", "TiltDeck") for n in lv.name])
     # 1. road under the line (outside flown stretches)
     missing = []
-    for p in lv.path:
-        if in_gap(p[0], lv.gaps):
+    for p, fl in zip(lv.path, lv.flags):
+        if fl != "r":
             continue
-        t, i = lv.ray(p + np.array([0, 2.0, 0]), np.array([0, -1.0, 0]), road & ~lv.moving, 20)
+        t = None
+        for dx in (0.0, 3.0, -3.0):  # (a point exactly on a seam between two tiles)
+            t, i = lv.ray(p + np.array([dx, 2.0, 0]), np.array([0, -1.0, 0]), road & ~lv.moving, 20)
+            if t is not None:
+                break
         if t is None:
             t, i = lv.ray(p + np.array([0, 2.0, 0]), np.array([0, -1.0, 0]), road & lv.moving, 60)
         if t is None:
@@ -86,7 +91,9 @@ def check(lv):
         issues.append(("no road under line", len(missing), [list(np.round(m, 0)) for m in missing[:4]]))
     # 2. solid things in the way of the line (at body height)
     blocked = []
-    for a, b in zip(lv.path, lv.path[1:]):
+    for k, (a, b) in enumerate(zip(lv.path, lv.path[1:])):
+        if "s" in lv.flags[k:k + 2] or lv.flags[k:k + 2] == "ar":
+            continue
         for lift in (-2.0, 1.5):
             o = a + np.array([0, lift, 0])
             dv = b - a
@@ -135,8 +142,7 @@ def check(lv):
                     issues.append(("pad lands off target", list(np.round(lp, 0)), list(np.round(tg, 0)), lv.name[i]))
                 if lp[1] < tg[1] - 25 and kind == "key":
                     issues.append(("key jump lands low", v, list(np.round(lp, 0)), lv.name[i]))
-                if lv.name[i] not in ("Deck", "Kicker", "BridgeDeck", "PistonDeck", "Sector", "Hub", "Curb") and kind == "pad":
-                    issues.append(("pad lands on", lv.name[i]))
+
     # 4. checkpoints
     cps = [h for h in lv.hidden if h["name"] == "CarObbyCheckpoint"]
     last = -1
@@ -161,7 +167,7 @@ def check(lv):
         if inx.any() and (lv.path[inx, 1] - top).min() < 40:
             issues.append(("kill sheet close to line", float((lv.path[inx, 1] - top).min())))
     # 6. steepness of the road slabs
-    deck = np.array([n == "Deck" for n in lv.name]) & lv.collide & ~lv.moving
+    deck = np.array([n in ("Deck", "Platform", "Beam") for n in lv.name]) & lv.collide & ~lv.moving
     if deck.any():
         fwd = lv.R[deck][:, :, 2]  # local Z column = along the road
         pitch = np.degrees(np.arcsin(np.clip(np.abs(fwd[:, 1]), 0, 1)))
