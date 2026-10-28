@@ -1,5 +1,25 @@
 # Car obby: 100 object-world levels
 
+## Showcase build: levels 1-10 (awaiting approval)
+
+Levels 1-10 (the boot course, `Workspace.OBBY1`-`OBBY10`) are now ten hand-designed themed levels, each with 6-7 set pieces drawn in its theme, Roblox's textured materials instead of flat plastic, and themed structures under every deck. `showcase-preview.jpg` shows one set piece from each.
+
+| # | Level | Theme | Set pieces |
+|---|-------|-------|------------|
+| 1 | Sugar Rush | Candy land | Gumdrop climb, candy-cane sweepers on cookies, lollipop turntable, frosted donut loop, licorice conveyors, chocolate crumble |
+| 2 | Drive Thru | 50s diner | Burger & fries hops, ketchup & mustard gates, rolling pickle, swinging spatulas, burger presses, milkshake tower, grill conveyors |
+| 3 | Spore Springs | Glowing mushroom forest | Toadstool hops, hollow log, swinging leaves, giant mushroom climb, spore-ring drop, puffball field, bark bridges |
+| 4 | Checkmate | Chess board | Rook hops, sliding castle walls, pawn crushers, rotating chessboard, sceptre sweepers, knight jumps |
+| 5 | Tick Tock | Clockwork | Gear climb, clock-hand sweepers, brass pendulums, clock tower, gear-tooth pistons, cog bridges |
+| 6 | Toy Box | Toy box | Alphabet block steps, spinning tops, domino path, toy swings, hula-hoop leap, sliding brick walls |
+| 7 | Orbit | Outer space | Planet hops, satellite bridges, asteroid field, ring loop, moonshot, meteor drop |
+| 8 | Eruption | Volcano | Obsidian descent, lava geysers, crumbling crust, flame sweepers, magma pistons, caldera drop (over a lava sea) |
+| 9 | Frostbite | Ice and snow | Snowflake hops, ice rink, icicle crushers, glacier wall ride, snowflake bridges, snowman slalom |
+| 10 | High Score | Neon arcade | Coin lanes, pinball bumpers, laser rhythm, pixel path, neon loop, equaliser bars, invader walls |
+
+`generator/skins.py` holds the ten themes (every hop target, deck, pad, hoop and moving hazard is drawn by the theme); `generator/showcase.py` holds the set pieces and the level order. Levels 11-100 are still the earlier object-world versions below.
+
+
 `good-redesigned.rbxl` is the uploaded place with all 100 levels in `ServerStorage.OBBY_POOL` (L001-L100) rebuilt as clean parkour courses. The boot course in `Workspace` (OBBY1-OBBY10) and `RACING_START.CoursePath` are rebuilt from the new levels 1-10. Scripts, lobby, garage, stadium and UI are unchanged.
 
 `levels.json` lists every level's title, style and modules in order.

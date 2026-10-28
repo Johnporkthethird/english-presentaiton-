@@ -13,8 +13,8 @@ import rbxl
 from factory import Factory, transform_tree
 from geom import CF, look_frame
 from builder import LevelBuilder, X0, ZC, Y0
-from sections import St, SECTIONS
 import levels3
+import showcase
 
 sys.setrecursionlimit(1000000)
 threading.stack_size(512 * 1024 * 1024)
@@ -22,6 +22,7 @@ threading.stack_size(512 * 1024 * 1024)
 POS_ATTR = {"CheckpointCFrame"}
 import os
 EXPORT = os.environ.get("EXPORT_DIR")
+SHOWCASE = set(range(1, 11))
 INDEX_ATTR = {"CheckpointIndex", "CpIndex"}
 
 
@@ -35,24 +36,6 @@ def detach(inst):
     if inst.parent is not None:
         inst.parent.children.remove(inst)
         inst.parent = None
-
-
-def measure(fac, templates, sandbox):
-    """Longest x-length each section type has produced over many seeds and difficulties."""
-    out = {}
-    theme, _ = levels.theme_for(1)
-    for key, fn in SECTIONS.items():
-        mx = 0
-        for s in range(40):
-            rng = random.Random(s * 31 + 7)
-            b = LevelBuilder(fac, sandbox, theme, rng, 99999, templates)
-            st = St(X0, Y0, ZC, 60, ZC)
-            fn(b, st, (s % 5) / 4.0, rng)
-            mx = max(mx, st.x - X0)
-            for c in list(sandbox.children):
-                detach(c)
-        out[key] = mx
-    return out
 
 
 def place_slot(fac, unit, slot, x0):
@@ -98,6 +81,7 @@ def export_level(lvl, path, course, meta):
     out = []
     names = {}
     hidden = []
+    texs = []
     for d in lvl.descendants():
         if not is_basepart(d):
             continue
@@ -133,19 +117,30 @@ def export_level(lvl, path, course, meta):
         hz = 1 if "ObbyHazard" in rbxl.attrs(d) else 0
         c = d.get("Color3uint8")
         r = cf.rows()
+        ti = 0
+        for ch in d.children:
+            if ch.cls == "Texture" and ch.get("Face") == 1:
+                uri = ch.get("TextureContent")[1].split(b"//")[-1]
+                c3 = ch.get("Color3")
+                key = ({b"100230810419170": 1, b"118286778245825": 2, b"10025395487": 3}.get(uri, 4),
+                       round(ch.get("StudsPerTileU"), 2),
+                       (int(c3[0] * 255) << 16) | (int(c3[1] * 255) << 8) | int(c3[2] * 255), round(ch.get("Transparency"), 2))
+                if key not in texs:
+                    texs.append(key)
+                ti = texs.index(key) + 1
         nm = d.name
         if nm not in names:
             names[nm] = len(names)
         out.append([kind, round(cf.p[0] - X0, 1), round(cf.p[1] - Y0, 1), round(cf.p[2] - ZC, 1)] +
                    [round(v, 3) for v in r] + [round(v, 2) for v in d.get("size")] +
                    [(c[0] << 16) | (c[1] << 8) | c[2], d.get("Material"), round(tr, 2), moving, hz,
-                    1 if d.get("CanCollide") else 0, names[nm]])
+                    1 if d.get("CanCollide") else 0, names[nm], ti, round(d.get("Reflectance", 0.0), 2)])
     pts = []
     for q in course.split("|"):
         x, y, z = (float(v) for v in q.split(","))
         pts.append([round(x - X0, 1), round(y - Y0, 1), round(z - ZC, 1)])
     with open(path, "w") as f:
-        json.dump({"meta": meta, "parts": out, "path": pts, "names": list(names)}, f, separators=(",", ":"))
+        json.dump({"meta": meta, "parts": out, "path": pts, "names": list(names), "texs": [list(t) for t in texs]}, f, separators=(",", ":"))
     with open(path.replace(".json", ".hidden.json"), "w") as f:
         json.dump({"hidden": hidden, "jumps": meta.get("jumps", [])}, f, separators=(",", ":"))
 
@@ -181,17 +176,20 @@ def main():
         for c in list(lvl.children):
             detach(c)
         length = rbxl.attrs(unit)["Length"]
-        b, used, title, theme = levels3.build_level(fac, unit, lvl, lid, length, tpl)
+        builder_ = showcase.build_level if lid in SHOWCASE else levels3.build_level
+        b, used, title, theme = builder_(fac, unit, lvl, lid, length, tpl)
         cpath, cpts = b.course_path_ordered()
         unit.find("CoursePath").set("Value", cpath.encode())
         n = len(lvl.descendants())
         if EXPORT:
-            meta = {"id": lid, "title": title, "theme": theme, "sections": used, "length": length,
+            meta = {"id": lid, "title": title, "theme": theme, "theme_name": getattr(getattr(b, "skin", None), "theme_name", theme), "sections": used, "length": length,
                     "light": {k: v for k, v in rbxl.attrs(lvl).items() if k.startswith("Lt_")},
                     "jumps": [[j[0], [j[1][0] - X0, j[1][1] - Y0, j[1][2] - ZC], [j[2][0] - X0, j[2][1] - Y0, j[2][2] - ZC],
                                j[3], j[4]] for j in b.jumps],
                     "gaps": [[g0 - X0, g1 - X0] for g0, g1 in b.gaps]}
             meta["flags"] = "".join(p[3] for p in cpts)
+            meta["pieces"] = [[lab, [lo[0] - X0, lo[1] - Y0, lo[2] - ZC], [hi[0] - X0, hi[1] - Y0, hi[2] - ZC]]
+                              for lab, lo, hi in getattr(b, "pieces", [])]
             export_level(lvl, "%s/L%03d.json" % (EXPORT, lid), cpath, meta)
         report.append({"id": lid, "title": title, "theme": theme, "sections": used, "instances": n,
                        "checkpoints": len(b.cps), "length": length})
