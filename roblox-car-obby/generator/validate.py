@@ -125,9 +125,9 @@ def check(lv):
         f[1] = 0
         D = float(np.linalg.norm(f))
         f = f / max(D, 1e-6)
-        speeds = [H] if kind == "pad" else [90.0, 115.0, 160.0]
+        speeds = [H] if kind == "pad" else [70.0, 130.0, 200.0] if kind == "drop" else [90.0, 115.0, 160.0]
         for v in speeds:
-            up = V if kind == "pad" else 140.0
+            up = V if kind == "pad" else 0.0 if kind == "drop" else 140.0
             pos = s + np.array([0, 3.0, 0])
             vel = f * v + np.array([0, up, 0])
             landed = None

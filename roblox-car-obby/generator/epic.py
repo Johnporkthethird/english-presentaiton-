@@ -12,7 +12,7 @@ def build_level(fac, unit_, level_folder, level_id, length, templates):
     import skins
     import journey_skins  # noqa: F401
     import epic_skins  # noqa: F401
-    import epic_levels
+    import rush_levels as epic_levels
     skin = skins.SKINS[level_id]()
     pal = skin.pal()
     rng = random.Random(91000 + level_id * 1301)
@@ -44,6 +44,17 @@ def build_level(fac, unit_, level_folder, level_id, length, templates):
     used = epic_levels.LEVELS[level_id](r, skin, rng)
     # home: arrive on the centre line heading down the course
     end = (X1 - 110, Y0, ZC)
+    import rush
+    k = 0
+    while X1 - 110 - r.p[0] > 760 and k < 6:
+        # keep the beats coming all the way home: aim at the finish and jump again
+        rush.aim(r, "Home Bend %d" % (k + 1), length - 110, 0.0, R=100, limit=60)
+        dy = max(-60.0, min(60.0, (Y0 - r.p[1]) * 0.6))
+        rush.kick(r, "Home Jump %d" % (k + 1), 250, dy, rings=2 + k % 3, mill=(k % 3 == 1))
+        if X1 - 110 - r.p[0] > 900:
+            rush.gauntlet(r, "Home Run %d" % (k + 1), 180, epic_levels.FINAL[level_id][k % 2:] + epic_levels.FINAL[level_id][:k % 2],
+                          every=70)
+        k += 1
     if math.dist(r.p, end) > 1:
         r.connect("Final Dash", end, (1, 0, 0), w1=72)
         L = sum(math.dist(a, c) for a, c in zip(r.last[0], r.last[0][1:]))

@@ -2,34 +2,29 @@
 
 ## Showcase build: levels 1-10 (awaiting approval)
 
-Levels 1-10 (the boot course, `Workspace.OBBY1`-`OBBY10`) are ten big themed journeys. A level is no longer a line down
-the course: the route winds across a 5,400 by 2,500 stud area, turns back on itself, spirals up and round giant
-landmarks, crosses over its own track, and climbs and dives by 300-450 studs. Each level is 9,000-16,000 studs of
-driving with its own shape and its own centrepiece. Road widths run from 12-stud tightropes to 260-stud arenas.
-`showcase-preview.jpg` shows every level from above and up close.
+Levels 1-10 (the boot course, `Workspace.OBBY1`-`OBBY10`) are non-stop jump levels: no long roads. Every level is a run
+of short beats (a ramp jump through rings onto a downhill landing ramp, a drop cascade, a bounce up onto a mushroom or a
+cake, quick island hops, a short gauntlet of sweepers, crushers or lasers, a windmill whose blades sweep through the
+flight, loops, wall rides, tubes). Each level has its own shape, length, height profile and look.
+`showcase-preview.jpg` shows three driver's-eye moments from each.
 
-| # | Level | Shape | Journey |
-|---|-------|-------|---------|
-| 1 | Sugar Rush | Spiral up a mountain | Sprinkle stampede; spiral up a giant three-tier cake past cake-knife sweepers; macaron towers; candle-flame crown; cherry leap off the top; candy-cane slide; licorice tightrope; gingerbread launch; wafer floor; lollipop spiral; donut loop; gumdrop bumpers |
-| 2 | Drive Thru | Zig-zag legs | Drive-thru lane; conveyor grill; patty smashers; fry-forest hops; plate spinners; 1.5 laps up a giant burger; spatula catapult; milkshake spiral down; straw tightrope; salt and pepper rush; rolling pin |
-| 3 | Spore Springs | Up a giant tree | Hollow trunk; glowroot cavern; shelf-fungus spiral up the Great Tree past swinging leaves; canopy cap hops round the crown; vine tightrope; rolling log; leaf slide; spore bumpers; puffball field |
-| 4 | Checkmate | Board, then castle | Pawn stampede; knight's-tour L-hops across a giant chessboard; grand board rotors; switchbacks up the castle wall; battlements; drawbridge leap; tower stair down |
-| 5 | Tick Tock | Round a clock face | Gear steps; escapement pistons; a lap of a giant clock's rim with the minute hand sweeping across it; cuckoo leap; pendulum hall; mainspring spiral; cog bridges; gear teeth; balance wheel |
-| 6 | Toy Box | Track that crosses itself | Big banked loop over the start straight; crossover bridge; track loop; wall ride; block tower; spring launcher; domino crushers; playground slide; toy-train crossing; toy bumpers |
-| 7 | Orbit | Planet to planet | Launch tube; a ring road round Mars; slingshot; ring-shard hops round a ringed planet; comet dive; station spin; zero-g tube; ring loop |
-| 8 | Eruption | Down a canyon and out | Switchbacks down into a lava canyon; lava river road; obsidian stones; magma chamber; crumbling crust; geyser blast; lava pistons; lava fall |
-| 9 | Frostbite | Summit, then hairpins | Spiral up an ice spire; ski jump; four hairpins down the mountain past crushers, swings and sweepers; ice cavern; frozen lake; avalanche; icicle crushers |
-| 10 | High Score | Neon maze | Coin slot; a right-angle neon maze with sliding doors; pinball table; plunger launch; tetris-stack hops; neon loop; joystick spiral; laser grid |
+| # | Level | Idea |
+|---|-------|------|
+| 1 | Sugar Rush | Sugar Avalanche: fired onto a giant cake, then a candy downhill of jumps, drops and gumdrop hops (an S) |
+| 2 | Drive Thru | Kitchen Chaos: flat out in right angles: belts, smashers, burger hops, a bun bounce, frying-pan drops |
+| 3 | Spore Springs | Bounce Forest: up and down all the way: mushroom bounces, cap dives, toadstool hops (an organic weave) |
+| 4 | Checkmate | Knight Moves: L-shaped knight hops between towers over a giant board, rook sliders, a crumbling board |
+| 5 | Tick Tock | Clock Tower Drop: launched up, then jumping down round a clock tower in a square spiral |
+| 6 | Toy Box | Stunt Track: kickers through rings, two loops, two wall rides, a tube, banked hairpins |
+| 7 | Orbit | Moon Jumps: a few huge floaty leaps between planets through long rows of rings |
+| 8 | Eruption | Meltdown: drop after drop into a lava canyon, then a geyser blasts you out |
+| 9 | Frostbite | Avalanche Run: shot to the summit, then ski jumps straight down the mountain |
+| 10 | High Score | Rhythm Rush: rapid-fire short hops on a narrow neon track in a square wave, laser gates between |
 
-- `generator/route.py` lays a route in any direction: straights, banked turns, spirals round a centre, rollers, smooth
-  connectors, pad jumps and hop chains. Any older set piece (built along +X) is built in place and turned to the
-  route's heading, with its pads, checkpoints and racing line.
-- Every launch pad still fires straight at its landing; the validator checks each pad's direction against its jump.
-- `generator/epic_levels.py` has the ten routes, `generator/epic_marks.py` the giant landmarks,
-  `generator/epic_kit.py` the new set pieces (rotor arenas, sliding-block lanes, piston seas, crumble floors, bumper
-  fields, turntables, wide conveyors) and obstacles that sit on any road, `generator/epic.py` the level assembly.
-- Every level stays inside its own X box (the next level starts there) and starts and ends on the course centre line, so
-  the shuffle and the stadium still line up. Fall triggers sit on a grid under the lowest road nearby.
+- `generator/rush.py` has the beats, `generator/rush_levels.py` the ten levels, `generator/route.py` lays them in any
+  direction, `generator/epic_marks.py` the giant landmarks, `generator/epic_kit.py` the arenas and obstacles.
+- Every jump is an exact launch pad that fires straight at its landing (the drawn kicker ramp never collides).
+- Every level stays inside its own X box and starts and ends on the course centre line, so the shuffle still works.
 - `generator/polish.py` removes every pair of overlapping coplanar faces (the flicker). Levels 11-100 are still the
   earlier object-world versions below.
 

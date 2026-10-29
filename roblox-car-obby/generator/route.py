@@ -370,7 +370,7 @@ def _pad_any(b, src, tgt, apex=None, rings=0):
 
 
 # ===================================================================== checks
-def overlaps(route, clear=34.0, gap_seg=1):
+def overlaps(route, clear=34.0, gap_seg=2):
     """Pairs of route segments (and landmarks) that crowd each other: closer in plan than their half widths plus a
     margin while less than `clear` apart in height."""
     b = route.b
