@@ -164,6 +164,36 @@ def candy_cane(b, base, h, d, lean=0.0, yaw=0.0):
         B(b, "CaneHook", q, d * 1.04, (225, 30, 50) if k % 2 else (255, 255, 255))
 
 
+def big_cupcake(b, base, h, col, rng, liner=(255, 255, 255)):
+    """A standing cupcake landmark: a tapered pleated paper case, a domed sponge top, three swirls of frosting,
+    sprinkles and a cherry. base = bottom centre, h = total height."""
+    x, y, z = base
+    R = h * 0.36
+    hc = h * 0.42
+    n = 6
+    for k in range(n):
+        t = (k + 0.5) / n
+        C(b, "Liner", (x, y + hc * t, z), hc / n + 0.05, 2 * R * (0.78 + 0.22 * t), liner)
+    m = 20
+    for k in range(m):
+        a = TAU * k / m
+        rr = R * 0.9
+        P(b, "Pleat", CF((x + math.cos(a) * rr, y + hc / 2, z + math.sin(a) * rr)) * rot_y(-a), (2.6, hc, R * 0.16), col)
+    C(b, "CakeTop", (x, y + hc + 6, z), 12, 2 * R * 1.04, (214, 160, 100))
+    for i, (dy, k_) in enumerate(((0.10, 1.0), (0.22, 0.78), (0.33, 0.52))):
+        ell(b, "Frosting", (x, y + hc + h * dy, z), (2 * R * k_, h * 0.16, 2 * R * k_),
+            mix(col, (255, 255, 255), 0.45 + 0.12 * i), parent=b.scenery)
+    B(b, "Cherry", (x, y + hc + h * 0.47, z), h * 0.11, (210, 20, 40), refl=0.2)
+    C(b, "CherryStem", (x + 3, y + hc + h * 0.55, z), h * 0.08, 1.6, (90, 140, 40))
+    for k in range(30):
+        a = rng.random() * TAU
+        e = rng.uniform(0.15, 0.95)
+        rr = R * 0.98 * e
+        yy = y + hc + h * (0.10 + 0.2 * (1 - e))
+        P(b, "Sprinkle", CF((x + math.cos(a) * rr, yy + h * 0.06, z + math.sin(a) * rr)) * rot_y(rng.random() * 3),
+          (h * 0.04, 1.2, h * 0.012), rng.choice([(255, 90, 140), (90, 200, 255), (255, 220, 80), (140, 230, 120)]))
+
+
 def lollipop(b, base, h, d, col, rng):
     x, y, z = base
     C(b, "LollyStick", (x, y + h / 2, z), h, d * 0.07 + 2, (255, 255, 255))

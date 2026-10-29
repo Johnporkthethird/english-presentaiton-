@@ -46,6 +46,17 @@ def build(r, sk, rng):
                                         M.ghost(b, (c[0] - 260, Y0 + 80, c[2] - 60), 13, S[10].NEON[0])))
     slot("spire", 160, 260, lambda c: M.obsidian_spire(b, c, 250, 40, S[8]))
     slot("canes", 300, 260, lambda c: (M.candy_cane(b, (c[0] - 80, Y0, c[2]), 200, 16), M.lollipop(b, (c[0] + 80, Y0, c[2]), 160, 90, (255, 120, 170), rng)))
+    import rush2 as R2
+    slot("cupcake", 260, 300, lambda c: M.big_cupcake(b, c, 280, (255, 140, 185), rng))
+    slot("ketchup", 160, 330, lambda c: M.ketchup(b, c, 60, 320))
+    slot("bounce mushroom", 260, 360, lambda c: M.giant_mushroom(b, c, 230, 150, (150, 70, 210), rng))
+    slot("great tree", 700, 800, lambda c: M.great_tree(b, c, 60, Y0, Y0 + 480, rng, S[3]))
+    slot("castle", 420, 380, lambda c: M.castle(b, c, 260, 200, 260, rng))
+    slot("ufo", 160, 120, lambda c: R2.ufo(b, b.model("UFO", b.scenery), (c[0], Y0 + 60, c[2])))
+    slot("gear", 380, 380, lambda c: M.gear(b, (c[0], Y0 + 180, c[2]), 160, (0, 0, 1), S[5].BRASS))
+    slot("snowball", 100, 100, lambda c: (R2.ball(b, "Snowball", (c[0], Y0 + 15, c[2]), 30, (245, 250, 255), "Snow", b.scenery),
+                                          R2.ball(b, "SnowballLump", (c[0] + 2, Y0 + 25, c[2] + 3), 15, (245, 250, 255), "Snow", b.scenery)))
+    slot("crater", 900, 400, lambda c: R2.crater(b, (c[0], Y0, c[2]), 340, Y0, Y0 + 300, rng, gap=(0, 0, 1), gap_deg=40))
     for i in range(1, 11):
         slot("plat%d" % i, 120, 80, lambda c, i=i: S[i].plat(b, (c[0], Y0 + 60, c[2]), 60, rng))
     return out

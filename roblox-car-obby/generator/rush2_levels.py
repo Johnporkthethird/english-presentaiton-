@@ -74,7 +74,7 @@ def sugar_rush(r, sk, rng):
     pal = [(255, 120, 170), (120, 220, 200), (255, 210, 90), (170, 140, 255), (255, 150, 90)]
     R2.dress(r, [(lambda b_, c, g: M.lollipop(b_, c, g.uniform(260, 380), g.uniform(110, 160), g.choice(pal), g), 80, 420),
                  (lambda b_, c, g: M.candy_cane(b_, c, g.uniform(280, 380), 26, yaw=g.random() * 6), 50, 400),
-                 (lambda b_, c, g: sk.cupcake(b_, add(c, (0, 160, 0)), 150, g), 90, 260)], 18, rng)
+                 (lambda b_, c, g: M.big_cupcake(b_, c, g.uniform(240, 320), g.choice(pal), g), 120, 320)], 18, rng)
     r.log("end")
     return ["Frosting Spiral", "Sprinkle Sprint", "Mega Ramp", "Candy Cane Slalom", "Gumball Drop", "Wafer Leap",
             "Donut Drop"]
