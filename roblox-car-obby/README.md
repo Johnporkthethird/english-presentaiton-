@@ -11,14 +11,14 @@ workspace attribute `ObbyDefaultCourse = "course1"`. Delete that attribute (or r
 ## Levels 1-10: the Mechanical Playground
 
 Levels 1-10 form one long course in the sky, built from dark steel machinery. The roads are coloured, with hazard stripes,
-glowing boost strips, gears and pistons. Each stage has its own accent colour, and huge rings, gears, towers and robot
-arms stand around it. The ten course slots run straight into each other:
+glowing boost strips, gears and pistons. Each stage has its own accent colour. There is no background scenery: only the
+track and its machines. The ten course slots run straight into each other:
 
 | Stage | Name | What is in it |
 |-------|------|---------------|
 | 1 | Launch Runway | A wide runway with boost lanes and gantries, then a giant ramp through a suspended ring. You land on one of three routes: the central landing, a high narrow line (full speed only) or a low road that pads back up. Then an enclosed hammer corridor with crushers, swinging side hammers, overhead punches and sweeping arms, and its S-bend second hall. |
 | 2 | Collapsing Highway | Tilting spans, a span that slides away and back, a falling tile span, and rolling spans on curves. A three-way split: the centre has spin gates and a turntable, the narrow right side is faster, and the lower left route has shaky tiles and a pad back up. |
-| 3 | The Loop | A long acceleration ramp into a giant vertical loop with turning rings round it. A bypass goes round it. A high shortcut fires you diagonally through the middle of the loop, with a recovery deck under it. Then the airborne sequence: a ramp up onto a sky deck, a long gap over turning propeller beams, and a split landing. The lower right deck leads by a precision hop to a hidden ledge that cuts the corner. |
+| 3 | The Loop | A long acceleration ramp into a giant vertical loop. A bypass goes round it. A high shortcut fires you diagonally through the middle of the loop, with a recovery deck under it. Then the airborne sequence: a ramp up onto a sky deck, a long gap, and a split landing. The lower right deck leads by a precision hop to a hidden ledge that cuts the corner. |
 | 4 | Crusher Works | An enclosed machine hall with crusher plates that slam together, lane walls that rise from the floor, floors that slide away, grinders on a reverse conveyor and a piston hall. An exit tunnel leads onto a launch ramp. Then a magnet crane carries the car over the void, and a fast belt runs under a row of presses. |
 | 5 | Bridge Works | A swing span that turns half round, a sectional bridge of four quarter-turn sections, and a crossroads turntable. When the turntable stands at 90 degrees it lines up with a side spur, which is a safer way past everything. Also a see-saw bridge, a gear turntable, a pendulum ferry, a tilt gauntlet, and a lower route of small spinning platforms. |
 | 6 | Demolition Yard | Wrecking balls of every size: across the road, down one lane, and huge slow ones on tall frames. A pair swings in opposite directions, then a wide escape ramp. A littered scrap heap, a drop, and a launch. Broken barriers and chains everywhere. |

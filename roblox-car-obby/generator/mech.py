@@ -274,7 +274,6 @@ def landing(b, a, f, w, L, col=None):
     return r
 
 
-# ===================================================================== backdrop: huge machinery far off the route
 def big_ring(b, c, R, axis, col, spin=0.03):
     rig = SC.spin(b, c, axis, spin, 0.0, "RingSpin") if spin else b.scenery
     ringz(b, c, R, STEEL, "Metal", th=12.0, axis=axis, parent=rig, name="IndustrialRing")
@@ -289,51 +288,6 @@ def big_ring(b, c, R, axis, col, spin=0.03):
         Pt(b, "RingClamp", CF(q, a, d, cross(a, d)), (16, 14, 16), HAZ_K, "Metal", rig)
 
 
-def stack_tower(b, base, h, rng, col):
-    y = base[1]
-    k = 0
-    while y < base[1] + h:
-        s = rng.uniform(60, 110)
-        t = rng.uniform(14, 26)
-        box(b, "TowerSlab", (base[0] + rng.uniform(-10, 10), y + t / 2, base[2] + rng.uniform(-10, 10)), (s, t, s),
-            STEEL if k % 2 else STEEL_DK, "DiamondPlate", yaw=rng.random() * 3)
-        if k % 3 == 0:
-            box(b, "TowerGlow", (base[0], y + t + 1, base[2]), (s * 0.7, 2, s * 0.7), col, "Neon")
-        cyl(b, "TowerCore", (base[0], y + t + 10, base[2]), 20, 16, STEEL_LT, "Metal")
-        y += t + 20
-        k += 1
-
-
-def mech_arm(b, base, h, col, rng):
-    x, y, z = base
-    cyl(b, "ArmBase", (x, y + 12, z), 24, 50, STEEL_DK, "Metal")
-    a1 = (x, y + 24, z)
-    yaw = rng.random() * TAU
-    d1 = unit((math.cos(yaw) * 0.5, 1.0, math.sin(yaw) * 0.5))
-    e1 = add(a1, mul(d1, h * 0.55))
-    d2 = unit((math.cos(yaw), -0.3, math.sin(yaw)))
-    e2 = add(e1, mul(d2, h * 0.45))
-    for (p, q, th) in ((a1, e1, 16), (e1, e2, 12)):
-        cyl(b, "ArmSeg", R2.lerp3(p, q, 0.5), math.dist(p, q), th, col, "SmoothPlastic", axis=unit(sub(q, p)))
-        ball(b, "ArmJoint", q, th + 6, STEEL, "Metal")
-    for k in (-1, 1):
-        Pt(b, "ArmClaw", CF(add(e2, (0, -10, k * 8))), (4, 20, 4), STEEL_LT, "Metal", b.scenery)
-
-
-def backdrop(r, rng, col, n=7):
-    """Huge machinery round the section, measured so none of it reaches the route."""
-    makers = [
-        (lambda b_, c, g: big_ring(b_, add(c, (0, 420, 0)), g.uniform(140, 220), unit((g.uniform(-1, 1), 0.3, g.uniform(-1, 1))),
-                                   col, spin=g.choice([0.02, -0.03, 0.04])), 240, 700),
-        (lambda b_, c, g: stack_tower(b_, c, g.uniform(500, 800), g, col), 70, 800),
-        (lambda b_, c, g: big_gear(b_, add(c, (0, 500, 0)), g.uniform(120, 200), g.choice([(1, 0, 0), (0, 0, 1)]),
-                                   g.choice([STEEL_LT, col]), spin=g.choice([0.03, -0.04])), 220, 720),
-        (lambda b_, c, g: mech_arm(b_, c, g.uniform(400, 600), col, g), 200, 650),
-    ]
-    R2.dress(r, makers, n, rng, near=500, far=1300, ground=Y0 - 700)
-
-
-# ===================================================================== 1. launch runway + 2. hammer corridor
 def slot1(r, sk, rng):
     b = r.b
     sk.title = "Launch Runway"
@@ -426,7 +380,6 @@ def slot1(r, sk, rng):
     r.along(crusher_v, [90, 200], i0=5)
     _corridor_shell(r, 0, 80, rng)
     road(r, "Hammer Exit", 160, w=80, dy=15, boosts=2, every=50, arrows_at=(80,))
-    backdrop(r, rng, ACC["hammer"], n=6)
     r.log("end")
     return ["Launch Runway", "Giant Ramp", "High Line", "Low Road", "Hammer Corridor", "Hammer Bend"]
 
@@ -597,7 +550,6 @@ def slot2(r, sk, rng):
     road(r, "Return Pier 3", 60, w=70)
     r.turn("Return Straighten", 50, 400, rails=True)
     R2.lay_strips(r, 60, 300, every=80, lanes=2)
-    backdrop(r, rng, ACC["highway"], n=6)
     r.log("end")
     return ["Collapsing Highway", "Tilting Span", "Retracting Span", "Falling Span", "Three-Way Split"]
 
@@ -671,13 +623,6 @@ def slot3(r, sk, rng):
     road(r, "Loop Plaza", 420, w=PW, cp=True, arrows_at=(60, 300))
     plaza0 = sub(r.p, mul(r.f, 420))
     pz = plaza0[2]
-    # rotating rings and gears round the loop (a landmark from everywhere); they cross the road level only in the
-    # gap between the entry and exit lanes
-    big_ring(b, hc, 178, (0, 0, 1), ACC["loop"], spin=0.03)
-    big_ring(b, hc, 150, (0, 0, 1), (255, 255, 255), spin=-0.02)
-    for s_ in (-1, 1):
-        stack_tower(b, (hc[0] + s_ * 380, Y0 - 700, hc[2] - 560), 900, rng, ACC["loop"])
-        big_gear(b, (hc[0] + s_ * 120, hc[1] + 60, hc[2] - 330), 90, (0, 0, 1), STEEL_LT, spin=0.05 * s_)
     # ---- the bypass (left), for a car that would rather not loop: round the loop's legs and onto the plaza
     al = Alt(r, add(fork_end, mul(rt, -60)), f, 40, B=230.0)
     accent(b, (200, 160, 255))
@@ -746,7 +691,6 @@ def slot3(r, sk, rng):
     r.turn("Loop Run-Out", 26, 400, rails=True)
     R2.lay_strips(r, 30, 150, every=60, lanes=2)
     r.turn("Loop Run-Out 2", -26, 400, rails=True)
-    backdrop(r, rng, ACC["loop"], n=5)
     air_sequence(r, rng)
     r.log("end")
     return ["Acceleration Ramp", "Giant Loop", "Bypass", "Hole Shortcut", "Recovery Deck", "Sky Ramps", "Split Landing",
@@ -756,32 +700,6 @@ def slot3(r, sk, rng):
 def last_len(r):
     pts = r.last[0]
     return sum(math.dist(a_, c_) for a_, c_ in zip(pts, pts[1:]))
-
-
-def spin_beams(b, c, f, R, col, speed=0.18):
-    """A huge propeller of steel beams turning in the gap under the flights."""
-    rig = SC.spin(b, c, f, speed, 0.0, "BeamSpin")
-    rt = right_of(f)
-    for k in range(3):
-        a = TAU * k / 3
-        d = add(mul(rt, math.cos(a)), (0, math.sin(a), 0))
-        q = add(c, mul(d, R / 2))
-        Pt(b, "SpinBeam", CF(q, *_axes(d)), (8, 8, R), col if k == 0 else STEEL, "Metal", rig)
-    cyl(b, "BeamHub", c, 14, 22, STEEL_LT, "Metal", rig, axis=f)
-    for s_ in (-1, 1):
-        q = add(c, mul(rt, s_ * (R + 30)))
-        cyl(b, "BeamPylon", (q[0], (q[1] + Y0 - 600) / 2, q[2]), q[1] - (Y0 - 600), 12, STEEL_DK, "Metal", b.scenery)
-        Pt(b, "BeamAxle", CF(R2.lerp3(q, c, 0.5), *_axes(rt)), (6, 6, R + 30), STEEL, "Metal", b.scenery)
-
-
-def float_rings(b, c, f, rng, col, n=3):
-    """Rings floating beside and above a flight (not in its way), turning slowly."""
-    rt = right_of(f)
-    for k in range(n):
-        side = (-1) ** k * rng.uniform(150, 220)
-        q = add(c, add(mul(rt, side), add(mul(f, rng.uniform(-120, 120)), (0, rng.uniform(40, 140), 0))))
-        ax = unit(add(f, add(mul(rt, rng.uniform(-0.6, 0.6)), (0, rng.uniform(-0.3, 0.3), 0))))
-        big_ring(b, q, rng.uniform(45, 75), ax, col, spin=rng.choice([0.04, -0.05, 0.06]))
 
 
 def air_sequence(r, rng):
@@ -796,19 +714,14 @@ def air_sequence(r, rng):
         gantry(b, r.ahead(d - 160), r.f, 80, h=40)
     R2.ramp_jump(r, "Sky Ramp", deg=24, drop=20, w_land=90, slope=2, land_min=280, cp=True)
     kind, lip, tgt, H, V = [j for j in b.jumps if j[0] == "ramp"][-1]
-    float_rings(b, R2.lerp3(lip, tgt, 0.5), r.f, rng, col)
     Lr = last_len(r)
     r.along(sweep_arm, [Lr - 60], i0=0)
     road(r, "Sky Deck", 70, w=80, boosts=3, every=30, arrows_at=(40,))
     f = r.f
     rt = right_of(f)
 
-    def gap(b_, lip_, a0, f_, w_):
-        spin_beams(b_, add(R2.lerp3(lip_, a0, 0.45), (0, -150, 0)), f_, 120, col)
-        spin_beams(b_, add(R2.lerp3(lip_, a0, 0.8), (0, -140, 0)), f_, 110, (255, 255, 255), speed=-0.22)
-    R2.ramp_jump(r, "Long Gap", deg=22, drop=60, w_land=70, slope=3, land_min=330, cp=True, gap_fn=gap)
+    R2.ramp_jump(r, "Long Gap", deg=22, drop=60, w_land=70, slope=3, land_min=330, cp=True)
     kind, lip, tgt, H, V = [j for j in b.jumps if j[0] == "ramp"][-1]
-    float_rings(b, R2.lerp3(lip, tgt, 0.5), f, rng, (255, 255, 255))
     Lr = last_len(r)
     land0 = sub(r.p, mul(f, Lr))
     # ---- the main road: the beam walk, turning beams sweeping a narrower road
@@ -853,8 +766,6 @@ def air_sequence(r, rng):
     accent(b, col)
     R2.ramp_jump(r, "Last Air", deg=18, drop=30, w_land=90, slope=3, land_min=260, cp=True)
     kind, lip, tgt, H, V = [j for j in b.jumps if j[0] == "ramp"][-1]
-    float_rings(b, R2.lerp3(lip, tgt, 0.5), r.f, rng, col, n=2)
-    backdrop(r, rng, col, n=6)
 
 
 # ===================================================================== 5. the giant crusher machine
@@ -1034,11 +945,7 @@ def slot4(r, sk, rng):
     accent(b, col)
     R2.ramp_jump(r, "Machine Launch", deg=20, drop=40, w_land=110, slope=4, land_min=360, cp=True)
     kind, lip, tgt, H, V = [j for j in b.jumps if j[0] == "ramp"][-1]
-    # gears and pistons round the launch
-    for s_ in (-1, 1):
-        big_gear(b, add(lip, add(mul(rt, s_ * 120), (0, 60, 0))), 70, f, STEEL_LT, spin=0.08 * s_)
     road(r, "Works Run-Out", 200, w=90, boosts=2, every=60)
-    backdrop(r, rng, col, n=6)
     # ---- the magnet crane: it picks the car up off the loading bay and swings it over the void
     road(r, "Loading Bay", 140, w=70, cp=True, arrows_at=(60,))
     crane_transfer(r, "Magnet Crane", 520, dy=40, turn=0, land_L=220, w_land=80, cp=True)
@@ -1283,7 +1190,6 @@ def slot5(r, sk, rng):
     al.o.pad(up, side=dot(sub(ss_mid, al.r.p), right_of(f0)) * 0.9)
     al.done()
     accent(b, col)
-    backdrop(r, rng, col, n=7)
     r.log("end")
     return ["Swing Span", "Sectional Bridge", "Crossroads Turntable", "Side Spur", "See-Saw Bridge", "Gear Turntable",
             "Pendulum Ferry", "Tilt Gauntlet", "Lower Spinners"]
@@ -1438,7 +1344,6 @@ def slot6(r, sk, rng):
     dress_road(r, rng)
     road(r, "Launch Run", 160, w=90, boosts=3, every=40, arrows_at=(80,))
     R2.ramp_jump(r, "Wrecker Launch", deg=20, drop=60, w_land=100, slope=3, land_min=300, cp=True)
-    backdrop(r, rng, col, n=7)
     r.log("end")
     return ["Wrecking Row", "Wrecking Bend", "Opposite Pair", "Escape Ramp", "Scrap Heap", "Demolition Drop", "Ball Run",
             "Wrecker Launch"]
@@ -1598,7 +1503,6 @@ def slot7(r, sk, rng):
     p0, f = r.p, r.f
     road(r, "Exit Tunnel 2", 300, w=80, dy=-8, boosts=3, every=40, cp=True)
     tunnel(b, p0, f, 300, 80, (255, 160, 220))
-    backdrop(r, rng, col, n=6)
     r.log("end")
     return ["Piston Lifts", "Corkscrew", "Spiral Hops", "Exit Tunnel", "Banked Slalom", "Corkscrew B"]
 
@@ -1765,7 +1669,6 @@ def slot8(r, sk, rng):
         o.plat("Updraft Deck %d" % (k + 1), 140, 80, cp=(k == 1))
     road(r, "Vent Run", 180, w=W, boosts=2, every=60)
     r.along(fan, [100], i0=5, R=56.0, n=4, speed=0.35)
-    backdrop(r, rng, col, n=7)
     r.log("end")
     return ["Fan Duct", "Shutters", "Split Duct", "Pipe Bend", "Close Fans", "Open Air Jump", "Updraft Fans"]
 
@@ -1933,7 +1836,6 @@ def slot9(r, sk, rng):
         p, ff = at_road(r, d)
         brick_wall(b, p, ff, 106, h=26.0, kind="crate", nx=9)
         crate_stacks(b, p, ff, 110, rng)
-    backdrop(r, rng, col, n=7)
     r.log("end")
     return ["Crate Alley", "Barricade Run", "Hidden Shortcut", "Detour", "Wall Gauntlet", "Reinforced Maze", "Smash Launch"]
 
@@ -2028,7 +1930,6 @@ def slot10(r, sk, rng):
     R2.ramp_jump(r, "Final Ramp", deg=26, drop=110, w_land=160, slope=3, land_min=360, cp=True)
     kind, lip, tgt, H, V = [j for j in b.jumps if j[0] == "ramp"][-1]
     f = r.f
-    float_rings(b, R2.lerp3(lip, tgt, 0.5), f, rng, col, n=4)
     land_end = r.p
     Lr = last_len(r)
     land0 = sub(land_end, mul(f, Lr))
@@ -2053,7 +1954,6 @@ def slot10(r, sk, rng):
             cyl(b, "VictoryPole", add(q, (0, 30, 0)), 60, 3, STEEL_LT, "Metal", b.scenery)
             ball(b, "Firework", add(q, (0, 64, 0)), 7, [(255, 80, 80), (80, 200, 255), (255, 230, 90)][(d // 80) % 3], "Neon",
                  b.scenery)
-    backdrop(r, rng, col, n=8)
     r.log("end")
     return ["Collapsing Straight", "Hammer Medley", "Final Swing", "Final See-Saw", "Narrow Jumps", "Final Boost",
             "Final Ramp", "Recovery Deck", "Finish Arch"]
