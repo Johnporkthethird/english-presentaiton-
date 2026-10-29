@@ -236,7 +236,7 @@ class LevelBuilder:
         return p
 
     # ------------------------------------------------------------ course furniture
-    def checkpoint(self, x, y, z, w, fwd=(1, 0, 0)):
+    def checkpoint(self, x, y, z, w, fwd=(1, 0, 0), flag_side=1):
         self.cp_count += 1
         idx = round(getattr(self, "cp_step", 0.05) * self.cp_count, 4)
         if idx >= 0.96:
@@ -251,7 +251,7 @@ class LevelBuilder:
         # the flag at the road's right edge
         flag = self.fac.clone(self.tpl["flag"], self.level)
         # (the template's pole stands on the line it was made at, which is the middle of the road: put it at the edge)
-        rgt = (-f[2], 0.0, f[0])
+        rgt = (-f[2] * flag_side, 0.0, f[0] * flag_side)
         side = max(w, 48) / 2 + 3
         T = look_frame((x + rgt[0] * side, y + SPAWN_UP, z + rgt[2] * side), f) * self.tpl["flag_ref"].inverse()
         transform_tree(flag, T)

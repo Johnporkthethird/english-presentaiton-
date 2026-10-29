@@ -102,7 +102,7 @@ def check(lv):
             if t is not None:
                 break
         if t is None:
-            for o in ((0.0, 0.0), (3.0, 0.0), (-3.0, 0.0), (0.0, 3.0), (0.0, -3.0)):
+            for o in ((0.0, 0.0), (3.0, 0.0), (-3.0, 0.0), (0.0, 3.0), (0.0, -3.0), (3.0, 3.0), (-3.0, -3.0)):  # (tile corners)
                 t, i = lv.ray(p + np.array([o[0], 2.0, o[1]]), np.array([0, -1.0, 0]), road & lv.moving, 60)
                 if t is not None:
                     break
@@ -150,10 +150,11 @@ def check(lv):
         # key: the car's own jump; drop: rolling off an edge
         speeds = ([H] if kind == "pad" else [110.0, 170.0] if kind in ("up", "key")
                   else [H * 0.9, H] if kind in ("ramp", "bounce", "drive") else [H] if kind == "ramp_hop"
-                  else [70.0, 130.0, 200.0] if kind == "drop" and H < 200 else [H * 0.7, H] if kind == "drop"
+                  else [H * 0.8, H] if kind in ("kick", "oup")
+                  else [70.0, 130.0, 200.0] if kind == "drop" and H < 200 else [H * 0.8, H] if kind == "drop"
                   else [90.0, 115.0, 160.0])
         for v in speeds:
-            up = (V if kind in ("pad", "up", "bounce", "ramp_hop", "drive") else V * v / H if kind == "ramp"
+            up = (V if kind in ("pad", "up", "bounce", "ramp_hop", "drive", "oup") else V * v / H if kind in ("ramp", "kick")
                   else 0.0 if kind == "drop" else 140.0)
             pos = s + np.array([0, 3.0, 0])
             vel = f * v + np.array([0, up, 0])
@@ -179,7 +180,7 @@ def check(lv):
                     issues.append(("pad lands off target", list(np.round(lp, 0)), list(np.round(tg, 0)), lv.name[i]))
                 if kind == "bounce" and np.linalg.norm((lp - tg)[[0, 2]]) > 50:
                     issues.append(("bounce lands off the cap", round(v), list(np.round(lp, 0)), list(np.round(tg, 0)), lv.name[i]))
-                if kind in ("ramp", "drive", "ramp_hop") and lv.name[i] not in ("Deck", "Floor", "Platform", "Ramp", "MovingDeck", "SinkTile"):
+                if kind in ("ramp", "drive", "ramp_hop", "kick", "oup", "drop") and lv.name[i] not in ("Deck", "Floor", "Platform", "Ramp", "MovingDeck", "SinkTile"):
                     issues.append(("lands on scenery", kind, round(v), list(np.round(lp, 0)), lv.name[i]))
                 if lp[1] < tg[1] - 25 and kind == "key":
                     issues.append(("key jump lands low", v, list(np.round(lp, 0)), lv.name[i]))
@@ -227,7 +228,7 @@ def check(lv):
 
 PASS = ("Hoop", "Ring", "Updraft", "Target", "Halo", "Laser", "Glow", "Flame", "Stripe", "Lip", "Edge", "Chevron",
         "Pad", "Sparkle", "Sugar", "Sprinkle", "Spot", "Shine", "Arrow", "Beam", "Light", "Line", "Trim", "Sign", "Text",
-        "Letter", "Pixel", "Kicker", "Floor", "Rail", "FlagCap")
+        "Letter", "Pixel", "Kicker", "Floor", "Rail", "FlagCap", "Bumper")
 
 
 def phase_check(lv):

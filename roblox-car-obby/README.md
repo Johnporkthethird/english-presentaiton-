@@ -8,40 +8,36 @@ in a random ten of the 100 levels after every race; in this file it is pinned to
 workspace attribute `ObbyDefaultCourse = "course1"`. Delete that attribute (or run
 `python3 generator/test_course.py generator good.rbxl out.rbxl random`) to go back to random courses.
 
-## Levels 1-10, version 3
+## Levels 1-10, version 4: obby courses
 
-`PLAN.md` has the plan and a review of each level. Each level is built round its own main idea, with no hoops and
-no loops:
-
-| # | Level | Main idea |
-|---|-------|-----------|
-| 1 | Sugar Rush | mega ramps off a giant cake (a ~600-stud jump over a chocolate river), a candy-cane slalom |
-| 2 | Drive Thru | conveyor belts (turbo, sideways, backwards), grease, burger smashers |
-| 3 | Spore Springs | chains of bounce mushrooms: steer in the air from cap to cap |
-| 4 | Checkmate | knight jumps between towers, a chessboard that falls away under you, sliding rooks |
-| 5 | Tick Tock | spinning gears, ticking clock-hand bridges and pendulums that carry the car |
-| 6 | Toy Box | a slot-car race track: figure of eight over its own bridge, strips on every straight |
-| 7 | Orbit | UFO tractor beams that carry the car across space, an asteroid belt at full speed |
-| 8 | Eruption | down a volcano: crater spiral, lava tube, surging lava, a geyser blast out |
-| 9 | Frostbite | a downhill ski run: switchbacks, ski jumps, black ice, rolling snowballs |
-| 10 | High Score | laser gates on a beat timed to a boost deck's exact speed, pinball bumpers, ghosts |
-
-- Speed: runs of boost strips take every car to 330 studs/s (the game's stack cap). Boost decks hold an exact
-  speed where the next thing depends on it.
-- Jumps are curved ramps sized for that speed. Each landing runway runs from the slowest take-off to past the
-  fastest.
-- Moving platforms use systems the game already has:
-  - the clock rotor engine (gears, clock hands, pendulums);
-  - sinking tiles (the chessboard);
-  - magnet rides (the UFOs);
-  - the junkyard's conveyors and oil.
-- The ObbyAssembler now moves the clock rides' rest frames (`ClockRest`) with a level, like the checkpoints.
-- Moving props pivot at their own centre, so the 1400-stud animation distance cull works.
-- Scenery is measured after building, and anything touching a road or a flight path is moved.
-- The validator flies every jump at its slowest and fastest take-off. Levels 1-10 report 0 issues.
-- `generator/rush2.py` has the pieces and `generator/rush2_levels.py` the ten levels. `generator/epic.py` joins
-  them to the start and finish.
-- Levels 11-100 are still the earlier object-world versions below (they still have hoops and loops).
+Every level is now an obby rather than a road:
+- **Platforms, not roads.** Short floating platforms that change width (wide decks, narrow 16-24 beams), height
+  (up and down) and line (left and right).
+- **A jump between nearly every pair of platforms** (10-14 per level):
+  - **drop:** drive off the end onto a lower platform;
+  - **kick:** a curved kicker onto a level or lower one;
+  - **up pad:** thrown straight up onto a higher one.
+  Many land to the side, so you steer in the air.
+- **A trap or machine on nearly every platform.** Rolling saw blades (SHREDDED), side pushers that shove you off,
+  electric floors and flame jets on a beat (FRIED), swinging blades, crushers (CRUSHED), grabbing claws (CAUGHT),
+  spring mines that throw you, sweepers, lasers, lava (MELTED), falls.
+- **Fast.** Every platform is a boost deck that holds every car at the same speed (200-260 by level), so each jump
+  is the same for every car. Each landing is checked from 80% of that speed (a driver easing off) to full speed.
+- **Each level keeps its main idea as set pieces between the platforms:**
+  - 1: the mega ramp
+  - 2: conveyor belts
+  - 3: bounce mushroom chains
+  - 4: knight towers and falling boards
+  - 5: gears, clock hands and pendulums
+  - 6: the kicker chain
+  - 7: UFO tractor beams
+  - 8: surging lava and the geyser
+  - 9: black ice and rolling snowballs
+  - 10: laser beats and claws
+- **Code:** `generator/obby.py` has the platforms, links and traps, and `generator/rush3_levels.py` has the ten
+  courses. Version 3's set pieces are in `generator/rush2.py`.
+- **Checks:** the validator reports 0 issues on levels 1-10. Not tested in Roblox Studio.
+- **Levels 11-100** are still the earlier object-world versions below.
 
 ## How the levels are built
 

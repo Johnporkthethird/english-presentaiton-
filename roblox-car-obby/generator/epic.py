@@ -51,9 +51,9 @@ def build_level(fac, unit_, level_folder, level_id, length, templates):
     import journey_skins  # noqa: F401
     import epic_skins  # noqa: F401
     import rush_levels as old_levels
-    import rush2_levels
-    epic_levels = rush2_levels if level_id in rush2_levels.LEVELS else old_levels
-    new = epic_levels is rush2_levels
+    import rush3_levels
+    epic_levels = rush3_levels if level_id in rush3_levels.LEVELS else old_levels
+    new = epic_levels is rush3_levels
     skin = skins.SKINS[level_id]()
     pal = skin.pal()
     rng = random.Random(91000 + level_id * 1301)
@@ -95,16 +95,19 @@ def build_level(fac, unit_, level_folder, level_id, length, templates):
     import rush
     k = 0
     import rush2
-    while new and X1 - 110 - r.p[0] > 1200 and k < 4 and not os.environ.get("GALLERY"):
-        # keep it fast all the way home: aim at the finish (gently: it is taken at speed), a strip run, a jump
-        rush.aim(r, "Home Bend %d" % (k + 1), length - 110, 0.0, R=380, limit=70)
+    import obby as OB
+    while new and X1 - 110 - r.p[0] > 900 and k < 6 and not os.environ.get("GALLERY"):
+        # keep the obby going all the way home: aim at the finish (gently), a platform with a trap, a jump
+        rush.aim(r, "Home Bend %d" % (k + 1), length - 110, 0.0, R=300, limit=50)
+        o = OB.Obby(r, 230)
+        traps = [OB.saw, OB.crusher, OB.sweeper, OB.pusher, OB.axe, OB.mine]
+        o.plat("Home Deck %d" % (k + 1), 150, [50, 36, 24][k % 3], [(traps[(k + level_id) % 6], 0.5)], cp=(k % 2 == 0))
         dh = Y0 - r.p[1]
         if dh > 30:
-            rush2.strips(r, "Home Climb %d" % (k + 1), 520, dy=min(dh, 160.0), cp=(k == 0), rails=True)
+            o.pad(min(dh, 120.0), side=(-40 if k % 2 else 40))
         else:
-            rush2.strips(r, "Home Sprint %d" % (k + 1), 260, cp=(k == 0))
-            rush2.ramp_jump(r, "Home Jump %d" % (k + 1), deg=14, drop=max(10.0, min(80.0, -dh * 0.5 + 20)),
-                            slope=5, land_min=180)
+            o.drop(max(30.0, min(60.0, -dh)), side=(40 if k % 2 else -40))
+        o.plat("Home Landing %d" % (k + 1), 0, 50)
         k += 1
     while not new and X1 - 110 - r.p[0] > 760 and k < 6 and not os.environ.get("GALLERY"):
         # keep the beats coming all the way home: aim at the finish and jump again
