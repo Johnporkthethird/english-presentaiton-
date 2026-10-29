@@ -16,19 +16,19 @@ track and its machines. The ten course slots run straight into each other:
 
 | Stage | Name | What is in it |
 |-------|------|---------------|
-| 1 | Launch Runway | A wide runway with boost lanes and gantries, then a giant ramp through a suspended ring. You land on one of three routes: the central landing, a high narrow line (full speed only) or a low road that pads back up. Then an enclosed hammer corridor with crushers, swinging side hammers, overhead punches and sweeping arms, and its S-bend second hall. |
+| 1 | Launch Runway | A wide runway with boost lanes and gantries, then a giant ramp through a suspended ring. You land on one of three routes: the central landing, a high narrow line (full speed only) or a low road that pads back up. Then an enclosed hammer corridor with swinging side hammers, side pushers and sweeping arms, and its S-bend second hall. |
 | 2 | Collapsing Highway | Tilting spans, a span that slides away and back, a falling tile span, and rolling spans on curves. A three-way split: the centre has spin gates and a turntable, the narrow right side is faster, and the lower left route has shaky tiles and a pad back up. |
 | 3 | The Loop | A long acceleration ramp into a giant vertical loop. A bypass goes round it. A high shortcut fires you diagonally through the middle of the loop, with a recovery deck under it. Then the airborne sequence: a ramp up onto a sky deck, a long gap, and a split landing. The lower right deck leads by a precision hop to a hidden ledge that cuts the corner. |
-| 4 | Crusher Works | An enclosed machine hall with crusher plates that slam together, lane walls that rise from the floor, floors that slide away, grinders on a reverse conveyor and a piston hall. An exit tunnel leads onto a launch ramp. Then a magnet crane carries the car over the void, and a fast belt runs under a row of presses. |
+| 4 | Crusher Works | An enclosed machine hall with crusher plates that slam together, lane walls that rise from the floor, floors that slide away, grinders on a reverse conveyor and a hall of side pushers and hammers. An exit tunnel leads onto a launch ramp. Then a magnet crane carries the car over the void, and a fast belt runs past swinging hammers and sweeping arms. |
 | 5 | Bridge Works | A swing span that turns half round, a sectional bridge of four quarter-turn sections, and a crossroads turntable. When the turntable stands at 90 degrees it lines up with a side spur, which is a safer way past everything. Also a see-saw bridge, a gear turntable, a pendulum ferry, a tilt gauntlet, and a lower route of small spinning platforms. |
 | 6 | Demolition Yard | Wrecking balls of every size: across the road, down one lane, and huge slow ones on tall frames. A pair swings in opposite directions, then a wide escape ramp. A littered scrap heap, a drop, and a launch. Broken barriers and chains everywhere. |
 | 7 | Corkscrew Tower | Piston lifts, then two banked laps spiralling down round a mechanical tower, with hops between the segments. The tower holds the road on spokes. Then a boost tunnel, a banked slalom and a second corkscrew. |
 | 8 | Fan Tunnel | Giant fans with blades sweeping down through the road, each with its own size, speed and position. Shutters, a split duct with a small fan in each lane, close fans, an open-air jump, and updraft fans. |
 | 9 | Smash Yard | Breakable crate and brick walls that you smash through at speed (they fly off and come back), and reinforced gates you must steer round. A cracked wall at the fork hides a straight shortcut. Wall gauntlet, reinforced maze, crate walls after the launch. |
-| 10 | Final Gauntlet | A collapsing straight, a medley of every machine, a swing span and a see-saw, narrow jumps, crusher plates, and a boost run to the giant final ramp. A recovery deck under the ramp pads you back up. Victory lane and the finish arch. |
+| 10 | Final Gauntlet | A collapsing straight, a medley of hammers, sweeping arms and pushers, a swing span and a see-saw, narrow jumps, crusher plates, and a boost run to the giant final ramp. A recovery deck under the ramp pads you back up. Victory lane and the finish arch. |
 
 - Moving parts use the game's own systems:
-  - `ObbyPropAnim` rigs for hammers, crushers, wrecking balls, fans, shutters and pistons.
+  - `ObbyPropAnim` rigs for hammers, crusher plates, pushers, wrecking balls, fans, shutters and pistons.
   - The clock rotor engine for bridges that turn, rock and carry the car.
   - Sinking tiles for collapsing road.
   - The arcade brick walls (`ArcadeM = "bricks"`) for breakable walls.

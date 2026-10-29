@@ -1,6 +1,6 @@
 """The Mechanical Playground: one huge car obby across the ten course slots (OBBY1-10), each slot one or two sections
 of the map. Dark steel structure, colourful road tops, hazard stripes, glowing boost strips; every section has its own
-accent colour. Moving machines use the game's own systems: ObbyPropAnim rigs (hammers, crushers, wrecking balls,
+accent colour. Moving machines use the game's own systems: ObbyPropAnim rigs (hammers, crusher plates, wrecking balls,
 fans, pistons), the clock rotor engine (bridges that turn and tilt and carry the car), sinking tiles (collapsing
 road), the arcade brick walls (destructible barriers), WallRide surfaces (the loop).
 
@@ -174,22 +174,6 @@ def big_gear(b, c, R, axis, col, spin=0.05, phase=0.0):
 
 
 # ===================================================================== hammers (built at c heading +X across a road w wide)
-def crusher_v(b, c, w, i, H=46.0, period=2.4, bl=40.0):
-    """A vertical crusher: a huge steel head on a piston in a frame, slamming down onto a striped zone (CRUSHED)."""
-    x, y, z = c
-    rc = (x, y + H + 11, z)
-    gantry(b, c, (1, 0, 0), w, h=H + 26)
-    impact_zone(b, c, (1, 0, 0), w, bl)
-    root = b.prop_root("Crusher")
-    rig = b.rig(root, "Slide", axis_frame(rc, (0, -1, 0)), H + 1, period, phase=(i * 0.31) % 1,
-                keys="0:0 0.42:0 0.5:1 0.66:1 0.95:0", name="Slam")
-    Pt(b, "CrusherHead", CF(rc), (bl, 22, w + 2), STEEL, "DiamondPlate", rig, query=True, attrs={"ObbyHazard": "Crush"})
-    stripe_box(b, "CrusherFace", CF(add(rc, (0, -11.3, 0))), (bl + 0.4, 0.6, w + 2.4), parent=rig)
-    cyl(b, "Piston", add(rc, (0, 24, 0)), 26, 10, STEEL_LT, "Metal", rig, refl=0.3)
-    for s in (-1, 1):
-        cyl(b, "PistonGuide", (x + s * (bl / 2 - 4), y + H + 30, z), 40, 4, STEEL_DK, "Metal", b.scenery)
-
-
 def side_hammer(b, c, w, i, period=2.6):
     """A hammer on a post at the road's edge, swinging its arm flat across the road and back (knocks you off)."""
     x, y, z = c
@@ -207,23 +191,6 @@ def side_hammer(b, c, w, i, period=2.6):
     head = add(post, (L, 9, 0))
     Pt(b, "HammerHead", CF(head), (12, 16, 22), (200, 40, 40), "Metal", rig, query=True, attrs={"ObbyHazard": "Knock"})
     stripe_box(b, "HammerFace", CF(add(head, (6.2, 0, 0))), (0.4, 16, 22), parent=rig)
-
-
-def punch(b, c, w, i, period=1.5, lane=None):
-    """An overhead punch: a fast piston over one lane (CRUSHED)."""
-    x, y, z = c
-    k = (i % 3) - 1 if lane is None else lane
-    zz = z + k * w / 3
-    H = 34.0
-    rc = (x, y + H + 7, zz)
-    root = b.prop_root("Punch")
-    rig = b.rig(root, "Slide", axis_frame(rc, (0, -1, 0)), H, period, phase=(i * 0.43) % 1,
-                keys="0:0 0.5:0 0.56:1 0.66:1 0.9:0", name="Punch")
-    Pt(b, "PunchFist", CF(rc), (22, 14, w / 3 - 4), (230, 60, 50), "SmoothPlastic", rig, query=True,
-       attrs={"ObbyHazard": "Crush"})
-    cyl(b, "PunchRod", add(rc, (0, 16, 0)), 20, 6, STEEL_LT, "Metal", rig)
-    Pt(b, "PunchHousing", CF((x, y + H + 30, zz)), (28, 14, w / 3), STEEL, "Metal", b.scenery)
-    impact_zone(b, (x, y, zz), (1, 0, 0), w / 3 + 4, 22)
 
 
 def sweep_arm(b, c, w, i, speed=0.22):
@@ -357,27 +324,27 @@ def slot1(r, sk, rng):
     r.log("corridor")
     L = 1700.0
     road(r, "Hammer Corridor", L, w=80)
-    kinds = [crusher_v, side_hammer, punch, sweep_arm, crusher_v, punch, side_hammer, sweep_arm, crusher_v, side_hammer,
-             punch, crusher_v]
+    kinds = [side_hammer, sweep_arm, O.pusher, side_hammer, sweep_arm, O.pusher, side_hammer, sweep_arm, O.pusher,
+             side_hammer, sweep_arm, side_hammer]
     at = [130 + 130 * k for k in range(len(kinds))]
     for k, (fn, d) in enumerate(zip(kinds, at)):
         r.along(fn, [d], i0=k)
     _corridor_shell(r, L, 80, rng)
     road(r, "Corridor Exit", 300, w=80, dy=60, boosts=2, every=60, cp=True)
-    # ---- the corridor's second hall: an S-bend of sweeping arms and hammers, then a last row of crushers
+    # ---- the corridor's second hall: an S-bend of sweeping arms and hammers, then a last row of hammers
     r.turn("Hammer Bend", 30, 360, rails=True)
     r.along(sweep_arm, [100], i0=0)
     _corridor_shell(r, 0, 80, rng)
     r.turn("Hammer Bend Swing", -60, 360, rails=True)
     r.along(side_hammer, [70], i0=1)
-    r.along(punch, [150, 220], i0=0)
+    r.along(O.pusher, [150, 220], i0=0)
     r.along(sweep_arm, [300], i0=1)
     _corridor_shell(r, 0, 80, rng)
     r.turn("Hammer Bend Back", 30, 360, rails=True)
     r.along(side_hammer, [90], i0=2)
     _corridor_shell(r, 0, 80, rng)
-    road(r, "Last Crushers", 280, w=80, cp=True)
-    r.along(crusher_v, [90, 200], i0=5)
+    road(r, "Last Hammers", 280, w=80, cp=True)
+    r.along(side_hammer, [90, 200], i0=5)
     _corridor_shell(r, 0, 80, rng)
     road(r, "Hammer Exit", 160, w=80, dy=15, boosts=2, every=50, arrows_at=(80,))
     r.log("end")
@@ -727,7 +694,7 @@ def air_sequence(r, rng):
     # ---- the main road: the beam walk, turning beams sweeping a narrower road
     road(r, "Beam Walk", 200, w=70, cp=True)
     r.along(sweep_arm, [50, 150], i0=1)
-    r.along(punch, [100], i0=2)
+    r.along(O.pusher, [100], i0=2)
     r.w = 160.0  # (the ring run opens out at once, so the hidden ledge's drop has the whole width to land on)
     ring_run0 = r.p
     road(r, "Ring Run", 240, w=160, dy=58, boosts=3, every=60, cp=True, arrows_at=(60, 210))
@@ -919,7 +886,8 @@ def slot4(r, sk, rng):
     r.along(grinder, [70, 150, 230], i0=0)
     r.along(roller_bed, [30, 110, 190, 270], i0=0)
     road(r, "Piston Hall", 420, w=W, cp=True)
-    pist = [(punch, 80, 0), (O.pusher, 140, 1), (punch, 190, 3), (crusher_v, 260, 2), (O.pusher, 320, 2), (punch, 370, 5)]
+    pist = [(O.pusher, 80, 0), (side_hammer, 140, 1), (O.pusher, 190, 3), (sweep_arm, 260, 2), (O.pusher, 320, 2),
+            (side_hammer, 370, 5)]
     for fn, d, k in pist:
         r.along(fn, [d], i0=k)
     p_out = r.p
@@ -949,14 +917,15 @@ def slot4(r, sk, rng):
     # ---- the magnet crane: it picks the car up off the loading bay and swings it over the void
     road(r, "Loading Bay", 140, w=70, cp=True, arrows_at=(60,))
     crane_transfer(r, "Magnet Crane", 520, dy=40, turn=0, land_L=220, w_land=80, cp=True)
-    # ---- the press line: a fast belt under a row of presses
-    R2.belt_road(r, "Press Line", 580, 60.0, direction="along", w=80, cp=False)
-    r.along(crusher_v, [90, 200, 310, 420, 520], i0=3)
+    # ---- the hammer belt: a fast belt past swinging hammers and sweeping arms
+    R2.belt_road(r, "Hammer Belt", 580, 60.0, direction="along", w=80, cp=False)
+    r.along(side_hammer, [90, 310, 520], i0=3)
+    r.along(sweep_arm, [200, 420], i0=3)
     _corridor_shell(r, 0, 80, rng)
     road(r, "Works Exit", 200, w=80, dy=12, boosts=2, every=60, cp=True)
     r.log("end")
     return ["Crusher Plates", "Lane Walls", "Shift Floor", "Roller Bed", "Piston Hall", "Exit Tunnel", "Machine Launch",
-            "Magnet Crane", "Press Line"]
+            "Magnet Crane", "Hammer Belt"]
 
 
 def crane_head(b, head, home):
@@ -1162,8 +1131,8 @@ def slot5(r, sk, rng):
     to = dot(sub(merge0, al.r.p), f) - 2 * 340 * math.sin(math.radians(45)) - 60.0
     Ls = max(60.0, to)
     al.r.straight("Spur Run", Ls, lead=5.0, rails=True, line=False)
-    # (the spur is the safer way, not an empty one: arms and punches along it, gantries over it)
-    kinds = [sweep_arm, punch, side_hammer, punch]
+    # (the spur is the safer way, not an empty one: arms and pushers along it, gantries over it)
+    kinds = [sweep_arm, O.pusher, side_hammer, O.pusher]
     at = [140 + 260 * k for k in range(int((Ls - 200) // 260) + 1)]
     for k, d in enumerate(at):
         al.r.along(kinds[k % len(kinds)], [d], i0=k)
@@ -1493,7 +1462,7 @@ def slot7(r, sk, rng):
     r.turn("Slalom", 45, 400, bank=10, rails=True)
     r.along(sweep_arm, [160], i0=0)
     r.turn("Slalom 2", -90, 400, bank=10, rails=True, cp=True)
-    r.along(punch, [120, 320], i0=1)
+    r.along(O.pusher, [120, 320], i0=1)
     r.along(sweep_arm, [450], i0=1)
     r.turn("Slalom 3", 45, 400, bank=10, rails=True)
     R2.lay_strips(r, 40, 260, every=70, lanes=2)
@@ -1790,11 +1759,11 @@ def slot9(r, sk, rng):
     r.turn("Detour", -60, R, rails=True)
     R2.lay_strips(r, 40, 330, every=60, lanes=2)
     road(r, "Detour Run", 200, w=60)
-    r.along(punch, [100], i0=0)
+    r.along(O.pusher, [100], i0=0)
     r.turn("Detour Turn", 120, R, rails=True, cp=True)
     r.along(sweep_arm, [200, 520], i0=0)
     road(r, "Detour Run 2", 200, w=60)
-    r.along(punch, [100], i0=2)
+    r.along(O.pusher, [100], i0=2)
     r.turn("Detour Back", -60, R, rails=True)
     for d in (0.2, 0.5, 0.8):
         p, ff = at_road(r, d * 360)
@@ -1813,14 +1782,14 @@ def slot9(r, sk, rng):
     R2.lay_strips(al.r, 40, dot(sub(merge0, a), f) - 40, every=80, lanes=1)
     al.done()
     accent(b, col)
-    # 4. the wall gauntlet: brick walls between punching pistons
+    # 4. the wall gauntlet: brick walls between side pushers
     r.w = W
     road(r, "Wall Gauntlet", 480, w=W, dy=25, cp=True)
     R2.lay_strips(r, 20, 460, every=45, lanes=3)
     for d in (90, 250, 410):
         p, ff = at_road(r, d)
         brick_wall(b, p, ff, W - 4, h=28.0, kind="brick")
-    r.along(punch, [170, 330], i0=1)
+    r.along(O.pusher, [170, 330], i0=1)
     # 5. reinforced maze: weave between the gates
     road(r, "Reinforced Maze", 420, w=W, cp=True)
     R2.lay_strips(r, 20, 400, every=50, lanes=3)
@@ -1878,8 +1847,8 @@ def finish_arch(b, c, f, w):
 
 
 def medley(b, c, w, i):
-    """One of every machine on the course, in turn: the final exam."""
-    fns = [crusher_v, side_hammer, sweep_arm, punch, wrecking_ball, crusher_v]
+    """Hammers, sweeping arms and pushers in turn: the final exam."""
+    fns = [side_hammer, sweep_arm, O.pusher, side_hammer, sweep_arm, O.pusher]
     fns[i % len(fns)](b, c, w, i)
 
 
