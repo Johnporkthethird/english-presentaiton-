@@ -357,11 +357,11 @@ def m_crumble(b, st, d, rng):
     delay = 0.4 - 0.15 * d
     for i in range(n):
         m = b.model("CrumbleTile", b.hazards, {"ObbyCrumble": float(delay)})
-        c = (st.x + i * (s - 2) + s / 2, st.y, st.z)
-        b.skin.crumble_tile(b, m, c, s - 1.6, i)  # a small gap between tiles so no two faces share a plane
+        c = (st.x + i * s + s / 2, st.y, st.z)
+        b.skin.crumble_tile(b, m, c, s - 0.3, i)  # a hairline gap between tiles so no two faces share a plane
         b.samples.append((c[0], st.y, st.z, s))
         b.line(c[0], st.y, st.z)
-    st.x += n * (s - 2)
+    st.x += n * s
     K.run(b, st.x, st.x + 100, st.y, st.z, K.W(b, 48))
     st.x += 100
 

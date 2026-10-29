@@ -183,7 +183,63 @@ def check(lv):
         pitch = np.degrees(np.arcsin(np.clip(np.abs(fwd[:, 1]), 0, 1)))
         if pitch.max() > 24:
             issues.append(("steep road", round(float(pitch.max()), 1)))
+    # 7. bumps: the road height under the wheels, every 2 studs along the line, must change smoothly
+    bumps = bump_check(lv)
+    if bumps:
+        issues.append(("bumpy road", len(bumps), bumps[:4]))
     return issues
+
+
+def bump_check(lv, step=2.0, tol=0.5):
+    solid = lv.collide & ~lv.moving
+    idx_all = np.nonzero(solid)[0]
+    # world AABBs of the solid parts
+    ext = np.einsum("nij,nj->ni", np.abs(lv.R[idx_all]), lv.S[idx_all] / 2)
+    lo, hi = lv.P[idx_all] - ext, lv.P[idx_all] + ext
+    out = []
+    run = {}
+    for k in range(len(lv.path) - 1):
+        if lv.flags[k] != "r" or lv.flags[k + 1] != "r":
+            run = {}
+            continue
+        a, b = lv.path[k], lv.path[k + 1]
+        d = b - a
+        L = float(np.hypot(d[0], d[2]))
+        if L < 0.5 or L > 40:
+            run = {}
+            continue
+        f = np.array([d[0] / L, 0, d[2] / L])
+        rgt = np.array([-f[2], 0, f[0]])
+        bl = np.minimum(a, b) - 12
+        bh = np.maximum(a, b) + 12
+        bl[1] -= 30
+        near = idx_all[np.all((hi >= bl) & (lo <= bh), axis=1)]
+        if not len(near):
+            run = {}
+            continue
+        mask = np.zeros(len(lv.P), bool)
+        mask[near] = True
+        n = max(1, int(L // step))
+        for i in range(n):
+            t = i / n
+            p = a + d * t
+            for off in (-4.0, 0.0, 4.0):
+                h = None
+                for e in (-0.3, 0.0, 0.3):  # the highest of three close rays: a hairline seam is not a bump
+                    o = p + rgt * off + f * e + np.array([0, 2.0, 0])
+                    hit, _ = lv.ray(o, np.array([0, -1.0, 0]), mask, 20)
+                    if hit is not None:
+                        h = o[1] - hit if h is None else max(h, o[1] - hit)
+                key = off
+                seq = run.setdefault(key, [])
+                seq.append(h)
+                if len(seq) >= 3 and None not in seq[-3:]:
+                    dd = seq[-1] - 2 * seq[-2] + seq[-3]
+                    if abs(dd) > tol:
+                        out.append((round(float(abs(dd)), 2), [round(float(v)) for v in p]))
+                if len(seq) > 3:
+                    del seq[0]
+    return out
 
 
 if __name__ == "__main__":

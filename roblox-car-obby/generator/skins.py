@@ -495,7 +495,7 @@ class SugarRush(Skin):
 
     def crumble_tile(self, b, m, c, s, i):
         col = self.CHOC if i % 2 == 0 else (240, 228, 205)
-        Pt(b, "Tile", (sub(c, (0, 2.5, 0))), (s - 1, 5, s - 1), col, "SmoothPlastic", m, collide=True, refl=0.05)
+        Pt(b, "Tile", (sub(c, (0, 2.5, 0))), (s, 5, s), col, "SmoothPlastic", m, collide=True, refl=0.05)
         Pt(b, "TileShine", (add(c, (0, 0.03, 0))), (s - 5, 0.06, s - 5), mix(col, (255, 255, 255), 0.18), "SmoothPlastic", m)
 
     def pad_art(self, b, start, f):
@@ -1295,7 +1295,7 @@ class ToyBox(Skin):
 
     def crumble_tile(self, b, m, c, s, i):
         """A domino lying flat."""
-        Pt(b, "Tile", (sub(c, (0, 2.5, 0))), (s - 1, 5, s - 1), (24, 24, 28), "SmoothPlastic", m, collide=True, refl=0.1)
+        Pt(b, "Tile", (sub(c, (0, 2.5, 0))), (s, 5, s), (24, 24, 28), "SmoothPlastic", m, collide=True, refl=0.1)
         Pt(b, "DominoLine", (add(c, (0, 0.03, 0))), (1.0, 0.06, s - 6), (250, 250, 250), parent=m)
         spots = {0: [], 1: [(0, 0)], 2: [(-1, -1), (1, 1)], 3: [(-1, -1), (0, 0), (1, 1)],
                  4: [(-1, -1), (-1, 1), (1, -1), (1, 1)], 5: [(-1, -1), (-1, 1), (0, 0), (1, -1), (1, 1)],
@@ -1530,7 +1530,7 @@ class Eruption(Skin):
         self.beams(b, x, y, z, w, beams, attrs, self.LAVA if i % 2 else self.LAVA2)
 
     def crumble_tile(self, b, m, c, s, i):
-        Pt(b, "Tile", (sub(c, (0, 3, 0))), (s - 1, 6, s - 1), self.top, "Basalt", m, collide=True)
+        Pt(b, "Tile", (sub(c, (0, 3, 0))), (s, 6, s), self.top, "Basalt", m, collide=True)
         Pt(b, "Cracks", (add(c, (0, 0.03, 0))), (s - 4, 0.06, s - 4), self.LAVA, "CrackedLava", m)
 
     def sweeper(self, b, rig, c, s, low):
@@ -1774,7 +1774,7 @@ class HighScore(Skin):
 
     def crumble_tile(self, b, m, c, s, i):
         col = self.NEON[i % 6]
-        Pt(b, "Tile", (sub(c, (0, 2.5, 0))), (s - 1.5, 5, s - 1.5), mix(col, (0, 0, 0), 0.65), "SmoothPlastic", m,
+        Pt(b, "Tile", (sub(c, (0, 2.5, 0))), (s, 5, s), mix(col, (0, 0, 0), 0.65), "SmoothPlastic", m,
            collide=True, refl=0.1)
         Pt(b, "TileFace", (add(c, (0, 0.02, 0))), (s - 6, 0.04, s - 6), mix(col, (0, 0, 0), 0.35), "SmoothPlastic", m)
         for s_ in (-1, 1):

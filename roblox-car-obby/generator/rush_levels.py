@@ -166,9 +166,8 @@ def tick_tock(r, sk, rng):
     # a square spiral down round the clock tower (it stands inside the square, to the left)
     side = 700.0
     T = add(r.p, add(mul(RT.left_of(r.f), side / 2), mul(r.f, side / 2 - 120)))
-    b.skin.helix_core(b, (T[0], Y0 - 400, T[2]), Y0 - 400, r.p[1] + 60, 110, 40, False)
-    M.clock_face(b, (T[0], 0, T[2]), 130, r.p[1] + 90, sk, rng)
-    r.solid("tower", T, 130, Y0 - 400, r.p[1] + 100)
+    M.clock_tower(b, (T[0], Y0 - 400, T[2]), 170, r.p[1] + 160, sk, rng)
+    r.solid("tower", T, 140, Y0 - 400, r.p[1] + 300)
     extra = [lambda: isles(r, "Cog Hops", 3, D=160, dy=-15, s=60, plat=gp),
              lambda: gauntlet(r, "Hammer Hall", 230, [EK.ob_press], every=75),
              lambda: drops(r, "Escapement Steps", 2, step=40),
@@ -201,12 +200,12 @@ def toy_box(r, sk, rng):
     isles(r, "Block Hops", 4, D=160, dy=10, s=56, side=30, plat=blk)
     r.local("Wall Ride", SC.m_wallride, 0.6, rng)
     kick(r, "Ramp Three", 260, 20, rings=3)
-    bend(r, "Banked Hairpin", 180, 150, dy=30, rails=True, cp=True)
+    bend(r, "Banked Hairpin", 180, 150, dy=30, rails=True, cp=True, bank=10)
     r.along(EK.ob_bumpers, [160, 320])
     r.local("Track Tube", SC.m_pipe, 0.7, rng)
     kick(r, "Gap Jump", 280, -30, rings=3)
     r.local("Domino Crushers", SC.m_crushers, 0.7, rng)
-    bend(r, "Banked Hairpin Two", -180, 150, dy=-20, rails=True, cp=True)
+    bend(r, "Banked Hairpin Two", -180, 150, dy=-20, rails=True, cp=True, bank=10)
     r.along(EK.ob_bumpers, [160, 320])
     r.local("Loop Two", SC.m_loop, 0.7, rng)
     kick(r, "Block Jump", 240, 40, rings=2)
@@ -215,7 +214,7 @@ def toy_box(r, sk, rng):
     r.local("Spinning Tops", SC.m_turntable, 0.7, rng)
     aim(r, "Last Bend", 5330, 0, R=90)
     kick(r, "Finish Ramp", 280, -20, rings=5)
-    M.teddy(b, add(r.p, (-300, -330, 380)), 260)
+    M.teddy(b, add(r.p, (-300, -330, 380)), 260, yaw=0.0)
     for k, (du, dv) in enumerate(((600, 420), (1500, -420), (2600, 500), (3400, -500))):
         for j in range(3):
             M.toy_block(b, A(du + j * 20, -330 + j * 100, dv + j * 12), 100 - j * 10, sk.BRICKS[(k + j) % 6])
@@ -306,7 +305,7 @@ def frostbite(r, sk, rng):
 # Rapid-fire short hops on a narrow neon track in a square wave, laser gates in between: hop, hop, hop.
 def high_score(r, sk, rng):
     b = r.b
-    M.cabinet(b, A(2700, -400, -900), 560, 720, 280, sk)
+    M.cabinet(b, A(2700, -400, -900), 560, 720, 280, sk, yaw=math.pi)
     for k in range(7):
         M.coin(b, A(600 + k * 700, 140 + 50 * (k % 3), (-1) ** k * 700), 110)
         M.ghost(b, A(900 + k * 640, 80, (-1) ** (k + 1) * 820), 13, sk.NEON[k % 6])

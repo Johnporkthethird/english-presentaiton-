@@ -111,9 +111,105 @@ def _extend(p, f, delta):
     p.set("CFrame", CF(tuple(cf.p[i] + shift[i] for i in range(3)), cf.x, cf.y, cf.z).to_prop())
 
 
+def _canon(a):
+    """An axis direction with a fixed sign (so a and -a share a bucket)."""
+    for v in a:
+        if abs(v) > 1e-6:
+            return a if v > 0 else tuple(-x for x in a)
+    return a
+
+
+def round_conflicts(root):
+    """Round surfaces drawn on top of each other: coaxial cylinders of the same radius that overlap along the axis
+    (stacked stripes whose ends overlap), and balls of the same size and centre."""
+    parts = _candidates(root)
+    out = []
+    lines = defaultdict(list)
+    for p in parts:
+        if p.get("shape", 1) != 2:
+            continue
+        cf = CF.from_prop(p.get("CFrame"))
+        sx, sy, sz = p.get("size")
+        a = _canon(cf.x)
+        r = min(sy, sz) / 2
+        t = _dot(cf.p, a)
+        q = tuple(cf.p[i] - a[i] * t for i in range(3))
+        key = (round(a[0], 2), round(a[1], 2), round(a[2], 2), round(q[0] * 5), round(q[1] * 5), round(q[2] * 5))
+        lines[key].append((t - sx / 2, t + sx / 2, r, p, a))
+    for items in lines.values():
+        if len(items) < 2:
+            continue
+        items.sort(key=lambda it: it[0])
+        for i in range(len(items)):
+            for j in range(i + 1, len(items)):
+                a0, a1, ra, pa, ax = items[i]
+                b0, b1, rb, pb, _ = items[j]
+                if b0 >= a1 - 0.01:
+                    break
+                if abs(ra - rb) < 0.1:
+                    out.append(("cyl", pa, pb, (a0, a1), (b0, b1), ax))
+    balls = defaultdict(list)
+    for p in parts:
+        if p.get("shape", 1) != 0:
+            continue
+        cf = CF.from_prop(p.get("CFrame"))
+        d = min(p.get("size"))
+        balls[(round(cf.p[0] * 10), round(cf.p[1] * 10), round(cf.p[2] * 10))].append((d, p))
+    for items in balls.values():
+        for i in range(len(items)):
+            for j in range(i + 1, len(items)):
+                if abs(items[i][0] - items[j][0]) < 0.1:
+                    out.append(("ball", items[i][1], items[j][1]))
+    return out
+
+
+def _grow_round(p, by=0.3):
+    s = list(p.get("size"))
+    if p.get("shape", 1) == 0:
+        s = [v + by for v in s]
+    else:
+        s[1] += by
+        s[2] += by
+    p.set("size", tuple(float(v) for v in s))
+
+
+def round_fix(root):
+    n = 0
+    for c in round_conflicts(root):
+        if c[0] == "ball":
+            _grow_round(c[2])
+            n += 1
+            continue
+        _, pa, pb, (a0, a1), (b0, b1), ax = c
+        ov = min(a1, b1) - max(a0, b0)
+        la, lb = a1 - a0, b1 - b0
+        if ov < 0.5 * min(la, lb) and b1 > a1 and b0 > a0:
+            # stacked: pull b's near end back so the two only meet
+            cut = ov + 0.02
+            s = list(pb.get("size"))
+            if s[0] - cut < 0.2:
+                _grow_round(pb)
+                n += 1
+                continue
+            s[0] -= cut
+            pb.set("size", tuple(float(v) for v in s))
+            cf = CF.from_prop(pb.get("CFrame"))
+            sgn = 1.0 if _dot(cf.x, ax) > 0 else -1.0
+            shift = tuple(cf.x[i] * sgn * cut / 2 for i in range(3))
+            pb.set("CFrame", CF(tuple(cf.p[i] + shift[i] for i in range(3)), cf.x, cf.y, cf.z).to_prop())
+        else:
+            # one inside the other: the shorter one wins by a hair
+            _grow_round(pb if lb <= la else pa)
+        n += 1
+    return n
+
+
 def fix(root, passes=60):
     """Resolve every fight. Returns (fights found at the start, fights left)."""
     first = None
+    for _ in range(4):
+        if not round_fix(root):
+            break
     for _ in range(passes):
         found = conflicts(root, 0.02)
         if first is None:
@@ -136,4 +232,4 @@ def fix(root, passes=60):
                 need[key] = (front[1], front[2], delta)
         for p, f, delta in need.values():
             _extend(p, f, delta)
-    return first, len(conflicts(root, 0.02))
+    return first, len(conflicts(root, 0.02)) + len(round_conflicts(root))

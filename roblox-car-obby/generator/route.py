@@ -195,6 +195,8 @@ class Route:
         w0 = self.w
         w1 = w0 if w1 is None else w1
         a = math.radians(deg)
+        if R1 is None:
+            R = max(R, max(w0, w1) / 2 + 14)  # never tighter than the road is wide (it would fold over itself)
         R1 = R if R1 is None else R1
         arc = abs(a) * (R + R1) / 2
         lft = left_of(self.f)
@@ -215,11 +217,12 @@ class Route:
             ws.append(w0 + (w1 - w0) * J.ease_s(t))
         assert J.grade_ok(pts), ("turn too steep", label, deg, R, dy)
         if bank is None:
-            bank = min(14.0, 4.0 + 1500.0 / min(R, R1))
+            bank = 0.0  # flat by default: a bank that changes from slab to slab leaves ledges under the wheels
         bk = math.radians(bank) * (-sgn)
         nn = len(pts)
-        ramp = max(1, min(6, nn // 4))
-        fb = lambda i: bk * min(1.0, i / ramp, (nn - 1 - i) / ramp)
+        # ease the bank in and out over a long stretch, in steps small enough that the wheels never feel them
+        ramp = max(1, min(nn // 3, int(abs(bk) / 0.008) + 1))
+        fb = lambda i: bk * J.ease_s(min(1.0, i / ramp, (nn - 1 - i) / ramp))
         self._lay(label, pts, ws, cp=cp, bank=fb if bank else None, **kw)
         if abs(R1 - R) < 1e-6:
             c, s = math.cos(a), math.sin(a)

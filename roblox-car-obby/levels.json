@@ -17,8 +17,8 @@
    "Licorice Leap",
    "Sugar Rush Finale"
   ],
-  "instances": 3042,
-  "zfights_fixed": 708,
+  "instances": 3494,
+  "zfights_fixed": 714,
   "checkpoints": 5,
   "length": 5540.0
  },
@@ -40,8 +40,8 @@
    "Milkshake Leap",
    "Plate Spinners"
   ],
-  "instances": 2973,
-  "zfights_fixed": 878,
+  "instances": 3875,
+  "zfights_fixed": 861,
   "checkpoints": 9,
   "length": 5420.0
  },
@@ -63,8 +63,8 @@
    "Vine Slide",
    "Pond Jump"
   ],
-  "instances": 2213,
-  "zfights_fixed": 476,
+  "instances": 2919,
+  "zfights_fixed": 298,
   "checkpoints": 5,
   "length": 5620.0
  },
@@ -84,8 +84,8 @@
    "King's Cross",
    "Checkmate Jump"
   ],
-  "instances": 2109,
-  "zfights_fixed": 737,
+  "instances": 2956,
+  "zfights_fixed": 542,
   "checkpoints": 8,
   "length": 5310.0
  },
@@ -107,8 +107,8 @@
    "Gear Teeth",
    "Midnight Jump"
   ],
-  "instances": 2837,
-  "zfights_fixed": 1985,
+  "instances": 2873,
+  "zfights_fixed": 1134,
   "checkpoints": 7,
   "length": 5610.0
  },
@@ -132,8 +132,8 @@
    "Spinning Tops",
    "Finish Ramp"
   ],
-  "instances": 4712,
-  "zfights_fixed": 1333,
+  "instances": 5448,
+  "zfights_fixed": 1624,
   "checkpoints": 11,
   "length": 5440.0
  },
@@ -150,8 +150,8 @@
    "Comet Leap",
    "Station Spin"
   ],
-  "instances": 1594,
-  "zfights_fixed": 710,
+  "instances": 2115,
+  "zfights_fixed": 664,
   "checkpoints": 6,
   "length": 5440.0
  },
@@ -171,8 +171,8 @@
    "Magma Windmill",
    "Last Eruption"
   ],
-  "instances": 2073,
-  "zfights_fixed": 932,
+  "instances": 2525,
+  "zfights_fixed": 838,
   "checkpoints": 7,
   "length": 5440.0
  },
@@ -192,8 +192,8 @@
    "Avalanche",
    "Last Ski Jump"
   ],
-  "instances": 2785,
-  "zfights_fixed": 1495,
+  "instances": 3910,
+  "zfights_fixed": 735,
   "checkpoints": 5,
   "length": 5440.0
  },
@@ -212,8 +212,8 @@
    "Neon Loop",
    "High Score"
   ],
-  "instances": 2076,
-  "zfights_fixed": 496,
+  "instances": 2503,
+  "zfights_fixed": 514,
   "checkpoints": 7,
   "length": 5440.0
  },

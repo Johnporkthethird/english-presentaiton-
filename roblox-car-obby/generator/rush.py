@@ -123,15 +123,24 @@ def windmill(b, src, tgt, jump, R=62.0, speed=0.32):
     root = b.prop_root("Windmill")
     rig = b.rig(root, "Spin", axis_frame(hub, f), speed, 4, phase=0.0, name="MillSpin")
     sk = b.skin
+    fr = axis_frame(hub, f)
     for k in range(3):
         a = TAU * k / 3
-        fr = axis_frame(hub, f)
         d = add(mul(fr.y, math.cos(a)), mul(fr.z, math.sin(a)))
-        c = add(hub, mul(d, R / 2 + 6))
-        Pt(b, "MillBlade", CF(c, f, d, cross(f, d)), (5, R, 9), sk.danger, "Neon", rig, query=True,
+        side = cross(f, d)
+        c = add(hub, mul(d, R * 0.42 + 6))
+        Pt(b, "MillBlade", CF(c, f, d, side), (5, R * 0.84, 12), sk.danger, "Neon", rig, query=True,
            attrs={"ObbyHazard": "Knock"})
-    cyl(b, "MillHub", hub, 10, 18, sk.body, sk.body_mat, rig, axis=f)
-    cyl(b, "MillPost", add(hub, (0, -90, 0)), 180, 8, sk.body, sk.body_mat, b.scenery)
+        Pt(b, "MillBladeTip", CF(add(hub, mul(d, R * 0.92 + 6)), f, d, side), (5.4, R * 0.16, 16), (255, 255, 255), "Neon", rig,
+           query=True, attrs={"ObbyHazard": "Knock"})
+        Pt(b, "MillSpar", CF(add(hub, mul(d, R * 0.42 + 6)), f, d, side), (6.4, R * 0.84, 2.4), sk.body, sk.body_mat, rig)
+    cyl(b, "MillHub", hub, 10, 20, sk.body, sk.body_mat, rig, axis=f)
+    ball(b, "MillCap", add(hub, mul(f, -6)), 14, sk.edge, "Neon", rig)
+    cyl(b, "MillPost", add(hub, (0, -95, 0)), 180, 9, sk.body, sk.body_mat, b.scenery)
+    cyl(b, "MillFoot", add(hub, (0, -186, 0)), 6, 30, sk.body, sk.body_mat, b.scenery)
+    for k in range(6):
+        cyl(b, "MillStripe", add(hub, (0, -30 - k * 22, 0)), 6, 9.6, (255, 210, 40) if k % 2 else (30, 30, 30), "SmoothPlastic",
+            b.scenery)
 
 
 def drops(r, label, n=3, step=45.0, L=150.0, w=None, cp=False):

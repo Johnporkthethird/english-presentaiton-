@@ -25,8 +25,16 @@ flight, loops, wall rides, tubes). Each level has its own shape, length, height 
   direction, `generator/epic_marks.py` the giant landmarks, `generator/epic_kit.py` the arenas and obstacles.
 - Every jump is an exact launch pad that fires straight at its landing (the drawn kicker ramp never collides).
 - Every level stays inside its own X box and starts and ends on the course centre line, so the shuffle still works.
-- `generator/polish.py` removes every pair of overlapping coplanar faces (the flicker). Levels 11-100 are still the
-  earlier object-world versions below.
+- Models: a seated teddy bear, a rubber duck, a spinning top, lettered alphabet blocks, giant toadstools, a horse-headed
+  knight, a four-faced clock tower, low-poly snowy peaks and pine trees (smooth faceted cones built from wedge
+  triangles), an arcade cabinet with a lit screen, joystick and buttons. `models-preview.jpg` shows them;
+  `generator/gallery.py` (`GALLERY=1`) builds them all in a row for inspection.
+- No flicker: `generator/polish.py` resolves overlapping flat faces and now also round ones (stacked same-size
+  cylinders, coincident balls). Every level of the 100 ends with 0 fights.
+- No bumps: road bends are mitred (slabs meet edge to edge, a flush triangle closes the outside of each bend) instead of
+  overlapping, turns are flat (the toy-track hairpins ease their bank in gradually), crumbling floors have hairline
+  seams, and the validator samples the road height under both wheels every 2 studs along the line and flags any step.
+- Levels 11-100 are still the earlier object-world versions below.
 
 ## How the levels are built
 

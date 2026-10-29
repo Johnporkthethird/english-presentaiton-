@@ -4,7 +4,8 @@ import math
 import random
 from geom import CF, axis_frame, deck_frame, add, sub, mul, unit, cross, rot_y, UP
 from builder import mix
-from skins import Pt, box, cyl, ball, cone, hexcol
+from skins import Pt, box, cyl, ball, cone, hexcol, pixel_art, FONT
+from geom import rot_axis
 from worlds import ell, ringz
 
 TAU = math.pi * 2
@@ -24,6 +25,68 @@ def B(b, name, c, d, color, mat="SmoothPlastic", **kw):
 
 def ring_of(n, R, a0=0.0):
     return [(math.cos(a0 + TAU * k / n) * R, math.sin(a0 + TAU * k / n) * R, a0 + TAU * k / n) for k in range(n)]
+
+
+class Local:
+    """A prop's own frame (yaw about Y; the prop's front is its -Z), to place parts by local offsets."""
+    def __init__(self, c, yaw=0.0):
+        self.cf = CF(c) * rot_y(yaw)
+
+    def at(self, x, y, z):
+        return self.cf.point((x, y, z))
+
+    def rot(self, *extra):
+        r = CF((0, 0, 0), self.cf.x, self.cf.y, self.cf.z)
+        for e in extra:
+            r = r * e
+        return r
+
+    def cf_at(self, x, y, z, *extra):
+        r = self.rot(*extra)
+        return CF(self.at(x, y, z), r.x, r.y, r.z)
+
+
+def tri(b, name, a, b_, c, color, mat="SmoothPlastic", parent=None, th=1.0, inward=None, collide=False):
+    """A flat triangle from two wedges (the usual Roblox way). inward: a point on the solid side, so the triangle's
+    thickness goes that way and its face lies exactly on the plane through a, b_, c."""
+    ab, ac, bc = sub(b_, a), sub(c, a), sub(c, b_)
+    abd, acd, bcd = dot3(ab, ab), dot3(ac, ac), dot3(bc, bc)
+    if abd > acd and abd > bcd:
+        c, a = a, c
+    elif acd > bcd and acd > abd:
+        a, b_ = b_, a
+    ab, ac, bc = sub(b_, a), sub(c, a), sub(c, b_)
+    right = unit(cross(ac, ab))
+    up = unit(cross(bc, right))
+    back = unit(bc)
+    height = abs(dot3(ab, up))
+    if height < 0.05:
+        return
+    off = (0.0, 0.0, 0.0)
+    if inward is not None:
+        g = mul(add(add(a, b_), c), 1 / 3)
+        sgn = 1.0 if dot3(sub(inward, g), right) > 0 else -1.0
+        off = mul(right, sgn * th / 2)
+    parent = parent if parent is not None else b.scenery
+    p1 = add(mul(add(a, b_), 0.5), off)
+    Pt(b, name, CF(p1, right, up, back), (th, height, abs(dot3(ab, back))), color, mat, parent, cls="WedgePart",
+       collide=collide)
+    p2 = add(mul(add(a, c), 0.5), off)
+    Pt(b, name, CF(p2, mul(right, -1), up, mul(back, -1)), (th, height, abs(dot3(ac, back))), color, mat, parent,
+       cls="WedgePart", collide=collide)
+
+
+def dot3(a, c):
+    return a[0] * c[0] + a[1] * c[1] + a[2] * c[2]
+
+
+def wcone(b, name, base, h, r, color, mat="SmoothPlastic", n=8, rot=0.0, parent=None, cap=True):
+    """A smooth faceted cone (an n-sided pyramid) from triangles: base centre, height, base radius."""
+    apex = add(base, (0, h, 0))
+    ring = [add(base, (math.cos(rot + TAU * k / n) * r, 0, math.sin(rot + TAU * k / n) * r)) for k in range(n)]
+    mid = add(base, (0, h * 0.3, 0))
+    for k in range(n):
+        tri(b, name, apex, ring[k], ring[(k + 1) % n], color, mat, parent, th=1.0, inward=mid)
 
 
 def column(b, name, top, ylo, d, color, mat="SmoothPlastic"):
@@ -251,16 +314,29 @@ def great_tree(b, c, R, ylo, yhi, rng, sk):
 
 
 def giant_mushroom(b, base, h, d, cap, rng, glow=(120, 255, 210)):
+    """A giant toadstool: bulbed, tapering stem, a frilled skirt, a domed spotted cap glowing underneath."""
     x, y, z = base
-    C(b, "Stem", (x, y + h / 2, z), h, d * 0.22, (236, 226, 200))
-    C(b, "Ring", (x, y + h * 0.72, z), 6, d * 0.34, (246, 236, 210))
-    ell(b, "Cap", (x, y + h + d * 0.12, z), (d, d * 0.42, d), cap, parent=b.scenery)
-    C(b, "Gills", (x, y + h + 1, z), 2, d * 0.9, glow, "Neon")
-    for k in range(9):
+    stem = (240, 232, 210)
+    ell(b, "StemBulb", (x, y + d * 0.1, z), (d * 0.44, d * 0.28, d * 0.44), stem, parent=b.scenery)
+    n = 6
+    for k in range(n):
+        t = (k + 0.5) / n
+        C(b, "Stem", (x, y + h * t, z), h / n + 0.05, d * (0.32 - 0.1 * t), mix(stem, (210, 196, 170), 0.3 * (k % 2)))
+    C(b, "Skirt", (x, y + h * 0.74, z), 4, d * 0.4, (250, 244, 228))
+    for k in range(12):
+        a = TAU * k / 12
+        ell(b, "SkirtFrill", (x + math.cos(a) * d * 0.19, y + h * 0.74 - 6, z + math.sin(a) * d * 0.19), (d * 0.1, 12, d * 0.1),
+            (250, 244, 228), parent=b.scenery)
+    C(b, "Gills", (x, y + h + 1, z), 2, d * 0.92, glow, "Neon")
+    ell(b, "Cap", (x, y + h + d * 0.12, z), (d, d * 0.46, d), cap, parent=b.scenery)
+    ell(b, "CapShine", (x - d * 0.12, y + h + d * 0.3, z - d * 0.1), (d * 0.3, d * 0.08, d * 0.22),
+        mix(cap, (255, 255, 255), 0.35), parent=b.scenery)
+    for k in range(12):
         a = rng.random() * TAU
-        rr = rng.uniform(0.1, 0.36) * d
-        hh = d * 0.2 * math.sqrt(max(0.0, 1 - (rr / (d * 0.5)) ** 2))
-        ell(b, "Spot", (x + math.cos(a) * rr, y + h + d * 0.12 + hh, z + math.sin(a) * rr), (d * 0.11, d * 0.04, d * 0.11),
+        rr = rng.uniform(0.08, 0.4) * d
+        hh = d * 0.23 * math.sqrt(max(0.0, 1 - (rr / (d * 0.5)) ** 2))
+        sz = rng.uniform(0.08, 0.13) * d
+        ell(b, "Spot", (x + math.cos(a) * rr, y + h + d * 0.12 + hh, z + math.sin(a) * rr), (sz, d * 0.035, sz),
             (255, 255, 240), parent=b.scenery)
 
 
@@ -295,10 +371,18 @@ def chess_piece(b, kind, base, s, col, trim=(232, 190, 90)):
         B(b, "Tip", (x, y + s * 2.02, z), s * 0.14, col, mat)
         return y + s * 2.1
     if kind == "knight":
-        P(b, "Neck", CF((x, y + s * 0.85, z)) * rot_y(0.0), (s * 0.4, s * 1.1, s * 0.5), col, mat)
-        P(b, "HeadK", CF((x + s * 0.22, y + s * 1.4, z)), (s * 0.75, s * 0.36, s * 0.4), col, mat)
-        P(b, "Mane", CF((x - s * 0.22, y + s * 1.15, z)), (s * 0.12, s * 0.8, s * 0.3), trim, "Metal")
-        return y + s * 1.6
+        C(b, "Body", (x, y + s * 0.5, z), s * 0.36, s * 0.56, col, mat)
+        P(b, "Neck", CF((x - s * 0.04, y + s * 0.92, z)) * rot_axis((0, 0, 1), 0.28), (s * 0.34, s * 0.7, s * 0.4), col, mat)
+        P(b, "HeadK", CF((x + s * 0.2, y + s * 1.3, z)) * rot_axis((0, 0, 1), -0.42), (s * 0.62, s * 0.3, s * 0.36), col, mat)
+        ell(b, "Muzzle", (x + s * 0.44, y + s * 1.13, z), (s * 0.28, s * 0.24, s * 0.32), col, mat, parent=b.scenery)
+        ell(b, "Nostril", (x + s * 0.56, y + s * 1.12, z), (s * 0.04, s * 0.06, s * 0.2), mix(col, (0, 0, 0), 0.4), parent=b.scenery)
+        for sz in (-1, 1):
+            P(b, "Ear", CF((x - s * 0.02, y + s * 1.55, z + sz * s * 0.1)) * rot_axis((0, 0, 1), 0.2), (s * 0.08, s * 0.2, s * 0.08), col, mat)
+            ball(b, "KnightEye", (x + s * 0.22, y + s * 1.38, z + sz * s * 0.18), s * 0.07, trim, "Metal", b.scenery)
+        for k in range(6):
+            t = k / 5
+            ball(b, "Mane", (x - s * 0.24 + s * 0.12 * t, y + s * 0.72 + s * 0.78 * t, z), s * 0.13, trim, "Metal", b.scenery)
+        return y + s * 1.62
     if kind in ("queen", "king"):
         C(b, "Body", (x, y + s * 1.0, z), s * 1.4, s * 0.44, col, mat)
         C(b, "Collar", (x, y + s * 1.72, z), s * 0.08, s * 0.64, trim, "Metal")
@@ -397,46 +481,104 @@ def gear(b, c, R, axis, col, mat="Metal", teeth=None, spin=0.0, phase=0.0, th=10
 
 
 # ===================================================================== 6. Toy Box
-def toy_block(b, c, s, col, letter_col=(255, 255, 255)):
-    x, y, z = c
-    P(b, "ToyBlock", CF((x, y + s / 2, z)), (s, s, s), col, refl=0.05)
-    for f in ((1, 0, 0), (-1, 0, 0), (0, 0, 1), (0, 0, -1)):
-        P(b, "BlockFace", CF((x + f[0] * (s / 2 + 0.2), y + s / 2, z + f[2] * (s / 2 + 0.2))),
-          (0.4 if f[0] else s * 0.62, s * 0.62, s * 0.62 if f[0] else 0.4), letter_col)
+def toy_block(b, c, s, col, letter_col=(255, 255, 255), letter=None, yaw=0.0):
+    """A wooden alphabet block: bevelled edges, a raised panel and a letter on every side."""
+    L = Local((c[0], c[1] + s / 2, c[2]), yaw)
+    edge = mix(col, (0, 0, 0), 0.25)
+    P(b, "ToyBlock", L.cf_at(0, 0, 0), (s * 0.94, s * 0.94, s * 0.94), col, refl=0.05)
+    h = s * 0.47
+    for ax in range(3):
+        for u in (-1, 1):
+            for v in (-1, 1):
+                p = [0.0, 0.0, 0.0]
+                others = [i for i in range(3) if i != ax]
+                p[others[0]], p[others[1]] = u * h, v * h
+                size = [s * 0.08] * 3
+                size[ax] = s * 0.94 + (0.02 if ax == 0 else 0.0)
+                P(b, "BlockEdge", L.cf_at(*p), tuple(size), edge)
+    letters = "ABCDEXYZ123"
+    rng_l = int(abs(c[0] * 7 + c[2] * 3)) % len(letters)
+    for k, (nx, nz) in enumerate(((0, -1), (1, 0), (0, 1), (-1, 0))):
+        n = (nx, 0, nz)
+        P(b, "BlockPanel", L.cf_at(nx * (s * 0.47 + 0.15), 0, nz * (s * 0.47 + 0.15)),
+          (s * 0.66 if nz else 0.3, s * 0.66, 0.3 if nz else s * 0.66), mix(col, (255, 255, 255), 0.55))
+        ch = letter or letters[(rng_l + k) % len(letters)]
+        rows = FONT.get(ch, FONT["A"])
+        nrm = L.cf.vec(n)
+        pixel_art(b, L.at(nx * (s * 0.47 + 0.3), 0, nz * (s * 0.47 + 0.3)), nrm, (0, 1, 0), rows, s * 0.1, letter_col,
+                  "SmoothPlastic", b.scenery, th=0.4, name="BlockLetter")
 
 
-def teddy(b, c, s, col=(190, 130, 80)):
-    x, y, z = c
-    ell(b, "TeddyBody", (x, y + s * 0.55, z), (s * 0.9, s * 1.1, s * 0.8), col, "Fabric", parent=b.scenery)
-    B(b, "TeddyHead", (x, y + s * 1.35, z), s * 0.72, col, "Fabric")
+def teddy(b, c, s, col=(190, 130, 80), yaw=0.0):
+    """A sitting teddy bear (s = about half its height), facing its -Z."""
+    L = Local(c, yaw)
+    lt = mix(col, (255, 238, 214), 0.5)
+    dk = (36, 24, 20)
+
+    def E(name, p, size, color, rot=(), mat="Fabric"):
+        ell(b, name, L.at(p[0] * s, p[1] * s, p[2] * s), tuple(v * s for v in size), color, mat, parent=b.scenery,
+            rot=L.rot(*rot))
+
+    E("TeddyBody", (0, 0.62, 0), (0.98, 1.08, 0.86), col)
+    E("TeddyBelly", (0, 0.58, -0.33), (0.58, 0.72, 0.24), lt)
+    E("TeddyHead", (0, 1.42, -0.02), (0.82, 0.74, 0.74), col)
+    E("TeddyMuzzle", (0, 1.31, -0.33), (0.38, 0.27, 0.24), lt)
+    E("TeddyNose", (0, 1.38, -0.445), (0.15, 0.1, 0.08), dk, mat="SmoothPlastic")
     for sx in (-1, 1):
-        B(b, "TeddyEar", (x + sx * s * 0.26, y + s * 1.68, z), s * 0.26, col, "Fabric")
-        ell(b, "TeddyArm", (x + sx * s * 0.5, y + s * 0.7, z - s * 0.1), (s * 0.3, s * 0.6, s * 0.3), col, "Fabric",
-            parent=b.scenery)
-        ell(b, "TeddyLeg", (x + sx * s * 0.28, y + s * 0.12, z - s * 0.3), (s * 0.36, s * 0.3, s * 0.5), col, "Fabric",
-            parent=b.scenery)
-        B(b, "TeddyEye", (x + sx * s * 0.12, y + s * 1.45, z - s * 0.33), s * 0.08, (20, 20, 20))
-    ell(b, "Snout", (x, y + s * 1.28, z - s * 0.32), (s * 0.3, s * 0.22, s * 0.16), (235, 200, 160), parent=b.scenery)
-    ell(b, "Bow", (x, y + s * 1.02, z - s * 0.3), (s * 0.4, s * 0.16, s * 0.1), (230, 40, 40), parent=b.scenery)
+        E("TeddySmile", (sx * 0.05, 1.255, -0.435), (0.09, 0.02, 0.025), dk, (rot_axis((0, 0, 1), sx * 0.45),), "SmoothPlastic")
+        E("TeddyEye", (sx * 0.155, 1.53, -0.33), (0.1, 0.12, 0.07), dk, mat="SmoothPlastic")
+        E("TeddyEyeShine", (sx * 0.155 + 0.028, 1.56, -0.362), (0.03, 0.03, 0.012), (255, 255, 255), mat="Neon")
+        E("TeddyEar", (sx * 0.3, 1.77, 0.0), (0.3, 0.3, 0.17), col)
+        E("TeddyEarInner", (sx * 0.3, 1.76, -0.072), (0.17, 0.17, 0.05), lt)
+        E("TeddyArm", (sx * 0.52, 0.82, -0.12), (0.3, 0.64, 0.3), col, (rot_axis((0, 0, 1), sx * 0.45), rot_axis((1, 0, 0), -0.3)))
+        E("TeddyPaw", (sx * 0.655, 0.545, -0.22), (0.22, 0.22, 0.1), lt, (rot_axis((0, 0, 1), sx * 0.45),))
+        E("TeddyLeg", (sx * 0.3, 0.19, -0.34), (0.38, 0.34, 0.6), col)
+        E("TeddyFoot", (sx * 0.3, 0.2, -0.635), (0.29, 0.31, 0.06), lt)
+        for k in range(3):
+            E("TeddyToe", (sx * 0.3 + (k - 1) * 0.08, 0.31, -0.66), (0.06, 0.06, 0.02), mix(lt, dk, 0.25))
+        E("TeddyBow", (sx * 0.11, 1.06, -0.335), (0.2, 0.14, 0.07), (225, 40, 60), (rot_axis((0, 0, 1), sx * 0.3),), "SmoothPlastic")
+    E("TeddyBowKnot", (0, 1.06, -0.36), (0.08, 0.09, 0.06), (180, 20, 40), mat="SmoothPlastic")
 
 
 def spinning_top(b, c, s, cols):
+    """A striped spinning top on its point (s = its height), turning."""
     x, y, z = c
     root = b.prop_root("Top")
     rig = b.rig(root, "Spin", axis_frame((x, y, z), UP), 0.4, 4, name="TopSpin")
-    for k in range(6):
-        d = s * (1 - abs(k - 2.5) / 3.2)
-        cyl(b, "TopBand", (x, y + s * 0.12 * (k + 0.5), z), s * 0.12 + 0.1, d, cols[k % len(cols)], "SmoothPlastic", rig)
-    cyl(b, "TopStem", (x, y + s * 0.85, z), s * 0.3, s * 0.08, (240, 240, 240), "SmoothPlastic", rig)
+    n = 18
+    y0, H = y + 0.1 * s, 0.82 * s
+    for k in range(n):
+        t = (k + 0.5) / n
+        prof = (t / 0.55) ** 0.75 if t < 0.55 else 1 - 0.8 * ((t - 0.55) / 0.45) ** 1.5
+        d = s * (0.05 + 0.8 * prof)
+        cyl(b, "TopBand", (x, y0 + H * t, z), H / n + 0.05, d, cols[(k // 2) % len(cols)], "SmoothPlastic", rig, refl=0.08)
+    cyl(b, "TopRim", (x, y0 + H * 0.55, z), 0.03 * s, s * 0.88, (255, 255, 255), "SmoothPlastic", rig)
+    cone(b, "TopTip", (x, y0, z), 0.1 * s, 0.07 * s, (200, 200, 210), "Metal", rig, n=4, down=True)
+    cyl(b, "TopHandle", (x, y0 + H + 0.14 * s, z), 0.28 * s, 0.08 * s, (245, 245, 245), "SmoothPlastic", rig)
+    ball(b, "TopKnob", (x, y0 + H + 0.3 * s, z), 0.13 * s, cols[0], "SmoothPlastic", rig)
 
 
-def duck(b, c, s):
-    x, y, z = c
-    ell(b, "DuckBody", (x, y + s * 0.35, z), (s * 1.2, s * 0.7, s * 0.8), (255, 215, 30), parent=b.scenery)
-    B(b, "DuckHead", (x + s * 0.4, y + s * 0.9, z), s * 0.55, (255, 215, 30))
-    ell(b, "Beak", (x + s * 0.72, y + s * 0.85, z), (s * 0.3, s * 0.1, s * 0.22), (255, 120, 20), parent=b.scenery)
-    for sz in (-1, 1):
-        B(b, "DuckEye", (x + s * 0.6, y + s * 1.0, z + sz * s * 0.15), s * 0.08, (20, 20, 20))
+def duck(b, c, s, yaw=0.0):
+    """A rubber duck (s = its body length), facing its -Z."""
+    L = Local(c, yaw)
+    Y, O, O2, dk = (255, 214, 40), (255, 130, 20), (230, 100, 10), (24, 20, 20)
+
+    def E(name, p, size, color, rot=(), mat="SmoothPlastic"):
+        ell(b, name, L.at(p[0] * s, p[1] * s, p[2] * s), tuple(v * s for v in size), color, mat, parent=b.scenery,
+            rot=L.rot(*rot), )
+
+    E("DuckBody", (0, 0.36, 0.05), (0.88, 0.62, 1.25), Y)
+    E("DuckChest", (0, 0.46, -0.36), (0.78, 0.58, 0.62), Y)
+    E("DuckTail", (0, 0.6, 0.55), (0.46, 0.32, 0.4), Y, (rot_axis((1, 0, 0), -0.7),))
+    E("DuckHead", (0, 0.98, -0.36), (0.64, 0.62, 0.6), Y)
+    E("DuckTuft", (0, 1.31, -0.33), (0.07, 0.2, 0.12), Y, (rot_axis((1, 0, 0), 0.4),))
+    E("DuckBeak", (0, 0.94, -0.7), (0.38, 0.12, 0.34), O)
+    E("DuckBeakLow", (0, 0.88, -0.66), (0.3, 0.08, 0.26), O2)
+    for sx in (-1, 1):
+        E("DuckEye", (sx * 0.16, 1.08, -0.6), (0.1, 0.13, 0.06), dk)
+        E("DuckEyeShine", (sx * 0.16 + 0.025, 1.12, -0.625), (0.03, 0.035, 0.012), (255, 255, 255), mat="Neon")
+        E("DuckWing", (sx * 0.43, 0.48, 0.08), (0.16, 0.36, 0.64), (245, 196, 30), (rot_axis((0, 0, 1), sx * 0.22),))
+        E("DuckCheek", (sx * 0.22, 0.94, -0.52), (0.12, 0.08, 0.06), (255, 150, 120))
 
 
 # ===================================================================== 7. Orbit
@@ -463,6 +605,11 @@ def planet(b, c, R, col, band, rng, ring=None, moons=0):
 
 
 def asteroid(b, c, s, rng, col=(110, 104, 100)):
+    for k in range(5):
+        a, e = rng.random() * TAU, rng.uniform(-0.6, 0.9)
+        d = (math.cos(a) * math.cos(e), math.sin(e), math.sin(a) * math.cos(e))
+        ell(b, "Crater", add(c, mul(d, s * 0.4)), (s * 0.22, s * 0.22, s * 0.06), mix(col, (0, 0, 0), 0.45), "Slate",
+            parent=b.scenery, rot=axis_frame((0, 0, 0), d) * CF((0, 0, 0), (0, 0, 1), (0, 1, 0), (-1, 0, 0)))
     for k in range(3):
         o = (rng.uniform(-0.25, 0.25) * s, rng.uniform(-0.2, 0.2) * s, rng.uniform(-0.25, 0.25) * s)
         ell(b, "Asteroid", add(c, o), (s * rng.uniform(0.6, 1.0), s * rng.uniform(0.5, 0.8), s * rng.uniform(0.6, 1.0)),
@@ -534,62 +681,71 @@ def obsidian_spire(b, c, h, d, sk, tip=True):
 
 # ===================================================================== 9. Frostbite
 def mountain(b, c, R, H, rng, sk):
-    """A snowy massif: a smooth main peak and shoulder peaks, rock showing low down, snow fields up high, ice veins."""
+    """A snowy massif: a faceted main peak and shoulder peaks, snow caps set at a twist so their edges break jagged
+    across the rock, boulders round the foot."""
     x, y, z = c
-    rock, rock2 = (112, 122, 138), (92, 100, 116)
+    rock, rock2 = (112, 122, 138), (96, 104, 120)
 
-    def peak(px, pz, R_, H_, base_y, k0=0):
-        n = 22
-        for k in range(n):
-            t = (k + 0.5) / n
-            rr = R_ * (1 - t) ** 1.25 + 8
-            yy = base_y + H_ * t
-            snow = t > 0.55 - 0.1 * ((k0 + k) % 2)
-            C(b, "Snow" if snow else "Rock", (px, yy, pz), H_ / n + 0.6, 2 * rr, sk.SNOW if snow else (rock if k % 2 else rock2),
-              "Snow" if snow else "Slate")
-        cone(b, "Summit", (px, base_y + H_ - 10, pz), 40, 30, sk.SNOW, "Snow", parent=b.scenery, n=3)
+    def peak(px, pz, R_, H_, k0):
+        n = 9
+        rot = rng.random()
+        wcone(b, "Rock", (px, y, pz), H_, R_, rock if k0 % 2 == 0 else rock2, "Slate", n=n, rot=rot)
+        f = rng.uniform(0.4, 0.5)
+        wcone(b, "Snow", (px, y + H_ * (1 - f) - 2, pz), H_ * f + 4, R_ * f * 1.08 + 3, sk.SNOW, "Snow", n=n,
+              rot=rot + math.pi / n)
 
-    peak(x, z, R, H, y)
+    peak(x, z, R, H, 0)
     for k in range(4):
         a = TAU * k / 4 + rng.uniform(-0.3, 0.3)
         d = R * rng.uniform(0.55, 0.75)
-        peak(x + math.cos(a) * d, z + math.sin(a) * d, R * rng.uniform(0.45, 0.6), H * rng.uniform(0.45, 0.65), y, k)
+        peak(x + math.cos(a) * d, z + math.sin(a) * d, R * rng.uniform(0.45, 0.6), H * rng.uniform(0.45, 0.65), k + 1)
     for k in range(18):
         a = rng.random() * TAU
-        d = R * rng.uniform(0.75, 1.05)
-        ell(b, "Boulder", (x + math.cos(a) * d, y + rng.uniform(10, 60), z + math.sin(a) * d),
+        d = R * rng.uniform(0.85, 1.1)
+        ell(b, "Boulder", (x + math.cos(a) * d, y + rng.uniform(10, 40), z + math.sin(a) * d),
             (rng.uniform(60, 140), rng.uniform(40, 90), rng.uniform(60, 140)), rock2, "Slate", parent=b.scenery,
             rot=CF((0, 0, 0)) * rot_y(rng.random() * 3))
-    for k in range(14):
-        a = rng.random() * TAU
-        t = rng.uniform(0.15, 0.6)
-        rr = R * (1 - t) ** 1.25 + 10
-        P(b, "IceVein", CF((x + math.cos(a) * rr, y + H * t, z + math.sin(a) * rr)) * rot_y(-a), (5, rng.uniform(60, 160), 16),
-          sk.ICE, "Ice")
 
 
 def pine(b, base, h, rng):
+    """A snowy pine: four faceted tiers, each with snow on its shoulders."""
     x, y, z = base
-    C(b, "PineTrunk", (x, y + h * 0.12, z), h * 0.24, h * 0.08, (90, 60, 40), "Wood")
-    for k in range(3):
-        cone(b, "Pine", (x, y + h * (0.18 + 0.24 * k), z), h * 0.42, h * (0.62 - 0.14 * k), (40, 100, 70), "Grass",
-             parent=b.scenery, n=4)
-        cone(b, "PineSnow", (x, y + h * (0.3 + 0.24 * k), z), h * 0.3, h * (0.4 - 0.1 * k), (246, 250, 255), "Snow",
-             parent=b.scenery, n=3)
-
+    C(b, "PineTrunk", (x, y + h * 0.1, z), h * 0.2, h * 0.07, (96, 64, 42), "Wood")
+    rot = rng.random()
+    for k in range(4):
+        y0 = y + h * (0.14 + 0.19 * k)
+        r = h * (0.31 - 0.06 * k)
+        wcone(b, "Pine", (x, y0, z), h * 0.36, r, (34 + 6 * k, 96 + 8 * k, 66), "Grass", n=8, rot=rot + 0.3 * k)
+        wcone(b, "PineSnow", (x, y0 + h * 0.36 * 0.55, z), h * 0.36 * 0.45 + 1.5, r * 0.45 + 1.5, (246, 250, 255), "Snow", n=8,
+              rot=rot + 0.3 * k + math.pi / 8)
 
 # ===================================================================== 10. High Score
 def cabinet(b, c, W, H, D, sk, yaw=0.0):
-    x, y, z = c
-    fr = CF((x, y, z)) * rot_y(yaw)
-    P(b, "Cabinet", fr * CF((0, H / 2, 0)), (W, H, D), (26, 22, 44))
-    P(b, "Screen", fr * CF((0, H * 0.62, -D / 2 - 0.3)), (W * 0.8, H * 0.36, 0.6), (20, 60, 90), "Neon")
-    P(b, "Marquee", fr * CF((0, H * 0.92, -D / 2 - 0.3)), (W * 0.9, H * 0.1, 0.6), sk.NEON[0], "Neon")
-    P(b, "Panel", fr * CF((0, H * 0.38, -D / 2 - 8)), (W * 0.9, 6, 18), (40, 36, 60))
+    """A classic arcade cabinet facing its -Z: tilted screen with a ghost, lit marquee, joystick and buttons."""
+    L = Local(c, yaw)
+    body, trim = (30, 24, 52), sk.NEON[0]
+    P(b, "CabinetBase", L.cf_at(0, H * 0.22, 0), (W, H * 0.44, D), body)
+    P(b, "CabinetTop", L.cf_at(0, H * 0.72, D * 0.12), (W, H * 0.56, D * 0.76), body)
+    P(b, "ControlPanel", L.cf_at(0, H * 0.47, -D * 0.52, rot_axis((1, 0, 0), 0.28)), (W * 0.98, H * 0.05, D * 0.32), (44, 38, 70))
+    P(b, "ScreenBezel", L.cf_at(0, H * 0.7, -D * 0.27, rot_axis((1, 0, 0), -0.12)), (W * 0.86, H * 0.38, 2), (16, 14, 26))
+    P(b, "Screen", L.cf_at(0, H * 0.7, -D * 0.27 - 1.2, rot_axis((1, 0, 0), -0.12)), (W * 0.74, H * 0.3, 0.6), (14, 40, 70), "Neon")
+    nrm = L.cf.vec((0, math.sin(0.12), -math.cos(0.12)))
+    pixel_art(b, L.at(0, H * 0.7, -D * 0.27 - 1.6), nrm, L.cf.vec((0, math.cos(0.12), math.sin(0.12))), GHOST, W * 0.035,
+              sk.NEON[0], "Neon", b.scenery, th=0.4, name="ScreenGhost")
+    P(b, "Marquee", L.cf_at(0, H * 0.96, D * 0.08), (W * 1.04, H * 0.1, D * 0.86), body)
+    P(b, "MarqueeGlow", L.cf_at(0, H * 0.96, -D * 0.35 - 0.4), (W * 0.94, H * 0.07, 0.6), trim, "Neon")
+    stick = L.at(-W * 0.22, H * 0.5, -D * 0.55)
+    cyl(b, "Joystick", add(stick, (0, H * 0.04, 0)), H * 0.08, W * 0.025, (30, 30, 36), "SmoothPlastic", b.scenery)
+    ball(b, "JoystickBall", add(stick, (0, H * 0.09, 0)), W * 0.06, sk.NEON[4], "SmoothPlastic", b.scenery)
     for k in range(4):
-        B(b, "Button", fr.point((-W * 0.25 + k * W * 0.12, H * 0.38 + 4, -D / 2 - 8)), 8, sk.NEON[k + 1], "Neon")
-    for s in (-1, 1):
-        P(b, "SideGlow", fr * CF((s * (W / 2 + 0.3), H / 2, 0)), (0.6, H * 0.96, D * 0.96), sk.NEON[1], "Neon", transp=0.4)
+        q = L.at(W * (0.02 + k * 0.1), H * 0.495, -D * 0.55)
+        cyl(b, "Button", q, H * 0.02, W * 0.05, sk.NEON[k + 1], "Neon", b.scenery)
+    P(b, "CoinDoor", L.cf_at(0, H * 0.18, -D / 2 - 0.4), (W * 0.3, H * 0.16, 0.8), (50, 44, 80))
+    for k in (-1, 1):
+        P(b, "CoinSlot", L.cf_at(k * W * 0.07, H * 0.2, -D / 2 - 0.9), (W * 0.05, H * 0.03, 0.4), (255, 80, 60), "Neon")
+    for sx in (-1, 1):
+        P(b, "SideStripe", L.cf_at(sx * (W / 2 + 0.4), H * 0.55, 0), (0.6, H * 0.08, D * 0.9), sk.NEON[1], "Neon")
+        P(b, "SideStripe2", L.cf_at(sx * (W / 2 + 0.4), H * 0.42, 0), (0.6, H * 0.03, D * 0.9), sk.NEON[2], "Neon")
 
 
 def coin(b, c, d, axis=(0, 0, 1)):
@@ -603,3 +759,47 @@ GHOST = ["0011100", "0111110", "1101011", "1111111", "1111111", "1010101"]
 def ghost(b, c, px, col, normal=(0, 0, -1)):
     from skins import pixel_art
     pixel_art(b, c, normal, (0, 1, 0), GHOST, px, col, "Neon", parent=b.scenery, th=2.0, name="Ghost")
+
+
+def clock_tower(b, base, W, top_y, sk, rng):
+    """A tall clock tower: panelled shaft with brass pilasters and bands, four clock faces, a stepped roof and spire.
+    base = bottom centre; the clock faces sit just under top_y."""
+    x, y, z = base
+    H = top_y - y
+    wood, brass, dark = (92, 58, 40), sk.BRASS, sk.DARK
+    P(b, "TowerShaft", CF((x, y + H / 2, z)), (W, H, W), wood, "Wood")
+    for sx in (-1, 1):
+        for sz in (-1, 1):
+            P(b, "Pilaster", CF((x + sx * W / 2, y + H / 2, z + sz * W / 2)), (W * 0.12, H, W * 0.12), brass, "Metal")
+    k = 1
+    while k * 80 < H - W:
+        P(b, "TowerBand", CF((x, y + k * 80, z)), (W + 2, 4, W + 2), brass, "Metal")
+        k += 1
+    # the clock storey
+    cy = top_y - W * 0.55
+    P(b, "ClockStorey", CF((x, cy, z)), (W * 1.12, W * 1.1, W * 1.12), dark, "Wood")
+    for k in range(4):
+        a = TAU * k / 4
+        n = (math.cos(a), 0.0, math.sin(a))
+        fc = (x + n[0] * (W * 0.56 + 1.5), cy, z + n[2] * (W * 0.56 + 1.5))
+        cyl(b, "ClockBezel", fc, 2.0, W * 0.92, brass, "Metal", b.scenery, axis=n)
+        cyl(b, "ClockFace", add(fc, mul(n, 1.3)), 0.6, W * 0.8, sk.FACE, "SmoothPlastic", b.scenery, axis=n)
+        fr = axis_frame(fc, n)
+        for t in range(12):
+            th = TAU * t / 12
+            d = add(mul(fr.y, math.cos(th)), mul(fr.z, math.sin(th)))
+            q = add(add(fc, mul(n, 1.8)), mul(d, W * 0.33))
+            Pt(b, "ClockTick", CF(q, n, d, cross(n, d)), (0.4, W * (0.07 if t % 3 == 0 else 0.04), W * 0.025), sk.INK,
+               "SmoothPlastic", b.scenery)
+        for (L_, w_, th) in ((W * 0.3, W * 0.03, 0.9 + k), (W * 0.2, W * 0.045, 2.6 + k * 0.7)):
+            d = add(mul(fr.y, math.cos(th)), mul(fr.z, math.sin(th)))
+            q = add(add(fc, mul(n, 2.2)), mul(d, L_ / 2))
+            Pt(b, "ClockHand", CF(q, n, d, cross(n, d)), (0.4, L_, w_), sk.INK, "SmoothPlastic", b.scenery)
+        ball(b, "ClockPin", add(fc, mul(n, 2.4)), W * 0.05, brass, "Metal", b.scenery)
+    # stepped roof and spire
+    ry = cy + W * 0.55
+    for k in range(6):
+        w_ = W * (1.2 - 0.18 * k)
+        P(b, "TowerRoof", CF((x, ry + 7 + k * 14, z)), (w_, 14, w_), (60, 70, 110) if k % 2 == 0 else (70, 82, 126), "Slate")
+    cyl(b, "Spire", (x, ry + 100 + 30, z), 60, 6, brass, "Metal", b.scenery)
+    ball(b, "SpireBall", (x, ry + 165, z), 14, brass, "Metal", b.scenery)

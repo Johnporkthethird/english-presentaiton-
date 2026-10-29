@@ -58,7 +58,7 @@ def lay_road(b, pts, widths, rails=False, tunnel=None, bank=None, name="Deck", l
             f1 = unit(sub(pts[j + 1], pts[j]))
             if (dot(f0, f1) < math.cos(math.radians(1.2)) or widths[j + 1] != widths[i]
                     or math.dist(pts[i], pts[j + 1]) > 120
-                    or (bank and abs(bank(j + 1) - bank(i)) > 0.02)):
+                    or (bank and abs(bank(j + 1) - bank(i)) > 0.01)):
                 break
             j += 1
         slabs.append((i, j))
@@ -69,6 +69,24 @@ def lay_road(b, pts, widths, rails=False, tunnel=None, bank=None, name="Deck", l
     cum = [0.0]
     for a, c in zip(pts, pts[1:]):
         cum.append(cum[-1] + math.dist(a, c))
+    # bends are mitred: each slab stops where its inner edge meets the next one's, so no two road tops ever overlap
+    # (overlaps flicker, and lifting one to stop the flicker leaves a ledge); the wedge left open on the outside of the
+    # bend is filled flush with a triangle
+    dirs = [unit(sub(pts[j], pts[i])) for (i, j) in slabs]
+    trim_a = [0.0] * len(slabs)
+    trim_b = [0.0] * len(slabs)
+    for si in range(len(slabs) - 1):
+        fa, fb = dirs[si], dirs[si + 1]
+        pa_, pb_ = unit((fa[0], 0.0, fa[2])), unit((fb[0], 0.0, fb[2]))
+        lft = (pa_[2], 0.0, -pa_[0])  # cross(UP, f): the left of the slab
+        th = math.atan2(dot(pb_, lft), dot(pb_, pa_))
+        if abs(th) < math.radians(0.3) or (bank and (abs(bank(slabs[si][1])) > 1e-4)):
+            continue
+        t = math.tan(abs(th) / 2)
+        la = math.dist(pts[slabs[si][0]], pts[slabs[si][1]])
+        lb = math.dist(pts[slabs[si + 1][0]], pts[slabs[si + 1][1]])
+        trim_b[si] = min(widths[slabs[si][0]] / 2 * t, 0.45 * la)
+        trim_a[si + 1] = min(widths[slabs[si + 1][0]] / 2 * t, 0.45 * lb)
     for si, (i, j) in enumerate(slabs):
         pa, pb = pts[i], pts[j]
         L = math.dist(pa, pb)
@@ -76,12 +94,7 @@ def lay_road(b, pts, widths, rails=False, tunnel=None, bank=None, name="Deck", l
             continue
         w = widths[i]
         f = unit(sub(pb, pa))
-        # slabs that carry straight on just meet end to end; only a bend gets a small overlap to close the seam
-        nxt = slabs[si + 1] if si + 1 < len(slabs) else None
-        bend = nxt is not None and dot(f, unit(sub(pts[nxt[1]], pts[nxt[0]]))) < math.cos(math.radians(1.2))
-        prev = slabs[si - 1] if si else None
-        bend_in = prev is not None and dot(f, unit(sub(pts[prev[1]], pts[prev[0]]))) < math.cos(math.radians(1.2))
-        a_ext, b_ext = (0.2 if bend_in else 0.0), (0.2 if bend else 0.0)
+        a_ext, b_ext = -trim_a[si], -trim_b[si]
         mid = add(lerp(pa, pb, 0.5), mul(f, (b_ext - a_ext) / 2))
         L = L + a_ext + b_ext
         bk = bank((i + j) // 2) if bank else 0.0
@@ -95,6 +108,8 @@ def lay_road(b, pts, widths, rails=False, tunnel=None, bank=None, name="Deck", l
                      (1.8, 0.4, L), sk.road_style()["edge"], sk.road_style()["edge_mat"], parent)
         if tunnel:
             sk.tunnel_piece(b, fr, w, L, tunnel)
+        if trim_b[si] > 0 and si + 1 < len(slabs):
+            _mitre_fill(b, parent, pts[j], f, dirs[si + 1], trim_b[si], trim_a[si + 1], w, widths[slabs[si + 1][0]], name)
         for t in (0.0, 0.5, 1.0):
             p = lerp(pa, pb, t)
             b.samples.append((p[0], p[1], p[2], w))
@@ -125,6 +140,23 @@ def lay_road(b, pts, widths, rails=False, tunnel=None, bank=None, name="Deck", l
             if cum[k] - last >= 22 or k == n - 1:
                 b.line(p[0], p[1], p[2])
                 last = cum[k]
+
+
+def _mitre_fill(b, parent, v, fa, fb, ea, eb, wa, wb, name):
+    """The flush triangle that closes the outside of a mitred bend between two road slabs."""
+    import epic_marks as M
+    fra, frb = deck_frame(v, fa), deck_frame(v, fb)
+    s_in = 1.0 if dot(unit((fb[0], 0.0, fb[2])), fra.x) > 0 else -1.0
+    ae = sub(v, mul(fa, ea))
+    bs = add(v, mul(fb, eb))
+    inner = add(ae, mul(fra.x, s_in * wa / 2))
+    a_out = sub(ae, mul(fra.x, s_in * wa / 2))
+    b_out = sub(bs, mul(frb.x, s_in * wb / 2))
+    st = b.skin.road_style()
+    M.tri(b, name, inner, a_out, b_out, st["top"], st["top_mat"], parent, th=2.0, inward=sub(v, (0, 6, 0)), collide=True)
+    M.tri(b, "RoadSide", a_out, b_out, sub(b_out, (0, 7.0, 0)), st["side"], st["side_mat"], parent, th=1.0, inward=v)
+    M.tri(b, "RoadSide", a_out, sub(a_out, (0, 7.0, 0)), sub(b_out, (0, 7.0, 0)), st["side"], st["side_mat"], parent, th=1.0,
+          inward=v)
 
 
 def SC_P(b, name, cf, size, color, mat="SmoothPlastic", parent=None, collide=False, transp=0.0, shape=1, attrs=None,

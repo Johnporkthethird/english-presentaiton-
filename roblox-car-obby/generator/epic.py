@@ -41,12 +41,17 @@ def build_level(fac, unit_, level_folder, level_id, length, templates):
     r = RT.Route(b, (X0 + 110, Y0, ZC), (1, 0, 0), 64)
     r.rng = rng
     r.X1 = X1
-    used = epic_levels.LEVELS[level_id](r, skin, rng)
+    import os
+    if os.environ.get("GALLERY") and level_id == 1:
+        import gallery
+        used = gallery.build(r, skin, rng)
+    else:
+        used = epic_levels.LEVELS[level_id](r, skin, rng)
     # home: arrive on the centre line heading down the course
     end = (X1 - 110, Y0, ZC)
     import rush
     k = 0
-    while X1 - 110 - r.p[0] > 760 and k < 6:
+    while X1 - 110 - r.p[0] > 760 and k < 6 and not os.environ.get("GALLERY"):
         # keep the beats coming all the way home: aim at the finish and jump again
         rush.aim(r, "Home Bend %d" % (k + 1), length - 110, 0.0, R=100, limit=60)
         dy = max(-60.0, min(60.0, (Y0 - r.p[1]) * 0.6))

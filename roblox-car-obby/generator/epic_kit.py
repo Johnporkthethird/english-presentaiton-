@@ -184,7 +184,7 @@ def a_crumble_field(b, st, d, rng, W=150.0, L=330.0, cell=30.0):
                 continue
             m = b.model("CrumbleTile", b.hazards, {"ObbyCrumble": float(delay)})
             c = (x0 + cell * (i + 0.5), st.y, st.z - W / 2 + cell * (j + 0.5))
-            b.skin.crumble_tile(b, m, c, cell - 1.6, i + j)
+            b.skin.crumble_tile(b, m, c, cell - 0.3, i + j)
             b.samples.append((c[0], st.y, c[2], cell))
         b.line(x0 + cell * (i + 0.5), st.y, st.z - W / 2 + cell * (mid + 0.5))
     st.x = x0 + nx * cell
