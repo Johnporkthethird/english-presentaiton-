@@ -48,7 +48,7 @@ def title_gate(b, level_id, title):
     beam = P(b, "GateBoard", look_frame((x, y + 50, z), (-1, 0, 0)), (span + 10, 30, 4), th["deco"], "SmoothPlastic")
     P(b, "GateTrim", CF((x, y + 65.5, z)), (5, 1.4, span + 12), th["edge"], "Neon")
     P(b, "GateTrim", CF((x, y + 34.5, z)), (5, 1.4, span + 12), th["edge"], "Neon")
-    sign(b, beam, 5, [("LEVEL %d" % level_id, 0.06, 0.3), (title.upper(), 0.36, 0.58)], th["accent"])
+    sign(b, beam, 5, [(getattr(b, "gate_label", "LEVEL %d" % level_id), 0.06, 0.3), (title.upper(), 0.36, 0.58)], th["accent"])
     sign(b, beam, 2, [(title.upper(), 0.2, 0.6)], th["edge"])
 
 

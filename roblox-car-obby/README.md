@@ -8,31 +8,38 @@ in a random ten of the 100 levels after every race; in this file it is pinned to
 workspace attribute `ObbyDefaultCourse = "course1"`. Delete that attribute (or run
 `python3 generator/test_course.py generator good.rbxl out.rbxl random`) to go back to random courses.
 
-## Levels 1-10, version 5: set-piece tours
+## Levels 1-10: the Mechanical Playground
 
-Each level is a tour through set pieces, and what you land on is the object itself:
+Levels 1-10 form one long course in the sky, built from dark steel machinery. The roads are coloured, with hazard stripes,
+glowing boost strips, gears and pistons. Each stage has its own accent colour, and huge rings, gears, towers and robot
+arms stand around it. The ten course slots run straight into each other:
 
-| # | Level | Set pieces |
-|---|-------|------------|
-| 1 | Stunt Show | drop into a laser box, a ramp through a ring of fire, star jumps, the hexagon mega ramp, a rocky downhill |
-| 2 | Island Hop | islands in the sea, bobbing boats, a ring of fire, a lighthouse, a ferry |
-| 3 | Rooftop Run | city rooftops at every height, a laser box, a skyscraper ramp |
-| 4 | Sky Garden | clouds, bounce mushrooms, stars, a ring of fire |
-| 5 | Clockwork Town | town rooftops, spinning gears, a clock-hand bridge, a pendulum ferry, music-box keys that sink |
-| 6 | Pipe Dream | warp pipes, sinking piano keys, a ring of fire, a power star, a laser box |
-| 7 | Orbit | stars in space, UFO tractor beams, a space-station laser box, a comet ramp, the moon surface |
-| 8 | Eruption | an ash slope, rings of fire, islands in a lava lake, a lava causeway, a geyser |
-| 9 | Frostbite | a black run, a ski jump, ice floes, an ice breaker, an avalanche run |
-| 10 | High Score | laser mazes, neon piano keys, a bonus star, warp pipes, a boss box |
+| Stage | Name | What is in it |
+|-------|------|---------------|
+| 1 | Launch Runway | A wide runway with boost lanes and gantries, then a giant ramp through a suspended ring. You land on one of three routes: the central landing, a high narrow line (full speed only) or a low road that pads back up. Then an enclosed hammer corridor with crushers, swinging side hammers, overhead punches and sweeping arms, and its S-bend second hall. |
+| 2 | Collapsing Highway | Tilting spans, a span that slides away and back, a falling tile span, and rolling spans on curves. A three-way split: the centre has spin gates and a turntable, the narrow right side is faster, and the lower left route has shaky tiles and a pad back up. |
+| 3 | The Loop | A long acceleration ramp into a giant vertical loop with turning rings round it. A bypass goes round it. A high shortcut fires you diagonally through the middle of the loop, with a recovery deck under it. Then the airborne sequence: a ramp up onto a sky deck, a long gap over turning propeller beams, and a split landing. The lower right deck leads by a precision hop to a hidden ledge that cuts the corner. |
+| 4 | Crusher Works | An enclosed machine hall with crusher plates that slam together, lane walls that rise from the floor, floors that slide away, grinders on a reverse conveyor and a piston hall. An exit tunnel leads onto a launch ramp. Then a magnet crane carries the car over the void, and a fast belt runs under a row of presses. |
+| 5 | Bridge Works | A swing span that turns half round, a sectional bridge of four quarter-turn sections, and a crossroads turntable. When the turntable stands at 90 degrees it lines up with a side spur, which is a safer way past everything. Also a see-saw bridge, a gear turntable, a pendulum ferry, a tilt gauntlet, and a lower route of small spinning platforms. |
+| 6 | Demolition Yard | Wrecking balls of every size: across the road, down one lane, and huge slow ones on tall frames. A pair swings in opposite directions, then a wide escape ramp. A littered scrap heap, a drop, and a launch. Broken barriers and chains everywhere. |
+| 7 | Corkscrew Tower | Piston lifts, then two banked laps spiralling down round a mechanical tower, with hops between the segments. The tower holds the road on spokes. Then a boost tunnel, a banked slalom and a second corkscrew. |
+| 8 | Fan Tunnel | Giant fans with blades sweeping down through the road, each with its own size, speed and position. Shutters, a split duct with a small fan in each lane, close fans, an open-air jump, and updraft fans. |
+| 9 | Smash Yard | Breakable crate and brick walls that you smash through at speed (they fly off and come back), and reinforced gates you must steer round. A cracked wall at the fork hides a straight shortcut. Wall gauntlet, reinforced maze, crate walls after the launch. |
+| 10 | Final Gauntlet | A collapsing straight, a medley of every machine, a swing span and a see-saw, narrow jumps, crusher plates, and a boost run to the giant final ramp. A recovery deck under the ramp pads you back up. Victory lane and the finish arch. |
 
-- How it works:
-  - Every top you drive on is an invisible boost floor inside the object. It holds every car at the level's speed,
-    so each jump is the same for every car.
-  - Drops, kickers and up pads join the pieces. Each landing is checked from 80% to 100% of that speed.
-  - Seas and lava kill on contact.
-- Code: `generator/stages.py` has the set pieces and `generator/rush4_levels.py` the ten tours. `generator/obby.py`
-  has the links and traps.
-- The validator reports 0 issues on levels 1-10. Not tested in Roblox Studio.
+- Moving parts use the game's own systems:
+  - `ObbyPropAnim` rigs for hammers, crushers, wrecking balls, fans, shutters and pistons.
+  - The clock rotor engine for bridges that turn, rock and carry the car.
+  - Sinking tiles for collapsing road.
+  - The arcade brick walls (`ArcadeM = "bricks"`) for breakable walls.
+  - `WallRide` for the loop.
+  - The magnet ride for the crane.
+  - Launch pads for lifts and updrafts.
+- Two small changes outside the level geometry:
+  - The `ObbyAssembler` position list now also moves `ClockRest` and `BrickFace` with a level, so rotors and brick walls work in any slot.
+  - The level exporter marks brick walls as moving parts, so the validator does not count them as blocking the road.
+- Code: `generator/mech.py` has the whole course; `generator/obby.py` has the links between platforms.
+- The validator reports 0 issues on levels 1-10. **Not tested in Roblox Studio.**
 - Levels 11-100 are still the earlier object-world versions below.
 
 ## How the levels are built

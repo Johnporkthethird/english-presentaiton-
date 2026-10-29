@@ -148,13 +148,13 @@ def check(lv):
         f = f / max(D, 1e-6)
         # pad: an exact launch; up: an up booster (the car keeps its own speed: the slowest and a typical take-off);
         # key: the car's own jump; drop: rolling off an edge
-        speeds = ([H] if kind == "pad" else [110.0, 170.0] if kind in ("up", "key")
+        speeds = ([H] if kind in ("pad", "exact") else [110.0, 170.0] if kind in ("up", "key")
                   else [H * 0.9, H] if kind in ("ramp", "bounce", "drive") else [H] if kind == "ramp_hop"
                   else [H * 0.8, H] if kind in ("kick", "oup")
                   else [70.0, 130.0, 200.0] if kind == "drop" and H < 200 else [H * 0.8, H] if kind == "drop"
                   else [90.0, 115.0, 160.0])
         for v in speeds:
-            up = (V if kind in ("pad", "up", "bounce", "ramp_hop", "drive", "oup") else V * v / H if kind in ("ramp", "kick")
+            up = (V if kind in ("pad", "exact", "up", "bounce", "ramp_hop", "drive", "oup") else V * v / H if kind in ("ramp", "kick")
                   else 0.0 if kind == "drop" else 140.0)
             pos = s + np.array([0, 3.0, 0])
             vel = f * v + np.array([0, up, 0])

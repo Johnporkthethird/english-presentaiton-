@@ -123,6 +123,20 @@ class Obby:
         r.p = add(lip, add(mul(f, start), add(mul(right_of(f), side * (1 + SLOW) / 2), (0, base_y + dy - lip[1], 0))))
         return self
 
+    def pad_range(self, dy, apex=None):
+        """(start, far) along the heading of the platform an up pad of dy would throw the car onto."""
+        B = self.B
+        apex = apex or max(dy + 45.0, 60.0)
+        while True:
+            V = math.sqrt(2 * G * apex)
+            disc = math.sqrt(max(V * V - 2 * G * (dy + 4), 0.0))
+            t_up = (V - disc) / G if dy > 0 else 0.0
+            t_dn = (V + math.sqrt(max(V * V - 2 * G * dy, 0.0))) / G
+            lo_edge = B * t_up + 24.0
+            if lo_edge <= SLOW * B * t_dn - 44:
+                return SLOW * B * t_dn - 48.0, B * t_dn
+            apex *= 1.1
+
     def pad(self, dy, side=0.0, label="Pad", apex=None):
         """An up pad at the platform's end: straight up, still going forward, onto a platform dy higher."""
         b, r, B = self.b, self.r, self.B

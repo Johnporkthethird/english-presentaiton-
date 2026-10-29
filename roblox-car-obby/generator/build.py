@@ -21,7 +21,7 @@ import polish
 sys.setrecursionlimit(1000000)
 threading.stack_size(512 * 1024 * 1024)
 
-POS_ATTR = {"CheckpointCFrame", "ClockRest", "HeadHome", "TrolleyHome", "RideA", "RideB", "RideC", "RideD"}
+POS_ATTR = {"CheckpointCFrame", "ClockRest", "BrickFace", "HeadHome", "TrolleyHome", "RideA", "RideB", "RideC", "RideD"}
 import os
 EXPORT = os.environ.get("EXPORT_DIR")
 SHOWCASE = set(range(1, 11))
@@ -132,7 +132,7 @@ def export_level(lvl, path, course, meta):
         moving = 0
         a = d.parent
         while a is not None and a is not lvl:
-            if a.cls == "Model" and any(k in rbxl.attrs(a) for k in ("PropMotion", "ClockRotor", "ClockSand")):
+            if a.cls == "Model" and any(k in rbxl.attrs(a) for k in ("PropMotion", "ClockRotor", "ClockSand", "ArcadeM")):
                 moving = 1
                 break
             a = a.parent
@@ -193,13 +193,15 @@ def main():
 
     # the assembler moves world positions held in attributes with a level: the clock rides' rest frames too
     OLD_PA = b"A.POS_ATTR = { CheckpointCFrame = true, HeadHome = true"
-    NEW_PA = b"A.POS_ATTR = { ClockRest = true, CheckpointCFrame = true, HeadHome = true"
+    NEW_PA = b"A.POS_ATTR = { BrickFace = true, ClockRest = true, CheckpointCFrame = true, HeadHome = true"
+    MID_PA = b"A.POS_ATTR = { ClockRest = true, CheckpointCFrame = true, HeadHome = true"
     for i in place.all():
         if i.cls == "ModuleScript" and i.name == "ObbyAssembler":
             src = i.get("Source")
             if NEW_PA not in src:
-                assert OLD_PA in src, "ObbyAssembler changed"
-                i.set("Source", src.replace(OLD_PA, NEW_PA))
+                old = MID_PA if MID_PA in src else OLD_PA
+                assert old in src, "ObbyAssembler changed"
+                i.set("Source", src.replace(old, NEW_PA))
 
     report = []
     for lid in only:

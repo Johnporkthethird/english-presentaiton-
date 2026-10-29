@@ -15,7 +15,7 @@ def go():
     ws = p.roots[0]
     print("ObbyDefaultCourse", rbxl.attrs(ws).get("ObbyDefaultCourse"), "ObbyMix", rbxl.attrs(ws).get("ObbyMix"))
     asm = [i for i in allx if i.cls == "ModuleScript" and i.name == "ObbyAssembler"]
-    print("assembler moves ClockRest:", all(b"ClockRest = true" in i.get("Source") for i in asm), len(asm))
+    print("assembler moves ClockRest + BrickFace:", all(b"ClockRest = true" in i.get("Source") and b"BrickFace = true" in i.get("Source") for i in asm), len(asm))
     for c in sorted([c for c in ws.children if c.name.startswith("OBBY")], key=lambda c: rbxl.attrs(c).get("ObbySlot", 0)):
         a = rbxl.attrs(c)
         ds = c.descendants()
@@ -37,6 +37,11 @@ def go():
                 zp = CF.from_prop(zone.get("CFrame")).p
                 A = da["RideA"][1:4]
                 worst = max(worst, math.dist(zp, A) - 8)
+            if d.cls == "Model" and da.get("ArcadeM") == "bricks":
+                n["brickwall"] += 1
+                face = da["BrickFace"][1]
+                ps = [CF.from_prop(q.get("CFrame")).p for q in d.descendants() if is_basepart(q)]
+                worst = max(worst, min(math.dist(face, q) for q in ps) - da["BrickW"] / 2 - da["BrickH"])
             if d.cls == "Model" and da.get("ClockSand"):
                 n["sinkboard"] += 1
             if d.cls == "Model" and da.get("BounceModel"):
