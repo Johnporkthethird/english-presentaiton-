@@ -111,7 +111,7 @@ def _extend(p, f, delta):
     p.set("CFrame", CF(tuple(cf.p[i] + shift[i] for i in range(3)), cf.x, cf.y, cf.z).to_prop())
 
 
-def fix(root, passes=25):
+def fix(root, passes=60):
     """Resolve every fight. Returns (fights found at the start, fights left)."""
     first = None
     for _ in range(passes):

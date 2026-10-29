@@ -15,6 +15,7 @@ from geom import CF, look_frame
 from builder import LevelBuilder, X0, ZC, Y0
 import levels3
 import showcase
+import epic
 import polish
 
 sys.setrecursionlimit(1000000)
@@ -177,9 +178,12 @@ def main():
         for c in list(lvl.children):
             detach(c)
         length = rbxl.attrs(unit)["Length"]
-        builder_ = showcase.build_level if lid in SHOWCASE else levels3.build_level
+        builder_ = epic.build_level if lid in SHOWCASE else levels3.build_level
         b, used, title, theme = builder_(fac, unit, lvl, lid, length, tpl)
-        zf0, zf1 = polish.fix(lvl)
+        zf0, zf1 = (0, 0) if os.environ.get("FAST") else polish.fix(lvl)
+        if zf1:
+            for (oa, pa, fa), (ob, pb, fb) in polish.conflicts(lvl, 0.02)[:12]:
+                print("   ZF", pa.name, pb.name, [round(v, 1) for v in fa[1]])
         cpath, cpts = b.course_path_ordered()
         unit.find("CoursePath").set("Value", cpath.encode())
         n = len(lvl.descendants())

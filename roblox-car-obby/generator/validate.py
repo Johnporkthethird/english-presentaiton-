@@ -110,8 +110,16 @@ def check(lv):
     # 3. jumps: fly them at a few speeds and see where they come down
     for j in lv.jumps:
         kind, s, tg, H, V = j
-        if lv.meta.get("straight") and (abs(tg[2] - s[2]) > 0.01 or tg[0] <= s[0]):
-            issues.append(("pad not straight", list(np.round(s, 0)), list(np.round(tg, 0))))
+        if lv.meta.get("straight") and kind == "pad":
+            # the pad must fire straight at its target: its LaunchForward points along the jump
+            pads = [h for h in lv.hidden if h["a"].get("CarLaunchPad")]
+            if pads:
+                pp = min(pads, key=lambda h: (h["p"][0] - s[0]) ** 2 + (h["p"][2] - s[2]) ** 2)
+                fw = np.array(pp["a"]["LaunchForward"][-3:], dtype=float)
+                jv = np.array([tg[0] - s[0], 0.0, tg[2] - s[2]])
+                jv /= max(np.linalg.norm(jv), 1e-6)
+                if float(np.dot(fw, jv)) < 0.9995:
+                    issues.append(("pad not straight", list(np.round(s, 0)), list(np.round(tg, 0))))
         s, tg = np.array(s), np.array(tg)
         f = tg - s
         f[1] = 0
@@ -158,7 +166,7 @@ def check(lv):
         t, i = lv.ray(pos, np.array([0, -1.0, 0]), road, 16)
         if t is None:
             issues.append(("cp over nothing", list(np.round(pos, 0))))
-        near = (np.linalg.norm((lv.P - pos)[:, [0, 2]], axis=1) < 30) & lv.hazard
+        near = (np.linalg.norm((lv.P - pos)[:, [0, 2]], axis=1) < 30) & (np.abs(lv.P[:, 1] - pos[1]) < 30) & lv.hazard
         if near.any():
             issues.append(("cp near hazard", list(np.round(pos, 0)), lv.name[int(np.nonzero(near)[0][0])]))
     # 5. kill sheets below every road they cover

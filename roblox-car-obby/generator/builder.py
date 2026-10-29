@@ -238,7 +238,7 @@ class LevelBuilder:
     # ------------------------------------------------------------ course furniture
     def checkpoint(self, x, y, z, w, fwd=(1, 0, 0)):
         self.cp_count += 1
-        idx = round(0.05 * self.cp_count, 4)
+        idx = round(getattr(self, "cp_step", 0.05) * self.cp_count, 4)
         if idx >= 0.96:
             self.cp_count -= 1
             return
