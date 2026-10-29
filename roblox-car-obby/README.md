@@ -1,5 +1,13 @@
 # Car obby: 100 object-world levels
 
+## Testing the new levels
+
+Open `good.rbxl` in Roblox Studio and press Play. The race course in Workspace (`OBBY1`-`OBBY10`) is levels 1-10, joined
+to the start grid, the racing line (`RACING_START.CoursePath`) and the finish stadium. The world rotation normally swaps
+in a random ten of the 100 levels after every race; in this file it is pinned to the main course (levels 1-10) by the
+workspace attribute `ObbyDefaultCourse = "course1"`. Delete that attribute (or run
+`python3 generator/test_course.py generator good.rbxl out.rbxl random`) to go back to random courses.
+
 ## Showcase build: levels 1-10 (awaiting approval)
 
 Levels 1-10 (the boot course, `Workspace.OBBY1`-`OBBY10`) are non-stop jump levels: no long roads. Every level is a run
