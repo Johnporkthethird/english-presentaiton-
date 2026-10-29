@@ -250,7 +250,10 @@ class LevelBuilder:
                   attrs={"CheckpointCFrame": ("CFrame", pose.p, pose.rows()), "CheckpointIndex": idx})
         # the flag at the road's right edge
         flag = self.fac.clone(self.tpl["flag"], self.level)
-        T = look_frame((x, y + SPAWN_UP, z), f) * self.tpl["flag_ref"].inverse()
+        # (the template's pole stands on the line it was made at, which is the middle of the road: put it at the edge)
+        rgt = (-f[2], 0.0, f[0])
+        side = max(w, 48) / 2 + 3
+        T = look_frame((x + rgt[0] * side, y + SPAWN_UP, z + rgt[2] * side), f) * self.tpl["flag_ref"].inverse()
         transform_tree(flag, T)
         a = rbxl.attrs(flag)
         a["CpIndex"] = idx

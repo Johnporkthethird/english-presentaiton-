@@ -430,6 +430,23 @@ def m_rink(b, st, d, rng):
     st.x += 90
 
 
+def _clear_corridor(b, keep, boxes):
+    """Remove freshly made dressing that reaches into the space a car drives through (boxes: (lo, hi) corners)."""
+    from factory import is_basepart
+    for d in [d for d in b.level.descendants() if id(d) not in keep]:
+        if not is_basepart(d) or d.get("CanCollide"):
+            continue
+        cf = CF.from_prop(d.get("CFrame"))
+        s = d.get("size")
+        ext = [abs(cf.x[i]) * s[0] / 2 + abs(cf.y[i]) * s[1] / 2 + abs(cf.z[i]) * s[2] / 2 for i in range(3)]
+        for lo, hi in boxes:
+            if all(cf.p[i] + ext[i] > lo[i] and cf.p[i] - ext[i] < hi[i] for i in range(3)):
+                if d.parent is not None:
+                    d.parent.children.remove(d)
+                    d.parent = None
+                break
+
+
 def m_loop(b, st, d, rng):
     w = 34.0
     K.rest(b, st, w=K.W(b, 48))
@@ -437,10 +454,10 @@ def m_loop(b, st, d, rng):
     b.boost(st.x + 40, st.y, st.z)
     b.line(st.x + 94, st.y, st.z)
     st.x += 100
-    R = 54.0
+    R = 64.0
     dz = w + 10
     cx, cy, z0 = st.x, st.y + R, st.z
-    n = 40
+    n = 56
     pts = []
     for i in range(n + 1):
         ph = TAU * i / n
@@ -450,7 +467,11 @@ def m_loop(b, st, d, rng):
     b.skin.ribbon(b, pts, w, m)
     for p, nrm in pts[::3]:
         b.path.append((p[0] + nrm[0] * CAR_UP, p[1] + nrm[1] * CAR_UP, p[2], "s"))
+    keep = set(map(id, b.level.descendants()))
     b.skin.loop_deco(b, (cx, cy, z0 + dz / 2), R, w)
+    _clear_corridor(b, keep, [((cx - 140, st.y - 1, z0 - w / 2 - 3), (cx + 2, st.y + 20, z0 + w / 2 + 3)),
+                              ((cx - 2, st.y - 1, z0 + dz - w / 2 - 3), (cx + 160, st.y + 20, z0 + dz + w / 2 + 3)),
+                              ((cx - 2, st.y - 1, z0 - w / 2 - 3), (cx + 160, st.y + 20, z0 + dz + w / 2 + 3))])
     # one wide deck to steer back into the lane the loop started in, so every pad after it fires straight
     K.run(b, st.x, st.x + 150, st.y, z0 + dz / 2, w + dz)
     b.line(st.x + 20, st.y, z0 + dz)

@@ -27,7 +27,7 @@ def sugar_rush(r, sk, rng):
     b = r.b
     run(r, "Start", 110, w=70)
     kick(r, "Cake Launch", 300, 330, rings=5, land=150, w=84)
-    c = under(r, 90)
+    c = add(under(r, 120), mul(RT.left_of(r.f), -240))  # the cake stands beside the landing, as tall as it
     M.cake(b, (c[0], 0, c[2]), [(150, c[1] - 260, c[1] - 140, (226, 170, 110), (255, 150, 190)),
                                  (110, c[1] - 140, c[1] - 60, (250, 236, 210), (255, 255, 255)),
                                  (70, c[1] - 60, c[1] - 8, (226, 170, 110), (120, 220, 200))], rng)
@@ -86,7 +86,9 @@ def drive_thru(r, sk, rng):
 # Up and down all the way: big bounces up onto mushroom caps, dives down off them; an organic weave.
 def spore_springs(r, sk, rng):
     b = r.b
-    cap = lambda col: (lambda b_, t, w: M.giant_mushroom(b_, (t[0], t[1] - 300, t[2]), 290, 150, col, rng))
+    # giant toadstools beside each bounce's landing deck, their caps level with it
+    cap = lambda col: (lambda b_, t, w, f: M.giant_mushroom(
+        b_, add(add(t, mul(RT.left_of(f), -(w / 2 + 95))), (0, -300, 0)), 290, 150, col, rng))
     run(r, "Start", 90, w=56)
     kick(r, "Spore Bounce", 200, 130, apex=210, rings=2, land_fn=cap((190, 40, 50)))
     kick(r, "Cap Dive", 260, -90)
@@ -117,33 +119,28 @@ def checkmate(r, sk, rng):
     b = r.b
     run(r, "Start", 90, w=60)
     sq = lambda b_, t, s_, rng_: (M.column(b_, "Tower", sub(t, (0, 6, 0)), t[1] - 260, 40, sk.WHITE if int(t[0]) % 2 else sk.BLACK),
-                                  sk.plat(b_, t, s_, rng_))
-    # knight's L hops: two ahead, one aside, each a step higher
-    lft = RT.left_of(r.f)
-    tg, q = [], r.p
-    for k in range(5):
-        q = add(q, add(mul(r.f, 150), add(mul(lft, 75 * (1 if k % 2 == 0 else -1)), (0, 22, 0))))
-        tg.append(q)
-    r.hops("Knight's Tour", tg, plat=sq, s=62, land=(200, -10, 60, 120))
-    bc = add(tg[2], (0, 0, 0))
+                                  sk.island(b_, t, s_, rng_))
+    # the knight's tour: up the black and white towers on boosters, a step higher each time
+    for k in range(3):
+        kick(r, "Knight's Tour %d" % (k + 1), 260, 40, rings=1, w=64,
+             land_fn=lambda b_, t, w_, f_: M.column(b_, "Tower", sub(t, (0, 6, 0)), t[1] - 260, 70,
+                                                sk.WHITE if int(t[0]) % 2 else sk.BLACK))
+    bc = add(r.p, (0, 0, 0))
     M.board(b, (bc[0], 0, bc[2]), 8, 100, Y0 - 270)
     for kind, du, dv, col in (("king", 2.6, 2.8, sk.BLACK), ("queen", -2.8, 2.2, sk.WHITE), ("rook", 3.0, -3.0, sk.WHITE),
                               ("bishop", -1.6, -3.2, sk.BLACK), ("knight", 0.4, 3.4, sk.WHITE)):
         M.chess_piece(b, kind, (bc[0] + du * 100, Y0 - 270, bc[2] + dv * 100), 110, col)
     r.local("Rook Sliders", EK.a_frogger, 0.7, rng, W=190, lanes=3,
-            block=lambda b_, rig, c, s_, i: M.chess_piece(b_, "rook", (c[0], c[1] - 4, c[2]), 28, sk.WHITE if i % 2 else sk.BLACK) and None)
+            block=lambda b_, rig, c, s_, i: (EK._slider_block(b_, rig, c, s_, i),
+                                             M.chess_piece(b_, "rook", (c[0], c[1] + 18.5, c[2]), 26, sk.WHITE if i % 2 else sk.BLACK,
+                                                           parent=rig)))
     bend(r, "Square Corner", 90, 60, cp=True)
     kick(r, "Bishop Leap", 240, 40, rings=2)
     gauntlet(r, "Pawn Crushers", 260, [EK.ob_press], every=85)
     bend(r, "File Corner", -90, 60)
     r.local("Crumbling Board", EK.a_crumble_field, 0.7, rng, W=120, L=240)
     kick(r, "Queen's Gambit", 280, 60, rings=3, cp=True)
-    lft = RT.left_of(r.f)
-    tg, q = [], r.p
-    for k in range(5):
-        q = add(q, add(mul(r.f, 150), add(mul(lft, 75 * (1 if k % 2 else -1)), (0, -30, 0))))
-        tg.append(q)
-    r.hops("Knight Descent", tg, plat=sq, s=62, land=(200, -20, 60, 120))
+    isles(r, "Knight Descent", 5, dy=-10, s=80, side=10, plat=sq)
     bend(r, "Rank Corner", -90, 60)
     drops(r, "Castling Steps", 3, step=40, L=110)
     r.local("King's Cross", SC.m_cross, 0.7, rng)
@@ -234,7 +231,7 @@ def orbit(r, sk, rng):
     M.planet(b, add(r.p, (-60, -190, 0)), 150, (210, 120, 80), (240, 180, 120), rng, moons=2)
     aim(r, "Orbit Bend", 1400, -500, R=140)
     kick(r, "Mars Hop", 440, -20, apex=200, rings=6, land=140, cp=True)
-    rock = lambda b_, t, s_, rng_: (M.asteroid(b_, sub(t, (0, s_ * 0.35, 0)), s_ * 0.9, rng_), sk.plat(b_, t, s_, rng_))
+    rock = lambda b_, t, s_, rng_: (M.asteroid(b_, sub(t, (0, s_ * 0.55, 0)), s_ * 0.8, rng_), sk.plat(b_, t, s_, rng_))
     aim(r, "Belt Bend", 2600, -600, R=140)
     isles(r, "Asteroid Field", 4, D=220, dy=10, s=60, side=50, plat=rock, land=(260, 0, 70, 130))
     aim(r, "Ring Bend", 3500, 200, R=140)
@@ -310,12 +307,12 @@ def high_score(r, sk, rng):
         M.coin(b, A(600 + k * 700, 140 + 50 * (k % 3), (-1) ** k * 700), 110)
         M.ghost(b, A(900 + k * 640, 80, (-1) ** (k + 1) * 820), 13, sk.NEON[k % 6])
     run(r, "Start", 80, w=40)
-    for k in range(4):
+    for k in range(3):
         kick(r, "Beat %d" % (k + 1), 150, 15 if k % 2 == 0 else -15, land=70, w=40, apex=40)
     bend(r, "Square Wave 1", 90, 50, w=40, cp=True)
     gauntlet(r, "Laser Rhythm", 200, [EK.ob_gate], every=50)
     bend(r, "Square Wave 2", -90, 50)
-    for k in range(4):
+    for k in range(3):
         kick(r, "Combo %d" % (k + 1), 160, 20 if k % 2 == 0 else -10, land=70, apex=45, rings=1)
     bend(r, "Square Wave 3", -90, 50, cp=True)
     pix = lambda b_, t, s_, rng_: (M.column(b_, "PixelPillar", sub(t, (0, 8, 0)), t[1] - 200, 26, sk.NEON[int(t[0]) % 6]),
@@ -324,7 +321,7 @@ def high_score(r, sk, rng):
     bend(r, "Square Wave 4", 90, 50)
     r.local("Pinball Bumpers", EK.a_bumper_field, 0.8, rng, W=150, L=240)
     kick(r, "Power Up", 220, 80, rings=3, cp=True)
-    for k in range(4):
+    for k in range(2):
         kick(r, "Bonus %d" % (k + 1), 150, -20, land=70, apex=45)
     r.local("Neon Loop", SC.m_loop, 0.8, rng)
     aim(r, "Last Wave", 5330, 0, R=60)

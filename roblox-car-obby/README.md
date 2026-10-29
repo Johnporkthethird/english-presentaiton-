@@ -31,7 +31,17 @@ flight, loops, wall rides, tubes). Each level has its own shape, length, height 
 
 - `generator/rush.py` has the beats, `generator/rush_levels.py` the ten levels, `generator/route.py` lays them in any
   direction, `generator/epic_marks.py` the giant landmarks, `generator/epic_kit.py` the arenas and obstacles.
-- Every jump is an exact launch pad that fires straight at its landing (the drawn kicker ramp never collides).
+- Jumps the car can clear on its own are real ramps: a solid kicker wedge you drive off with the car's own jump, and a
+  long landing deck so any normal speed lands.
+- Boosters (`LaunchPad`, `BoosterUp`) only push straight up: they keep your speed and direction and set the upward
+  speed, and you steer in the air to land where you want. None fires you in a set direction (`LaunchForward` is gone).
+  They are only used where a climb is too high for a normal jump.
+- Moving props animate: each animated model's pivot sits at its own centre, so `ObbyPropAnim`'s 1400-stud distance
+  cull no longer hides them (before, every pivot was at the level origin).
+- No phasing: scenery the car can reach (big blocks, wedges, round shapes) is solid; checkpoint flags stand at the road
+  edge; cakes, mushrooms and asteroids sit beside the landings instead of through them; rook sliders have a solid block
+  with a hazard; loops are bigger (radius 64), thicker and smoother, with nothing in the entry and exit lanes. The
+  validator checks the flight path and racing line against every solid part.
 - Every level stays inside its own X box and starts and ends on the course centre line, so the shuffle still works.
 - Models: a seated teddy bear, a rubber duck, a spinning top, lettered alphabet blocks, giant toadstools, a horse-headed
   knight, a four-faced clock tower, low-poly snowy peaks and pine trees (smooth faceted cones built from wedge

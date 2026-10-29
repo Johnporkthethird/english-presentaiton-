@@ -29,6 +29,8 @@ class Level:
         self.moving = np.array([p[19] for p in d["parts"]], dtype=bool)
         self.hazard = np.array([p[20] for p in d["parts"]], dtype=bool)
         self.name = [self.names[p[22]] for p in d["parts"]]
+        self.alpha = np.array([p[18] for p in d["parts"]], dtype=float)
+        self.kind = kind
         self.path = np.array(d["path"], dtype=float)
         self.hidden = h["hidden"]
         self.jumps = h["jumps"]
@@ -125,9 +127,12 @@ def check(lv):
         f[1] = 0
         D = float(np.linalg.norm(f))
         f = f / max(D, 1e-6)
-        speeds = [H] if kind == "pad" else [70.0, 130.0, 200.0] if kind == "drop" else [90.0, 115.0, 160.0]
+        # pad: an exact launch; up: an up booster (the car keeps its own speed: the slowest and a typical take-off);
+        # key: the car's own jump; drop: rolling off an edge
+        speeds = ([H] if kind == "pad" else [110.0, 170.0] if kind in ("up", "key")
+                  else [70.0, 130.0, 200.0] if kind == "drop" else [90.0, 115.0, 160.0])
         for v in speeds:
-            up = V if kind == "pad" else 0.0 if kind == "drop" else 140.0
+            up = V if kind in ("pad", "up") else 0.0 if kind == "drop" else 140.0
             pos = s + np.array([0, 3.0, 0])
             vel = f * v + np.array([0, up, 0])
             landed = None
@@ -183,6 +188,10 @@ def check(lv):
         pitch = np.degrees(np.arcsin(np.clip(np.abs(fwd[:, 1]), 0, 1)))
         if pitch.max() > 24:
             issues.append(("steep road", round(float(pitch.max()), 1)))
+    # 7b. scenery the car would drive or fly straight through (decoration across the racing line)
+    ghost = phase_check(lv)
+    if ghost:
+        issues.append(("drives through scenery", len(ghost), sorted(set(n for n, _ in ghost))[:8], ghost[:3]))
     # 7. bumps: the road height under the wheels, every 2 studs along the line, must change smoothly
     bumps = bump_check(lv)
     if bumps:
@@ -190,8 +199,35 @@ def check(lv):
     return issues
 
 
+PASS = ("Hoop", "Ring", "Updraft", "Target", "Halo", "Laser", "Glow", "Flame", "Stripe", "Lip", "Edge", "Chevron",
+        "Pad", "Sparkle", "Sugar", "Sprinkle", "Spot", "Shine", "Arrow", "Beam", "Light", "Line", "Trim", "Sign", "Text",
+        "Letter", "Pixel", "Kicker", "Floor", "Rail", "FlagCap")
+
+
+def phase_check(lv):
+    """Visible, non-colliding parts in the way of the car's body along the racing line."""
+    deco = (~lv.collide) & (~lv.hazard) & (~lv.moving) & np.array(
+        [not any(k in n for k in PASS) for n in lv.name])
+    alpha = np.array([p for p in lv.alpha]) if hasattr(lv, "alpha") else None
+    if alpha is not None:
+        deco &= alpha < 0.6
+    out = []
+    for k, (a, b) in enumerate(zip(lv.path, lv.path[1:])):
+        dv = b - a
+        L = float(np.linalg.norm(dv))
+        if L < 0.5:
+            continue
+        for lift in (-2.0, 1.0):
+            o = a + np.array([0, lift, 0])
+            t, i = lv.ray(o, dv / L, deco, L)
+            if t is not None:
+                out.append((lv.name[i], [round(float(v)) for v in o + dv / L * t]))
+                break
+    return out
+
+
 def bump_check(lv, step=2.0, tol=0.5):
-    solid = lv.collide & ~lv.moving
+    solid = lv.collide & ~lv.moving & np.array([n != "Kicker" for n in lv.name])  # (a ramp wedge, not a box)
     idx_all = np.nonzero(solid)[0]
     # world AABBs of the solid parts
     ext = np.einsum("nij,nj->ni", np.abs(lv.R[idx_all]), lv.S[idx_all] / 2)

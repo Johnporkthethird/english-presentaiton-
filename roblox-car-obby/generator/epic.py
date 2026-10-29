@@ -8,6 +8,44 @@ import landmarks
 import route as RT
 
 
+SOFT = ("Hoop", "Ring", "Updraft", "Target", "Halo", "Laser", "Glow", "Flame", "Stripe", "Lip", "Edge", "Chevron", "Arrow",
+        "Beam", "Light", "Line", "Trim", "Sign", "Text", "Letter", "Pixel", "Kicker", "Sprinkle", "Sugar", "Spot", "Shine",
+        "Drip", "Pearl", "Sesame", "Tick", "Hand", "Numeral", "Toe", "Eye", "Smile", "Nose", "Button", "Ghost", "Swirl",
+        "Frill", "Crack", "LavaFall", "Crater", "Bow", "Cheek", "Tuft", "Cloth", "Flag", "Coin", "Leaves", "Crown", "Fruit",
+        "Vine", "Moon", "Atmosphere", "Band", "Cream", "Whip", "Straw", "Stem")
+
+
+def solidify(b):
+    """Make the big scenery solid, so a car that strays into a landmark hits it instead of passing through. Blocks,
+    cylinders, balls and wedge shells collide as they are; an ellipsoid gets an invisible ball inside it (a part with a
+    sphere mesh would collide as its whole box). Thin, glowing or see-through dressing stays a ghost."""
+    from factory import is_basepart, MAT
+    from geom import CF
+    neon = MAT["Neon"]
+    n = 0
+    for d in list(b.scenery.descendants()):
+        if not is_basepart(d) or d.cls == "MeshPart" or d.get("CanCollide"):
+            continue
+        if d.get("Transparency", 0.0) > 0.3 or d.get("Material") == neon or any(k in d.name for k in SOFT):
+            continue
+        sz = d.get("size")
+        if any(c.cls == "SpecialMesh" for c in d.children):
+            if min(sz) >= 10:
+                cf = CF.from_prop(d.get("CFrame"))
+                k = min(sz) * 0.9
+                b.part(d.name + "Solid", CF(cf.p), (k, k, k), (255, 255, 255), parent=d.parent, transp=1, collide=True,
+                       shape=0)
+                n += 1
+            continue
+        thin_ok = d.cls == "WedgePart" and min(sz) >= 0.9
+        if (min(sz) < 3 and not thin_ok) or max(sz) < 10:
+            continue
+        d.set("CanCollide", True)
+        d.set("CanQuery", True)
+        n += 1
+    return n
+
+
 def build_level(fac, unit_, level_folder, level_id, length, templates):
     import skins
     import journey_skins  # noqa: F401
@@ -60,6 +98,17 @@ def build_level(fac, unit_, level_folder, level_id, length, templates):
             rush.gauntlet(r, "Home Run %d" % (k + 1), 180, epic_levels.FINAL[level_id][k % 2:] + epic_levels.FINAL[level_id][:k % 2],
                           every=70)
         k += 1
+    if not os.environ.get("GALLERY"):
+        # too little room left to roll back to the finish height: step down (or boost up) first
+        import journey as J
+        dh = Y0 - r.p[1]
+        need = abs(dh) * 1.32 / (J.MAX_GRADE * 0.95) + 120
+        if math.dist(r.p, end) < need and abs(dh) > 8:
+            if dh < 0:
+                n = int(math.ceil(-dh / 40.0))
+                rush.drops(r, "Home Steps", n, step=-dh / n)
+            else:
+                rush.booster(r, "Home Boost", 160, dh)
     if math.dist(r.p, end) > 1:
         r.connect("Final Dash", end, (1, 0, 0), w1=72)
         L = sum(math.dist(a, c) for a, c in zip(r.last[0], r.last[0][1:]))
@@ -74,6 +123,7 @@ def build_level(fac, unit_, level_folder, level_id, length, templates):
     b.line(X1, Y0, ZC)
     landmarks.title_gate(b, level_id, skin.title)
     skin.environment(b)
+    solidify(b)
     RT.kill_sheets(b)
     b.route = r
     for o in RT.overlaps(r):

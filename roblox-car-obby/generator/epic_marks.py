@@ -347,7 +347,18 @@ def glow_pond(b, c, R, y, col=(60, 200, 190)):
 
 
 # ===================================================================== 4. Checkmate
-def chess_piece(b, kind, base, s, col, trim=(232, 190, 90)):
+def chess_piece(b, kind, base, s, col, trim=(232, 190, 90), parent=None):
+    """A giant chess piece, s = its base diameter (parent: a rig, to make it move)."""
+    keep = b.scenery
+    if parent is not None:
+        b.scenery = parent
+    try:
+        return _chess_piece(b, kind, base, s, col, trim)
+    finally:
+        b.scenery = keep
+
+
+def _chess_piece(b, kind, base, s, col, trim=(232, 190, 90)):
     """A giant chess piece, s = its base diameter."""
     x, y, z = base
     mat = "Marble" if col[0] > 128 else "SmoothPlastic"

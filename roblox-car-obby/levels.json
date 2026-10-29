@@ -17,8 +17,8 @@
    "Licorice Leap",
    "Sugar Rush Finale"
   ],
-  "instances": 3494,
-  "zfights_fixed": 714,
+  "instances": 3053,
+  "zfights_fixed": 444,
   "checkpoints": 5,
   "length": 5540.0
  },
@@ -40,8 +40,8 @@
    "Milkshake Leap",
    "Plate Spinners"
   ],
-  "instances": 3875,
-  "zfights_fixed": 861,
+  "instances": 3501,
+  "zfights_fixed": 755,
   "checkpoints": 9,
   "length": 5420.0
  },
@@ -63,8 +63,8 @@
    "Vine Slide",
    "Pond Jump"
   ],
-  "instances": 2919,
-  "zfights_fixed": 298,
+  "instances": 2509,
+  "zfights_fixed": 234,
   "checkpoints": 5,
   "length": 5620.0
  },
@@ -84,9 +84,9 @@
    "King's Cross",
    "Checkmate Jump"
   ],
-  "instances": 2956,
-  "zfights_fixed": 542,
-  "checkpoints": 8,
+  "instances": 2558,
+  "zfights_fixed": 602,
+  "checkpoints": 7,
   "length": 5310.0
  },
  {
@@ -107,8 +107,8 @@
    "Gear Teeth",
    "Midnight Jump"
   ],
-  "instances": 2873,
-  "zfights_fixed": 1134,
+  "instances": 2706,
+  "zfights_fixed": 1138,
   "checkpoints": 7,
   "length": 5610.0
  },
@@ -132,8 +132,8 @@
    "Spinning Tops",
    "Finish Ramp"
   ],
-  "instances": 5448,
-  "zfights_fixed": 1624,
+  "instances": 5417,
+  "zfights_fixed": 1464,
   "checkpoints": 11,
   "length": 5440.0
  },
@@ -150,8 +150,8 @@
    "Comet Leap",
    "Station Spin"
   ],
-  "instances": 2115,
-  "zfights_fixed": 664,
+  "instances": 1708,
+  "zfights_fixed": 643,
   "checkpoints": 6,
   "length": 5440.0
  },
@@ -171,9 +171,9 @@
    "Magma Windmill",
    "Last Eruption"
   ],
-  "instances": 2525,
-  "zfights_fixed": 838,
-  "checkpoints": 7,
+  "instances": 2565,
+  "zfights_fixed": 860,
+  "checkpoints": 6,
   "length": 5440.0
  },
  {
@@ -192,8 +192,8 @@
    "Avalanche",
    "Last Ski Jump"
   ],
-  "instances": 3910,
-  "zfights_fixed": 735,
+  "instances": 3794,
+  "zfights_fixed": 672,
   "checkpoints": 5,
   "length": 5440.0
  },
@@ -212,8 +212,8 @@
    "Neon Loop",
    "High Score"
   ],
-  "instances": 2503,
-  "zfights_fixed": 514,
+  "instances": 2235,
+  "zfights_fixed": 160,
   "checkpoints": 7,
   "length": 5440.0
  },

@@ -153,8 +153,9 @@ def ribbon(b, pts, w, model, rails=False, edge=True, name="Deck", color=None, st
         up = unit(sub(up, mul(f, dot(up, f))))
         x = cross(up, f)
         mid = lerp(p0, p1, 0.5)
-        cf = CF(sub(mid, mul(up, THICK / 2)), x, up, f)
-        P(b, name, cf, (w, THICK, L + 1.0), color or pal["top"], pal["top_mat"], parent=model, collide=True)
+        th = 8.0 if name == "RideDeck" else THICK  # (a loop or wall ride: thick enough that a fast car never tunnels)
+        cf = CF(sub(mid, mul(up, th / 2)), x, up, f)
+        P(b, name, cf, (w, th, L + 1.0), color or pal["top"], pal["top_mat"], parent=model, collide=True)
         if edge:
             for s in (-1, 1):
                 P(b, "Edge", CF(add(mid, add(mul(x, s * (w / 2 - 0.6)), mul(up, 0.25))), x, up, f), (1.2, 0.5, L + 1.0),

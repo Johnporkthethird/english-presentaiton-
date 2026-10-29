@@ -77,6 +77,23 @@ def place_slot(fac, unit, slot, x0):
     return lvl, "|".join(pts), ln
 
 
+def centre_props(lvl):
+    """Put every moving prop's pivot at its own centre. ObbyPropAnim only animates a prop while the camera is within
+    1400 studs of the prop's pivot; left at the level origin, everything past the first stretch of a level stood still."""
+    from factory import is_basepart
+    n = 0
+    for m in lvl.descendants():
+        if m.cls != "Model" or "ObbyProp" not in rbxl.attrs(m):
+            continue
+        ps = [CF.from_prop(d.get("CFrame")).p for d in m.descendants() if is_basepart(d)]
+        if not ps:
+            continue
+        c = tuple(sum(p[i] for p in ps) / len(ps) for i in range(3))
+        m.props["WorldPivotData"] = (0x1E, (CF(c).to_prop(), True))
+        n += 1
+    return n
+
+
 def export_level(lvl, path, course, meta):
     """Compact geometry dump for the browser preview (positions relative to the level origin)."""
     from factory import is_basepart
@@ -181,6 +198,7 @@ def main():
         builder_ = epic.build_level if lid in SHOWCASE else levels3.build_level
         b, used, title, theme = builder_(fac, unit, lvl, lid, length, tpl)
         zf0, zf1 = (0, 0) if os.environ.get("FAST") else polish.fix(lvl)
+        centre_props(lvl)
         if zf1:
             for (oa, pa, fa), (ob, pb, fb) in polish.conflicts(lvl, 0.02)[:12]:
                 print("   ZF", pa.name, pb.name, [round(v, 1) for v in fa[1]])
