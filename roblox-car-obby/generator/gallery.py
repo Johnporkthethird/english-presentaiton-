@@ -57,6 +57,17 @@ def build(r, sk, rng):
     slot("snowball", 100, 100, lambda c: (R2.ball(b, "Snowball", (c[0], Y0 + 15, c[2]), 30, (245, 250, 255), "Snow", b.scenery),
                                           R2.ball(b, "SnowballLump", (c[0] + 2, Y0 + 25, c[2] + 3), 15, (245, 250, 255), "Snow", b.scenery)))
     slot("crater", 900, 400, lambda c: R2.crater(b, (c[0], Y0, c[2]), 340, Y0, Y0 + 300, rng, gap=(0, 0, 1), gap_deg=40))
-    for i in range(1, 11):
-        slot("plat%d" % i, 120, 80, lambda c, i=i: S[i].plat(b, (c[0], Y0 + 60, c[2]), 60, rng))
+    import obby as OB
+    from geom import CF as _CF
+
+    def trap(fn):
+        def go(c):
+            Pt = __import__("skins").Pt
+            Pt(b, "Deck", _CF((c[0], Y0 - 2, c[2])), (90, 4, 60), (90, 90, 100), "SmoothPlastic", b.roads, collide=True)
+            fn(b, (c[0], Y0, c[2]), 60, 0)
+        return go
+    for name, fn in (("saw blade", OB.saw), ("pusher", OB.pusher), ("electric floor", OB.zap_floor),
+                     ("swinging blade", OB.axe), ("flame jets", OB.flames), ("spring mines", OB.mine), ("claw", OB.claw),
+                     ("crusher", OB.crusher), ("sweeper", OB.sweeper)):
+        slot(name, 160, 90, trap(fn))
     return out
