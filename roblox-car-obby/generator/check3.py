@@ -16,6 +16,18 @@ def go():
     print("ObbyDefaultCourse", rbxl.attrs(ws).get("ObbyDefaultCourse"), "ObbyMix", rbxl.attrs(ws).get("ObbyMix"))
     asm = [i for i in allx if i.cls == "ModuleScript" and i.name == "ObbyAssembler"]
     print("assembler moves ClockRest + BrickFace:", all(b"ClockRest = true" in i.get("Source") and b"BrickFace = true" in i.get("Source") for i in asm), len(asm))
+    srv = [i for i in allx if i.cls == "Script" and i.name == "TorretaControlsServer"]
+    print("coin layer takes CoinSpot clusters:", all(b"COIN SPOTS:" in i.get("Source") for i in srv), len(srv))
+    rot = [i for i in allx if i.cls == "Script" and i.name == "WorldRotation"]
+    print("rotation reads the course pin list:", all(b"a list of keys takes turns" in i.get("Source") for i in rot), len(rot))
+    pool = [c for c in p.roots if c.name == "ServerStorage"] or [c for c in allx if c.name == "ServerStorage"]
+    obp = [c for c in allx if c.name == "OBBY_POOL"]
+    if obp:
+        spots = collections.Counter()
+        for u in obp[0].children:
+            if u.name in ("L%03d" % i for i in range(11, 21)):
+                spots[u.name] = sum(1 for d in u.descendants() if (rbxl.attrs(d) or {}).get("CoinSpot"))
+        print("Obby 2 coin spots per level:", dict(sorted(spots.items())))
     for c in sorted([c for c in ws.children if c.name.startswith("OBBY")], key=lambda c: rbxl.attrs(c).get("ObbySlot", 0)):
         a = rbxl.attrs(c)
         ds = c.descendants()

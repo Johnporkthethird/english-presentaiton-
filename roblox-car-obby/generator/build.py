@@ -24,7 +24,7 @@ threading.stack_size(512 * 1024 * 1024)
 POS_ATTR = {"CheckpointCFrame", "ClockRest", "BrickFace", "HeadHome", "TrolleyHome", "RideA", "RideB", "RideC", "RideD"}
 import os
 EXPORT = os.environ.get("EXPORT_DIR")
-SHOWCASE = set(range(1, 11))
+SHOWCASE = set(range(1, 21))  # (1-10 Obby 1, the Mechanical Playground; 11-20 Obby 2, the Extreme Speedway)
 INDEX_ATTR = {"CheckpointIndex", "CpIndex"}
 
 
@@ -202,6 +202,31 @@ def main():
                 old = MID_PA if MID_PA in src else OLD_PA
                 assert old in src, "ObbyAssembler changed"
                 i.set("Source", src.replace(old, NEW_PA))
+
+    # the coin layer also puts a coin on every CoinSpot a level places (coin clusters on risky lines, in rings)
+    OLD_CO = b'    template:Destroy()\n    print(string.format("[coins] %d coins on the driving line", made))'
+    NEW_CO = (b'    for _, top in ipairs(workspace:GetChildren()) do -- COIN SPOTS: clusters a level places on its risky lines\n'
+              b'        if string.sub(top.Name, 1, 4) == "OBBY" then\n'
+              b'            for _, d in ipairs(top:GetDescendants()) do\n'
+              b'                if d:IsA("BasePart") and d:GetAttribute("CoinSpot") then\n'
+              b'                    local coin = template:Clone()\n'
+              b'                    coin.CFrame = CFrame.new(d.Position)\n'
+              b'                    coin:SetAttribute("HomeY", d.Position.Y)\n'
+              b'                    coin.Parent = field\n'
+              b'                    made += 1\n'
+              b'                end\n'
+              b'            end\n'
+              b'        end\n'
+              b'    end\n') + OLD_CO
+    hits = 0
+    for i in place.all():
+        if i.cls == "Script" and i.name == "TorretaControlsServer":
+            src = i.get("Source")
+            if b"COIN SPOTS:" not in src:
+                assert src.count(OLD_CO) == 1, "TorretaControlsServer coin layer changed"
+                i.set("Source", src.replace(OLD_CO, NEW_CO))
+            hits += 1
+    assert hits == 1, hits
 
     report = []
     for lid in only:

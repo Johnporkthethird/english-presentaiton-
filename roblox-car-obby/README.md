@@ -1,12 +1,20 @@
-# Car obby: 100 object-world levels
+# Car obby: 100 object-world levels, two built courses
 
 ## Testing the new levels
 
-Open `good.rbxl` in Roblox Studio and press Play. The race course in Workspace (`OBBY1`-`OBBY10`) is levels 1-10, joined
-to the start grid, the racing line (`RACING_START.CoursePath`) and the finish stadium. The world rotation normally swaps
-in a random ten of the 100 levels after every race; in this file it is pinned to the main course (levels 1-10) by the
-workspace attribute `ObbyDefaultCourse = "course1"`. Delete that attribute (or run
-`python3 generator/test_course.py generator good.rbxl out.rbxl random`) to go back to random courses.
+Open `good.rbxl` in Roblox Studio and press Play.
+- **Obby 1** (the Mechanical Playground, levels 1-10) is packed in Workspace (`OBBY1`-`OBBY10`), so the first race
+  plays it. The course is joined to the start grid, the racing line (`RACING_START.CoursePath`) and the finish stadium.
+- **Obby 2** (the Extreme Speedway, levels 11-20, the game's `course2`) comes in at the next intermission.
+- After that the two take turns, one race each.
+
+How the turns work:
+- The workspace attribute `ObbyDefaultCourse = "course2,course1"` sets the pin. The WorldRotation script reads it, and
+  a list of keys takes turns.
+- To play only one obby, set the pin to `course1` or `course2`.
+- To go back to the normal random ten of the 100 levels, delete the attribute, or run
+  `python3 generator/test_course.py generator good.rbxl out.rbxl random`.
+- The dev course picker can also load `course2` directly.
 
 ## Levels 1-10: the Mechanical Playground
 
@@ -40,7 +48,43 @@ track and its machines. The ten course slots run straight into each other:
   - The level exporter marks brick walls as moving parts, so the validator does not count them as blocking the road.
 - Code: `generator/mech.py` has the whole course; `generator/obby.py` has the links between platforms.
 - The validator reports 0 issues on levels 1-10. **Not tested in Roblox Studio.**
-- Levels 11-100 are still the earlier object-world versions below.
+- Levels 21-100 are still the earlier object-world versions below.
+
+## Levels 11-20: Obby 2, the Extreme Speedway
+
+A second, completely different course: a futuristic stunt playground high above a deep canyon. Roads are dark metal
+with neon orange and electric-blue edges and boost strips built into them. Giant rings hang over the jump lines. The
+canyon below has terraced walls, rock spires and a glowing river, so every jump looks enormous. It is all speed: huge
+ramps, chained jumps, risky shortcuts and near misses. There are no presses, slow lifts or doors to wait for.
+
+| Stage | Level | What is in it |
+|-------|-------|---------------|
+| 1 | Boost Blast | A wide dive onto boost strips, then a massive jump through a giant ring onto a long runway. A steep side ramp on the left flies to a sky shortcut. Then a boost carve, a canyon gap, three launch pads up, a sky dive and the rocket ramp. |
+| 2 | Splitter | A three-way split under green, yellow and red arches. The safe route is wide and easy. The middle route is a chain of six quick hops. The risky route has narrow beams and big gaps, and comes down past the merge. Then a crossover where the high road passes over the low one, a lane dash and a commit jump. |
+| 3 | Pinball Run | A plunger launch, then a playfield of padded pop bumpers with slingshot banks. Spinning stars and flippers to squeeze past, angled ramp shots between raised platforms, a bumper bend, the jackpot ring and the drain. |
+| 4 | Skyline Leap | A slalom round giant towers, then two launch pads up to the skyline deck. A steep ramp flies across the whole canyon through several rings. The narrow "Needle Gap" kicker threads between two towers. Then a banked bend and rooftop hops. |
+| 5 | Rolling Thunder | Barrel gates (giant rings round the road, each rolled further), banked sweepers with the racing line painted on, and the Thunder Bowl: once round a giant spinning ring, climbing over your own way in. Then high platforms linked by hops, a roll ramp and a downhill burst. |
+| 6 | Cracking Canyon | Road that cracks and drops away just after you drive on it, tilting spans and mesa hops. A long bridge breaks apart right behind you, or you can take a ledge route below it. A crumbling launch over the canyon and a last crack-up. |
+| 7 | Mega Ramp Cascade | Land, accelerate, launch again: a chain of ever bigger jumps with strips on every landing. An expert line takes a steeper ramp onto a high rail. Then a curved road, two launch pads, and the Mega Launch. |
+| 8 | Laser Slalom | Fixed laser fences with wide openings (and narrow coin slots), low laser hurdles to jump, sweeping beams that cover half the road, pulse gates where one half is always open, laser rotors, and the prism jump. |
+| 9 | Speed Frenzy | A boost runway, two left-right chicanes with bollards, gaps that get bigger and bigger, and a medley of bumpers, laser fences and cracking road. |
+| 10 | Grand Finale | A reprise of the best bits, a collapsing bridge, a launch pad, pulse gates, and the final jump through a giant double ring. You land on a huge bright finish platform and drive under the finish ring with its fireworks. |
+
+- **Rewards:**
+  - Coin clusters sit along the risky lines, inside the hard rings and on the shortcut flights. They use the game's
+    own coins.
+  - The coin layer now also puts a coin on every `CoinSpot` part a level places. That is a few lines added to
+    `TorretaControlsServer`; no new currency or system.
+- **Moving parts use the game's own systems:**
+  - `ObbyPropAnim` rigs for spinners, flippers, sweeping beams and rotors.
+  - The clock rotor engine for tilting spans.
+  - Sinking tiles for cracking road.
+  - Launch pads.
+  - `ObbyHazard` Knock for bumpers and Zap for lasers. Pulse gates use the hazard's own timing, so the laser kills
+    only while it is lit.
+- **Code:** `generator/speedway.py`. Checkpoints use the game's `CarObbyCheckpoint` system.
+- The validator reports 0 issues on levels 11-20 (and 1-10). It flies every jump and alternate-route jump at the
+  slowest and fastest take-off speeds. **Not tested in Roblox Studio.**
 
 ## How the levels are built
 

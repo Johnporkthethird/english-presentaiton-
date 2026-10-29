@@ -55,11 +55,13 @@ def build_level(fac, unit_, level_folder, level_id, length, templates):
     import rush3_levels
     import rush4_levels
     import mech
-    epic_levels = (mech if level_id in mech.LEVELS else rush4_levels if level_id in rush4_levels.LEVELS else
+    import speedway
+    epic_levels = (mech if level_id in mech.LEVELS else speedway if level_id in speedway.LEVELS else
+                   rush4_levels if level_id in rush4_levels.LEVELS else
                    rush3_levels if level_id in rush3_levels.LEVELS else old_levels)
-    new = epic_levels in (rush3_levels, rush4_levels, mech)
-    import mech as _mech
-    skin = _mech.Machine() if level_id in _mech.LEVELS else skins.SKINS[level_id]()
+    new = epic_levels in (rush3_levels, rush4_levels, mech, speedway)
+    skin = (mech.Machine() if level_id in mech.LEVELS else speedway.Speedway() if level_id in speedway.LEVELS else
+            skins.SKINS[level_id]())
     pal = skin.pal()
     rng = random.Random(91000 + level_id * 1301)
     b = LevelBuilder(fac, level_folder, pal, rng, length, templates)
@@ -101,7 +103,7 @@ def build_level(fac, unit_, level_folder, level_id, length, templates):
     k = 0
     import rush2
     import obby as OB
-    is_mech = epic_levels is mech
+    is_mech = epic_levels in (mech, speedway)
     while new and not is_mech and X1 - 110 - r.p[0] > 900 and k < 6 and not os.environ.get("GALLERY"):
         # keep the obby going all the way home: aim at the finish (gently), a platform with a trap, a jump
         rush.aim(r, "Home Bend %d" % (k + 1), length - 110, 0.0, R=300, limit=50)
