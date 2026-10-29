@@ -21,7 +21,7 @@ import polish
 sys.setrecursionlimit(1000000)
 threading.stack_size(512 * 1024 * 1024)
 
-POS_ATTR = {"CheckpointCFrame"}
+POS_ATTR = {"CheckpointCFrame", "ClockRest", "HeadHome", "TrolleyHome", "RideA", "RideB", "RideC", "RideD"}
 import os
 EXPORT = os.environ.get("EXPORT_DIR")
 SHOWCASE = set(range(1, 11))
@@ -55,6 +55,9 @@ def place_slot(fac, unit, slot, x0):
         for k, v in list(da.items()):
             if k in POS_ATTR and isinstance(v, tuple) and v[0] == "CFrame":
                 da[k] = ("CFrame", (v[1][0] + dx, v[1][1], v[1][2]), v[2])
+                ch = True
+            elif k in POS_ATTR and isinstance(v, tuple) and v[0] == "Vector3":
+                da[k] = ("Vector3", v[1] + dx, v[2], v[3])
                 ch = True
             elif k in INDEX_ATTR and isinstance(v, (int, float)):
                 f = v - math.floor(v)
@@ -129,7 +132,7 @@ def export_level(lvl, path, course, meta):
         moving = 0
         a = d.parent
         while a is not None and a is not lvl:
-            if a.cls == "Model" and "PropMotion" in rbxl.attrs(a):
+            if a.cls == "Model" and any(k in rbxl.attrs(a) for k in ("PropMotion", "ClockRotor", "ClockSand")):
                 moving = 1
                 break
             a = a.parent
@@ -187,6 +190,16 @@ def main():
     tpl["pad_ref"] = body * CF((0, -0.55 / 2, 0))
     bb = CF.from_prop(boost.find("UniBoostBody").get("CFrame"))
     tpl["boost_ref"] = bb * CF((0, -0.17, 0))
+
+    # the assembler moves world positions held in attributes with a level: the clock rides' rest frames too
+    OLD_PA = b"A.POS_ATTR = { CheckpointCFrame = true, HeadHome = true"
+    NEW_PA = b"A.POS_ATTR = { ClockRest = true, CheckpointCFrame = true, HeadHome = true"
+    for i in place.all():
+        if i.cls == "ModuleScript" and i.name == "ObbyAssembler":
+            src = i.get("Source")
+            if NEW_PA not in src:
+                assert OLD_PA in src, "ObbyAssembler changed"
+                i.set("Source", src.replace(OLD_PA, NEW_PA))
 
     report = []
     for lid in only:

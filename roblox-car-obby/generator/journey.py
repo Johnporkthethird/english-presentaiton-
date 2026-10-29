@@ -102,10 +102,20 @@ def lay_road(b, pts, widths, rails=False, tunnel=None, bank=None, name="Deck", l
         sk.road_piece(b, parent, fr, w, L, name)
         if rails:
             for s in ((-1, 1) if rails is True else (rails,)):
-                SC_P(b, "Rail", CF(add(fr.p, add(mul(fr.x, s * (w / 2 + 0.8)), mul(fr.y, 1.6))), fr.x, fr.y, fr.z),
-                     (1.4, 4.4, L), sk.road_style()["side"], sk.road_style()["side_mat"], parent, collide=True)
-                SC_P(b, "RailCap", CF(add(fr.p, add(mul(fr.x, s * (w / 2 + 0.8)), mul(fr.y, 3.95))), fr.x, fr.y, fr.z),
-                     (1.8, 0.4, L), sk.road_style()["edge"], sk.road_style()["edge_mat"], parent)
+                # mitred at both ends: each rail runs from the bisector of the bend behind to the one ahead, so
+                # rails round a curve meet edge to edge instead of leaving gaps outside and overlaps inside
+                off = s * (w / 2 + 0.8)
+                ra = _rail_end(pts[i], dirs[si - 1] if si > 0 else None, dirs[si], off)
+                rb = _rail_end(pts[j], dirs[si], dirs[si + 1] if si + 1 < len(slabs) else None, off)
+                ra = add(ra, mul(fr.y, 0.0))
+                d_ = sub(rb, ra)
+                Lr = math.sqrt(d_[0] ** 2 + d_[1] ** 2 + d_[2] ** 2)
+                if Lr > 0.2:
+                    rf = deck_frame(lerp(ra, rb, 0.5), d_, bank=bk)
+                    SC_P(b, "Rail", CF(add(rf.p, mul(rf.y, 1.6)), rf.x, rf.y, rf.z),
+                         (1.4, 4.4, Lr + 0.6), sk.road_style()["side"], sk.road_style()["side_mat"], parent, collide=True)
+                    SC_P(b, "RailCap", CF(add(rf.p, mul(rf.y, 3.95)), rf.x, rf.y, rf.z),
+                         (1.8, 0.4, Lr + 0.6), sk.road_style()["edge"], sk.road_style()["edge_mat"], parent)
         if tunnel:
             sk.tunnel_piece(b, fr, w, L, tunnel)
         if trim_b[si] > 0 and si + 1 < len(slabs):
@@ -140,6 +150,20 @@ def lay_road(b, pts, widths, rails=False, tunnel=None, bank=None, name="Deck", l
             if cum[k] - last >= 22 or k == n - 1:
                 b.line(p[0], p[1], p[2])
                 last = cum[k]
+
+
+def _rail_end(v, fa, fb, off):
+    """Where a rail `off` to the right of the road's centre line meets the bisector at vertex v between the slab
+    directions fa and fb (either may be None: a plain end)."""
+    def rgt(f):
+        h = unit((f[0], 0.0, f[2]))
+        return (-h[2], 0.0, h[0])
+    if fa is None or fb is None:
+        return add(v, mul(rgt(fa or fb), off))
+    ra, rb = rgt(fa), rgt(fb)
+    n = unit(add(ra, rb))
+    c = max(0.3, dot(n, ra))
+    return add(v, mul(n, off / c))
 
 
 def _mitre_fill(b, parent, v, fa, fb, ea, eb, wa, wb, name):

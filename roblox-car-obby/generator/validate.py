@@ -59,6 +59,22 @@ class Level:
         tmx = np.where(par, np.where(inside, np.inf, -np.inf), tmx)
         tn = tmin.max(axis=1)
         tf = tmx.min(axis=1)
+        # cylinders (axis = local X): clip by the round wall as well as the end slabs
+        cyl = self.kind[idx] == 2
+        if cyl.any():
+            r2 = (np.minimum(S[:, 1], S[:, 2]) / 2) ** 2
+            a = ld[:, 1] ** 2 + ld[:, 2] ** 2
+            bq = 2 * (lo[:, 1] * ld[:, 1] + lo[:, 2] * ld[:, 2])
+            c = lo[:, 1] ** 2 + lo[:, 2] ** 2 - r2
+            disc = bq * bq - 4 * a * c
+            with np.errstate(divide="ignore", invalid="ignore"):
+                sq = np.sqrt(np.maximum(disc, 0))
+                c0 = np.where(a > 1e-12, (-bq - sq) / (2 * a), np.where(c <= 0, -np.inf, np.inf))
+                c1 = np.where(a > 1e-12, (-bq + sq) / (2 * a), np.where(c <= 0, np.inf, -np.inf))
+            c0 = np.where((a > 1e-12) & (disc < 0), np.inf, c0)
+            c1 = np.where((a > 1e-12) & (disc < 0), -np.inf, c1)
+            tn = np.where(cyl, np.maximum(tn, c0), tn)
+            tf = np.where(cyl, np.minimum(tf, c1), tf)
         ok = (tn <= tf) & (tf >= 0) & (tn <= tmax)
         if not ok.any():
             return None, None
@@ -86,7 +102,10 @@ def check(lv):
             if t is not None:
                 break
         if t is None:
-            t, i = lv.ray(p + np.array([0, 2.0, 0]), np.array([0, -1.0, 0]), road & lv.moving, 60)
+            for o in ((0.0, 0.0), (3.0, 0.0), (-3.0, 0.0), (0.0, 3.0), (0.0, -3.0)):
+                t, i = lv.ray(p + np.array([o[0], 2.0, o[1]]), np.array([0, -1.0, 0]), road & lv.moving, 60)
+                if t is not None:
+                    break
         if t is None:
             missing.append(p)
     if missing:
@@ -130,13 +149,16 @@ def check(lv):
         # pad: an exact launch; up: an up booster (the car keeps its own speed: the slowest and a typical take-off);
         # key: the car's own jump; drop: rolling off an edge
         speeds = ([H] if kind == "pad" else [110.0, 170.0] if kind in ("up", "key")
-                  else [70.0, 130.0, 200.0] if kind == "drop" else [90.0, 115.0, 160.0])
+                  else [H * 0.9, H] if kind in ("ramp", "bounce", "drive") else [H] if kind == "ramp_hop"
+                  else [70.0, 130.0, 200.0] if kind == "drop" and H < 200 else [H * 0.7, H] if kind == "drop"
+                  else [90.0, 115.0, 160.0])
         for v in speeds:
-            up = V if kind in ("pad", "up") else 0.0 if kind == "drop" else 140.0
+            up = (V if kind in ("pad", "up", "bounce", "ramp_hop", "drive") else V * v / H if kind == "ramp"
+                  else 0.0 if kind == "drop" else 140.0)
             pos = s + np.array([0, 3.0, 0])
             vel = f * v + np.array([0, up, 0])
             landed = None
-            for step in range(200):
+            for step in range(600):
                 dt = 0.02
                 nv = vel + np.array([0, -G * dt, 0])
                 npos = pos + nv * dt
@@ -147,14 +169,18 @@ def check(lv):
                     landed = (pos + seg / L * t, i)
                     break
                 pos, vel = npos, nv
-                if pos[1] < min(s[1], tg[1]) - 150:
+                if pos[1] < min(s[1], tg[1]) - 400:
                     break
-            if landed is None:
+            if landed is None and kind != "ramp_hop":  # (Space held on a lip at full speed: the driver brakes in the air)
                 issues.append(("jump falls", kind, v, list(np.round(s, 0)), list(np.round(tg, 0))))
-            else:
+            elif landed is not None:
                 lp, i = landed
                 if kind == "pad" and np.linalg.norm((lp - tg)[[0, 2]]) > 45:
                     issues.append(("pad lands off target", list(np.round(lp, 0)), list(np.round(tg, 0)), lv.name[i]))
+                if kind == "bounce" and np.linalg.norm((lp - tg)[[0, 2]]) > 50:
+                    issues.append(("bounce lands off the cap", round(v), list(np.round(lp, 0)), list(np.round(tg, 0)), lv.name[i]))
+                if kind in ("ramp", "drive", "ramp_hop") and lv.name[i] not in ("Deck", "Floor", "Platform", "Ramp", "MovingDeck", "SinkTile"):
+                    issues.append(("lands on scenery", kind, round(v), list(np.round(lp, 0)), lv.name[i]))
                 if lp[1] < tg[1] - 25 and kind == "key":
                     issues.append(("key jump lands low", v, list(np.round(lp, 0)), lv.name[i]))
 

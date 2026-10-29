@@ -8,51 +8,40 @@ in a random ten of the 100 levels after every race; in this file it is pinned to
 workspace attribute `ObbyDefaultCourse = "course1"`. Delete that attribute (or run
 `python3 generator/test_course.py generator good.rbxl out.rbxl random`) to go back to random courses.
 
-## Showcase build: levels 1-10 (awaiting approval)
+## Levels 1-10, version 3
 
-Levels 1-10 (the boot course, `Workspace.OBBY1`-`OBBY10`) are non-stop jump levels: no long roads. Every level is a run
-of short beats (a ramp jump through rings onto a downhill landing ramp, a drop cascade, a bounce up onto a mushroom or a
-cake, quick island hops, a short gauntlet of sweepers, crushers or lasers, a windmill whose blades sweep through the
-flight, loops, wall rides, tubes). Each level has its own shape, length, height profile and look.
-`showcase-preview.jpg` shows three driver's-eye moments from each.
+`PLAN.md` has the plan and a review of each level. Each level is built round its own main idea, with no hoops and
+no loops:
 
-| # | Level | Idea |
-|---|-------|------|
-| 1 | Sugar Rush | Sugar Avalanche: fired onto a giant cake, then a candy downhill of jumps, drops and gumdrop hops (an S) |
-| 2 | Drive Thru | Kitchen Chaos: flat out in right angles: belts, smashers, burger hops, a bun bounce, frying-pan drops |
-| 3 | Spore Springs | Bounce Forest: up and down all the way: mushroom bounces, cap dives, toadstool hops (an organic weave) |
-| 4 | Checkmate | Knight Moves: L-shaped knight hops between towers over a giant board, rook sliders, a crumbling board |
-| 5 | Tick Tock | Clock Tower Drop: launched up, then jumping down round a clock tower in a square spiral |
-| 6 | Toy Box | Stunt Track: kickers through rings, two loops, two wall rides, a tube, banked hairpins |
-| 7 | Orbit | Moon Jumps: a few huge floaty leaps between planets through long rows of rings |
-| 8 | Eruption | Meltdown: drop after drop into a lava canyon, then a geyser blasts you out |
-| 9 | Frostbite | Avalanche Run: shot to the summit, then ski jumps straight down the mountain |
-| 10 | High Score | Rhythm Rush: rapid-fire short hops on a narrow neon track in a square wave, laser gates between |
+| # | Level | Main idea |
+|---|-------|-----------|
+| 1 | Sugar Rush | mega ramps off a giant cake (a ~600-stud jump over a chocolate river), a candy-cane slalom |
+| 2 | Drive Thru | conveyor belts (turbo, sideways, backwards), grease, burger smashers |
+| 3 | Spore Springs | chains of bounce mushrooms: steer in the air from cap to cap |
+| 4 | Checkmate | knight jumps between towers, a chessboard that falls away under you, sliding rooks |
+| 5 | Tick Tock | spinning gears, ticking clock-hand bridges and pendulums that carry the car |
+| 6 | Toy Box | a slot-car race track: figure of eight over its own bridge, strips on every straight |
+| 7 | Orbit | UFO tractor beams that carry the car across space, an asteroid belt at full speed |
+| 8 | Eruption | down a volcano: crater spiral, lava tube, surging lava, a geyser blast out |
+| 9 | Frostbite | a downhill ski run: switchbacks, ski jumps, black ice, rolling snowballs |
+| 10 | High Score | laser gates on a beat timed to a boost deck's exact speed, pinball bumpers, ghosts |
 
-- `generator/rush.py` has the beats, `generator/rush_levels.py` the ten levels, `generator/route.py` lays them in any
-  direction, `generator/epic_marks.py` the giant landmarks, `generator/epic_kit.py` the arenas and obstacles.
-- Jumps the car can clear on its own are real ramps: a solid kicker wedge you drive off with the car's own jump, and a
-  long landing deck so any normal speed lands.
-- Boosters (`LaunchPad`, `BoosterUp`) only push straight up: they keep your speed and direction and set the upward
-  speed, and you steer in the air to land where you want. None fires you in a set direction (`LaunchForward` is gone).
-  They are only used where a climb is too high for a normal jump.
-- Moving props animate: each animated model's pivot sits at its own centre, so `ObbyPropAnim`'s 1400-stud distance
-  cull no longer hides them (before, every pivot was at the level origin).
-- No phasing: scenery the car can reach (big blocks, wedges, round shapes) is solid; checkpoint flags stand at the road
-  edge; cakes, mushrooms and asteroids sit beside the landings instead of through them; rook sliders have a solid block
-  with a hazard; loops are bigger (radius 64), thicker and smoother, with nothing in the entry and exit lanes. The
-  validator checks the flight path and racing line against every solid part.
-- Every level stays inside its own X box and starts and ends on the course centre line, so the shuffle still works.
-- Models: a seated teddy bear, a rubber duck, a spinning top, lettered alphabet blocks, giant toadstools, a horse-headed
-  knight, a four-faced clock tower, low-poly snowy peaks and pine trees (smooth faceted cones built from wedge
-  triangles), an arcade cabinet with a lit screen, joystick and buttons. `models-preview.jpg` shows them;
-  `generator/gallery.py` (`GALLERY=1`) builds them all in a row for inspection.
-- No flicker: `generator/polish.py` resolves overlapping flat faces and now also round ones (stacked same-size
-  cylinders, coincident balls). Every level of the 100 ends with 0 fights.
-- No bumps: road bends are mitred (slabs meet edge to edge, a flush triangle closes the outside of each bend) instead of
-  overlapping, turns are flat (the toy-track hairpins ease their bank in gradually), crumbling floors have hairline
-  seams, and the validator samples the road height under both wheels every 2 studs along the line and flags any step.
-- Levels 11-100 are still the earlier object-world versions below.
+- Speed: runs of boost strips take every car to 330 studs/s (the game's stack cap). Boost decks hold an exact
+  speed where the next thing depends on it.
+- Jumps are curved ramps sized for that speed. Each landing runway runs from the slowest take-off to past the
+  fastest.
+- Moving platforms use systems the game already has:
+  - the clock rotor engine (gears, clock hands, pendulums);
+  - sinking tiles (the chessboard);
+  - magnet rides (the UFOs);
+  - the junkyard's conveyors and oil.
+- The ObbyAssembler now moves the clock rides' rest frames (`ClockRest`) with a level, like the checkpoints.
+- Moving props pivot at their own centre, so the 1400-stud animation distance cull works.
+- Scenery is measured after building, and anything touching a road or a flight path is moved.
+- The validator flies every jump at its slowest and fastest take-off. Levels 1-10 report 0 issues.
+- `generator/rush2.py` has the pieces and `generator/rush2_levels.py` the ten levels. `generator/epic.py` joins
+  them to the start and finish.
+- Levels 11-100 are still the earlier object-world versions below (they still have hoops and loops).
 
 ## How the levels are built
 

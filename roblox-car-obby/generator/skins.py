@@ -1378,7 +1378,8 @@ class Orbit(Skin):
         for k in range(int(L // 24) + 1):
             xx = x0 + k * 24
             Pt(b, "Rib", ((xx, y - 5, z)), (1.6, 4, w - 2), self.body, "Metal")
-            Pt(b, "Brace", CF((xx + 12, y - 6.5, z)) * rot_y(0.8), (1, 1, w * 0.9), self.body, "Metal")
+            if x0 <= xx + 12 - 0.33 * w and xx + 12 + 0.33 * w <= x1:  # (a long diagonal must not reach out of the deck)
+                Pt(b, "Brace", CF((xx + 12, y - 6.5, z)) * rot_y(0.8), (1, 1, w * 0.9), self.body, "Metal")
             ball(b, "Beacon", (xx, y - 9, z), 1.2, (255, 80, 80) if k % 2 else self.edge, "Neon")
         samples(b, x0, x1, y, z, w)
 

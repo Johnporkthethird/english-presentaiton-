@@ -50,11 +50,15 @@ def build_level(fac, unit_, level_folder, level_id, length, templates):
     import skins
     import journey_skins  # noqa: F401
     import epic_skins  # noqa: F401
-    import rush_levels as epic_levels
+    import rush_levels as old_levels
+    import rush2_levels
+    epic_levels = rush2_levels if level_id in rush2_levels.LEVELS else old_levels
+    new = epic_levels is rush2_levels
     skin = skins.SKINS[level_id]()
     pal = skin.pal()
     rng = random.Random(91000 + level_id * 1301)
     b = LevelBuilder(fac, level_folder, pal, rng, length, templates)
+    b.level_id = level_id
 
     class World:
         def deck(self, tb, x0, x1, y, z, w, parent=None):
@@ -80,6 +84,7 @@ def build_level(fac, unit_, level_folder, level_id, length, templates):
     r.rng = rng
     r.X1 = X1
     import os
+    r.defer_dress = []
     if os.environ.get("GALLERY") and level_id == 1:
         import gallery
         used = gallery.build(r, skin, rng)
@@ -89,7 +94,19 @@ def build_level(fac, unit_, level_folder, level_id, length, templates):
     end = (X1 - 110, Y0, ZC)
     import rush
     k = 0
-    while X1 - 110 - r.p[0] > 760 and k < 6 and not os.environ.get("GALLERY"):
+    import rush2
+    while new and X1 - 110 - r.p[0] > 1200 and k < 4 and not os.environ.get("GALLERY"):
+        # keep it fast all the way home: aim at the finish (gently: it is taken at speed), a strip run, a jump
+        rush.aim(r, "Home Bend %d" % (k + 1), length - 110, 0.0, R=380, limit=70)
+        dh = Y0 - r.p[1]
+        if dh > 30:
+            rush2.strips(r, "Home Climb %d" % (k + 1), 520, dy=min(dh, 160.0), cp=(k == 0), rails=True)
+        else:
+            rush2.strips(r, "Home Sprint %d" % (k + 1), 260, cp=(k == 0))
+            rush2.ramp_jump(r, "Home Jump %d" % (k + 1), deg=14, drop=max(10.0, min(80.0, -dh * 0.5 + 20)),
+                            slope=5, land_min=180)
+        k += 1
+    while not new and X1 - 110 - r.p[0] > 760 and k < 6 and not os.environ.get("GALLERY"):
         # keep the beats coming all the way home: aim at the finish and jump again
         rush.aim(r, "Home Bend %d" % (k + 1), length - 110, 0.0, R=100, limit=60)
         dy = max(-60.0, min(60.0, (Y0 - r.p[1]) * 0.6))
@@ -112,7 +129,9 @@ def build_level(fac, unit_, level_folder, level_id, length, templates):
     if math.dist(r.p, end) > 1:
         r.connect("Final Dash", end, (1, 0, 0), w1=72)
         L = sum(math.dist(a, c) for a, c in zip(r.last[0], r.last[0][1:]))
-        if L > 600:
+        if new and L > 300:
+            rush2.lay_strips(r, 60, L - 160, every=90)
+        if L > 600 and not new:
             import epic_kit as EK
             kinds = getattr(epic_levels, "FINAL", {}).get(level_id, [EK.ob_sweeper, EK.ob_gate])
             at = [220 + 280 * k for k in range(int((L - 420) // 280) + 1)]
@@ -120,6 +139,9 @@ def build_level(fac, unit_, level_folder, level_id, length, templates):
                 r.along(kinds[k % len(kinds)], [d], i0=k)
     K.run(b, X1 - 110, X1, Y0, ZC, 160)
     skin.finish(b, X1 - 110, X1, Y0, ZC, 160)
+    jobs, r.defer_dress = r.defer_dress, None
+    for job in jobs:
+        rush2.dress(r, *job)
     b.line(X1, Y0, ZC)
     landmarks.title_gate(b, level_id, skin.title)
     skin.environment(b)

@@ -158,8 +158,8 @@ def booster(r, label, D, dy, rings=0, w=None, cp=False, mill=False, land_fn=None
            parent=b.track, transp=1, collide=False, query=False,
            attrs={"CarLaunchPad": True, "LaunchExact": True, "LaunchVertical": float(V), "BoosterUp": True})
     b.skin.pad_art(b, src, f)
-    for k in range(3):
-        ringz(b, add(src, (0, 6 + k * 9, 0)), 12 - k * 2.5, b.skin.padc, "Neon", th=0.8, parent=b.scenery, name="Updraft")
+    # (no rings: a faint column of light over the pad shows it throws you up)
+    cyl(b, "UpdraftGlow", add(src, (0, 14, 0)), 26, min(w - 8, 30), b.skin.padc, "Neon", b.scenery, transp=0.82)
     b.arc((src[0], src[1] + CAR_UP, src[2]), (f[0] * V_MID, V, f[2] * V_MID), until_y=src[1] + dy + CAR_UP)
     tgt = add(src, add(mul(f, V_MID * T), (0, dy, 0)))
     b.jumps.append(("up", src, tgt, V_MID, V))
