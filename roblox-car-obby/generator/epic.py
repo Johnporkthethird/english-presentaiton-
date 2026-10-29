@@ -12,7 +12,8 @@ SOFT = ("Hoop", "Ring", "Updraft", "Target", "Halo", "Laser", "Glow", "Flame", "
         "Beam", "Light", "Line", "Trim", "Sign", "Text", "Letter", "Pixel", "Kicker", "Sprinkle", "Sugar", "Spot", "Shine",
         "Drip", "Pearl", "Sesame", "Tick", "Hand", "Numeral", "Toe", "Eye", "Smile", "Nose", "Button", "Ghost", "Swirl",
         "Frill", "Crack", "LavaFall", "Crater", "Bow", "Cheek", "Tuft", "Cloth", "Flag", "Coin", "Leaves", "Crown", "Fruit",
-        "Vine", "Moon", "Atmosphere", "Band", "Cream", "Whip", "Straw", "Stem")
+        "Vine", "Moon", "Atmosphere", "Band", "Cream", "Whip", "Straw", "Stem", "Hillside", "Grass", "IslandSand", "PipeTop",
+        "PipeRim", "CloudTop", "Deckboards", "BoxFloor", "Sea")
 
 
 def solidify(b):
@@ -52,8 +53,10 @@ def build_level(fac, unit_, level_folder, level_id, length, templates):
     import epic_skins  # noqa: F401
     import rush_levels as old_levels
     import rush3_levels
-    epic_levels = rush3_levels if level_id in rush3_levels.LEVELS else old_levels
-    new = epic_levels is rush3_levels
+    import rush4_levels
+    epic_levels = (rush4_levels if level_id in rush4_levels.LEVELS else
+                   rush3_levels if level_id in rush3_levels.LEVELS else old_levels)
+    new = epic_levels in (rush3_levels, rush4_levels)
     skin = skins.SKINS[level_id]()
     pal = skin.pal()
     rng = random.Random(91000 + level_id * 1301)

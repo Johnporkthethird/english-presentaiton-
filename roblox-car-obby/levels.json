@@ -1,111 +1,105 @@
 [
  {
   "id": 1,
-  "title": "Sugar Rush",
+  "title": "Stunt Show",
   "theme": "candy",
   "sections": [
-   "Lolly Pad",
-   "Gumdrop Deck",
-   "Licorice Beam",
-   "Cupcake Top",
-   "Chocolate Bar",
-   "Candy Press",
-   "Mega Ramp",
-   "Sour Strip"
+   "Laser Box",
+   "Ring of Fire",
+   "Star Jumps",
+   "Hexagon Mega Ramp",
+   "Rock Slide"
   ],
-  "instances": 2691,
-  "zfights_fixed": 642,
-  "checkpoints": 5,
+  "instances": 2362,
+  "zfights_fixed": 1379,
+  "checkpoints": 9,
   "length": 5540.0
  },
  {
   "id": 2,
-  "title": "Drive Thru",
+  "title": "Island Hop",
   "theme": "diner",
   "sections": [
-   "Turbo Belt",
-   "Grill Deck",
-   "Sideways Belt",
-   "Fryer",
-   "Backwards Belt",
-   "Spatula",
-   "Dish Pit",
-   "Express Belt"
+   "Pier",
+   "Palm Island",
+   "Coconut Cay",
+   "Red Boat",
+   "Blue Boat",
+   "Yacht",
+   "Ring of Fire",
+   "Lighthouse",
+   "Ferry"
   ],
-  "instances": 3084,
-  "zfights_fixed": 586,
-  "checkpoints": 6,
+  "instances": 1562,
+  "zfights_fixed": 394,
+  "checkpoints": 9,
   "length": 5420.0
  },
  {
   "id": 3,
-  "title": "Spore Springs",
+  "title": "Rooftop Run",
   "theme": "mushroom",
   "sections": [
-   "Cap Chain",
-   "Root Bridge",
-   "Fern Beam",
-   "Toadstool Tumble",
-   "Log Run",
-   "Canopy",
-   "Firefly Hops"
+   "Apartment Roof",
+   "Office Roof",
+   "Hotel Roof",
+   "Tower Roof",
+   "Laser Box",
+   "Warehouse Roof",
+   "Skyscraper Ramp",
+   "Car Park Roof"
   ],
-  "instances": 3483,
-  "zfights_fixed": 254,
-  "checkpoints": 6,
+  "instances": 3070,
+  "zfights_fixed": 604,
+  "checkpoints": 7,
   "length": 5620.0
  },
  {
   "id": 4,
-  "title": "Checkmate",
+  "title": "Sky Garden",
   "theme": "chess",
   "sections": [
-   "Knight's Tour",
-   "Rook File",
-   "Falling Board",
-   "Queen's Line",
-   "Knight Descent",
-   "Collapsing Board"
+   "Clouds",
+   "Mushroom Bounce",
+   "Star Jumps",
+   "Ring of Fire"
   ],
-  "instances": 2796,
-  "zfights_fixed": 480,
-  "checkpoints": 6,
+  "instances": 1777,
+  "zfights_fixed": 169,
+  "checkpoints": 7,
   "length": 5310.0
  },
  {
   "id": 5,
-  "title": "Tick Tock",
+  "title": "Clockwork Town",
   "theme": "clocks",
   "sections": [
+   "Rooftops",
    "Great Wheel",
-   "Arbor",
    "Hour Hand",
    "Pendulum Ferry",
-   "Crown Wheel",
-   "Cog Beam",
-   "Minute Hand"
+   "Music Box Keys",
+   "Escape Wheel"
   ],
-  "instances": 2441,
-  "zfights_fixed": 887,
-  "checkpoints": 7,
+  "instances": 2347,
+  "zfights_fixed": 305,
+  "checkpoints": 12,
   "length": 5610.0
  },
  {
   "id": 6,
-  "title": "Toy Box",
+  "title": "Pipe Dream",
   "theme": "toys",
   "sections": [
-   "Kicker Chain",
-   "Domino Line",
-   "Train Top",
-   "Jack Box",
-   "Crayon Beam",
-   "Robot Arms",
-   "Marble Run"
+   "Warp Pipes",
+   "Piano Keys",
+   "Ring of Fire",
+   "Power Star",
+   "Bonus Box"
   ],
-  "instances": 2822,
-  "zfights_fixed": 521,
-  "checkpoints": 6,
+  "instances": 1370,
+  "zfights_fixed": 261,
+  "checkpoints": 10,
   "length": 5440.0
  },
  {
@@ -113,17 +107,16 @@
   "title": "Orbit",
   "theme": "space",
   "sections": [
-   "Launch Pad",
-   "Moon Rock",
+   "Star Jumps",
    "Tractor Beam",
-   "Asteroid Belt",
-   "Solar Panel",
-   "Wormhole Beam",
-   "Ring Shard"
+   "Space Station",
+   "Comet Ramp",
+   "Moon Surface",
+   "Wormhole Beam"
   ],
-  "instances": 2762,
-  "zfights_fixed": 581,
-  "checkpoints": 7,
+  "instances": 1887,
+  "zfights_fixed": 1099,
+  "checkpoints": 8,
   "length": 5440.0
  },
  {
@@ -131,17 +124,15 @@
   "title": "Eruption",
   "theme": "volcano",
   "sections": [
-   "Crater Rim",
-   "Basalt Step",
-   "Magma Vent",
+   "Ash Slope",
+   "Rings of Fire",
+   "Lava Islands",
    "Lava Causeway",
-   "Obsidian Beam",
-   "Geyser",
-   "Smoke Stack"
+   "Geyser"
   ],
-  "instances": 2147,
-  "zfights_fixed": 762,
-  "checkpoints": 8,
+  "instances": 2291,
+  "zfights_fixed": 1013,
+  "checkpoints": 11,
   "length": 5440.0
  },
  {
@@ -149,18 +140,15 @@
   "title": "Frostbite",
   "theme": "snow",
   "sections": [
-   "Chairlift",
-   "Black Ice",
+   "Black Run",
    "Ski Jump",
-   "Mogul Beam",
-   "Avalanche",
-   "Ice Cave",
-   "Frozen Lake",
-   "Glacier Edge"
+   "Ice Floes",
+   "Ice Breaker",
+   "Avalanche Run"
   ],
-  "instances": 6396,
-  "zfights_fixed": 183,
-  "checkpoints": 7,
+  "instances": 2605,
+  "zfights_fixed": 1452,
+  "checkpoints": 8,
   "length": 5440.0
  },
  {
@@ -168,18 +156,16 @@
   "title": "High Score",
   "theme": "arcade",
   "sections": [
-   "Beat Gates",
-   "Claw Machine",
-   "Pinball",
-   "Pixel Beam",
-   "Ghost House",
-   "Zap Grid",
-   "Claw Row",
-   "Bonus Round"
+   "Laser Maze",
+   "Neon Keys",
+   "Bonus Star",
+   "Warp Pipes",
+   "Ring of Fire",
+   "Boss Box"
   ],
-  "instances": 1876,
-  "zfights_fixed": 254,
-  "checkpoints": 7,
+  "instances": 1421,
+  "zfights_fixed": 197,
+  "checkpoints": 9,
   "length": 5440.0
  },
  {

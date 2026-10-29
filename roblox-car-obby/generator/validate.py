@@ -180,7 +180,7 @@ def check(lv):
                     issues.append(("pad lands off target", list(np.round(lp, 0)), list(np.round(tg, 0)), lv.name[i]))
                 if kind == "bounce" and np.linalg.norm((lp - tg)[[0, 2]]) > 50:
                     issues.append(("bounce lands off the cap", round(v), list(np.round(lp, 0)), list(np.round(tg, 0)), lv.name[i]))
-                if kind in ("ramp", "drive", "ramp_hop", "kick", "oup", "drop") and lv.name[i] not in ("Deck", "Floor", "Platform", "Ramp", "MovingDeck", "SinkTile"):
+                if kind in ("ramp", "drive", "ramp_hop", "kick", "oup", "drop") and lv.name[i] not in ("Deck", "Floor", "Platform", "Ramp", "MovingDeck", "SinkTile", "Star"):
                     issues.append(("lands on scenery", kind, round(v), list(np.round(lp, 0)), lv.name[i]))
                 if lp[1] < tg[1] - 25 and kind == "key":
                     issues.append(("key jump lands low", v, list(np.round(lp, 0)), lv.name[i]))
@@ -261,6 +261,7 @@ def bump_check(lv, step=2.0, tol=0.5):
     lo, hi = lv.P[idx_all] - ext, lv.P[idx_all] + ext
     out = []
     run = {}
+    prev_f = None
     for k in range(len(lv.path) - 1):
         if lv.flags[k] != "r" or lv.flags[k + 1] != "r":
             run = {}
@@ -272,6 +273,9 @@ def bump_check(lv, step=2.0, tol=0.5):
             run = {}
             continue
         f = np.array([d[0] / L, 0, d[2] / L])
+        if prev_f is not None and float(np.dot(prev_f, f)) < math.cos(math.radians(8)):
+            run = {}  # (a corner in the line swings the side rays round: not a bump in the road)
+        prev_f = f
         rgt = np.array([-f[2], 0, f[0]])
         bl = np.minimum(a, b) - 12
         bh = np.maximum(a, b) + 12

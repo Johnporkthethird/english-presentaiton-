@@ -8,36 +8,32 @@ in a random ten of the 100 levels after every race; in this file it is pinned to
 workspace attribute `ObbyDefaultCourse = "course1"`. Delete that attribute (or run
 `python3 generator/test_course.py generator good.rbxl out.rbxl random`) to go back to random courses.
 
-## Levels 1-10, version 4: obby courses
+## Levels 1-10, version 5: set-piece tours
 
-Every level is now an obby rather than a road:
-- **Platforms, not roads.** Short floating platforms that change width (wide decks, narrow 16-24 beams), height
-  (up and down) and line (left and right).
-- **A jump between nearly every pair of platforms** (10-14 per level):
-  - **drop:** drive off the end onto a lower platform;
-  - **kick:** a curved kicker onto a level or lower one;
-  - **up pad:** thrown straight up onto a higher one.
-  Many land to the side, so you steer in the air.
-- **A trap or machine on nearly every platform.** Rolling saw blades (SHREDDED), side pushers that shove you off,
-  electric floors and flame jets on a beat (FRIED), swinging blades, crushers (CRUSHED), grabbing claws (CAUGHT),
-  spring mines that throw you, sweepers, lasers, lava (MELTED), falls.
-- **Fast.** Every platform is a boost deck that holds every car at the same speed (200-260 by level), so each jump
-  is the same for every car. Each landing is checked from 80% of that speed (a driver easing off) to full speed.
-- **Each level keeps its main idea as set pieces between the platforms:**
-  - 1: the mega ramp
-  - 2: conveyor belts
-  - 3: bounce mushroom chains
-  - 4: knight towers and falling boards
-  - 5: gears, clock hands and pendulums
-  - 6: the kicker chain
-  - 7: UFO tractor beams
-  - 8: surging lava and the geyser
-  - 9: black ice and rolling snowballs
-  - 10: laser beats and claws
-- **Code:** `generator/obby.py` has the platforms, links and traps, and `generator/rush3_levels.py` has the ten
-  courses. Version 3's set pieces are in `generator/rush2.py`.
-- **Checks:** the validator reports 0 issues on levels 1-10. Not tested in Roblox Studio.
-- **Levels 11-100** are still the earlier object-world versions below.
+Each level is a tour through set pieces, and what you land on is the object itself:
+
+| # | Level | Set pieces |
+|---|-------|------------|
+| 1 | Stunt Show | drop into a laser box, a ramp through a ring of fire, star jumps, the hexagon mega ramp, a rocky downhill |
+| 2 | Island Hop | islands in the sea, bobbing boats, a ring of fire, a lighthouse, a ferry |
+| 3 | Rooftop Run | city rooftops at every height, a laser box, a skyscraper ramp |
+| 4 | Sky Garden | clouds, bounce mushrooms, stars, a ring of fire |
+| 5 | Clockwork Town | town rooftops, spinning gears, a clock-hand bridge, a pendulum ferry, music-box keys that sink |
+| 6 | Pipe Dream | warp pipes, sinking piano keys, a ring of fire, a power star, a laser box |
+| 7 | Orbit | stars in space, UFO tractor beams, a space-station laser box, a comet ramp, the moon surface |
+| 8 | Eruption | an ash slope, rings of fire, islands in a lava lake, a lava causeway, a geyser |
+| 9 | Frostbite | a black run, a ski jump, ice floes, an ice breaker, an avalanche run |
+| 10 | High Score | laser mazes, neon piano keys, a bonus star, warp pipes, a boss box |
+
+- How it works:
+  - Every top you drive on is an invisible boost floor inside the object. It holds every car at the level's speed,
+    so each jump is the same for every car.
+  - Drops, kickers and up pads join the pieces. Each landing is checked from 80% to 100% of that speed.
+  - Seas and lava kill on contact.
+- Code: `generator/stages.py` has the set pieces and `generator/rush4_levels.py` the ten tours. `generator/obby.py`
+  has the links and traps.
+- The validator reports 0 issues on levels 1-10. Not tested in Roblox Studio.
+- Levels 11-100 are still the earlier object-world versions below.
 
 ## How the levels are built
 
