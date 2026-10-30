@@ -264,9 +264,16 @@ def audit_level(lvl, lid, only_roots=None):
             for i in near:
                 rb = roads[i]["box"]
                 # the road's top face: the part must reach well above it (it pokes up through the road)
-                top = rb.p + rb.R[:, 1] * rb.h[1]
-                if (b.p + e)[1] < top[1] + 1.0 or (b.p - e)[1] > top[1] - 0.5:
+                top_y = rb.p[1] + float(np.abs(rb.R[1, :]) @ rb.h)
+                if (b.p + e)[1] < top_y + 1.0 or (b.p - e)[1] > top_y - 0.5:
                     continue
+                inst = rb.inst
+                if inst is not None and inst.get("shape", 1) == 2 and abs(rb.R[1, 0]) > 0.99:
+                    # a round road (a disc on end): only what stands inside its circle pokes through it
+                    rad = float(min(inst.get("size")[1], inst.get("size")[2])) / 2
+                    dxz = math.hypot(b.p[0] - rb.p[0], b.p[2] - rb.p[2]) - max(e[0], e[2])
+                    if dxz >= rad - 0.3:
+                        continue
                 if obb_overlap(b, rb, margin=0.6):
                     k = ("pokes up through road", b.name, rb.name)
                     if k not in where:

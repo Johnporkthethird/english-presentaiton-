@@ -60,12 +60,12 @@ def off(fr, x=0.0, y=0.0, z=0.0):
 
 
 def span(r):
-    """The stretch just laid: (start, end, flat heading, plan length, width at its start, points)."""
+    """The stretch just laid: (start, end, flat heading, plan length, its full width, points)."""
     pts, ws, _ = r.last
     p0, p1 = pts[0], pts[-1]
     f = RT.flat(sub(p1, p0))
     L = sum(math.hypot(c[0] - a[0], c[2] - a[2]) for a, c in zip(pts, pts[1:]))
-    return p0, p1, f, L, ws[0], pts
+    return p0, p1, f, L, max(ws), pts
 
 
 def at(r, d):
@@ -337,9 +337,9 @@ def backsplash(b, r, side=-1, h=60.0, tile=10.0):
     p0, p1, f, L, w, pts = span(r)
     c = R2.lerp3(p0, p1, 0.5)
     rt = right_of(f)
-    q = add(c, add(mul(rt, side * (w / 2 + 3)), (0, h / 2 - 6, 0)))
+    q = add(c, add(mul(rt, side * (w / 2 + 10)), (0, h / 2 - 6, 0)))
     ob(b, "Backsplash", q, f, (4, h + 6, L), K_TILE, "Marble")
-    face = add(c, mul(rt, side * (w / 2 + 0.85)))
+    face = add(c, mul(rt, side * (w / 2 + 7.85)))
     y = 2.0
     while y < h:
         ob(b, "TileLine", add(face, (0, y, 0)), f, (0.3, 0.5, L), (190, 204, 210))
@@ -652,8 +652,8 @@ def slot31(r, sk, rng):
     with look(sk, surface=ghost):
         o.kick(dy=0, side=-60, label="Cheese Hop")
         o.plat("Cheese Wheel", 100, 90, cp=True)
-        c, R = disc_obj(b, r, (255, 206, 70), th=40.0, name="CheeseWheel")
-        cyl(b, "CheeseRind", sub(c, (0, 20.4, 0)), 39.6, 2 * R - 3, (240, 170, 40), "SmoothPlastic", b.scenery)
+        c, R = disc_obj(b, r, (255, 206, 70), th=6.0, name="CheeseWheel")
+        cyl(b, "CheeseRind", sub(c, (0, 23, 0)), 34, 2 * R, (240, 170, 40), "SmoothPlastic", b.scenery)
         for k in range(7):
             a = TAU * k / 7 + 0.3
             cyl(b, "CheeseHoleTop", add(c, (math.cos(a) * R * 0.7, 0.08, math.sin(a) * R * 0.7)), 0.15, 9 + k % 3 * 3,
@@ -697,8 +697,9 @@ def slot31(r, sk, rng):
             cyl(b, "CakeIcing", sub(c, (0, 6 + 52, 0)), 4, 2 * R - 2, col, "SmoothPlastic", b.scenery)
             for j in range(10):
                 a = TAU * j / 10
-                q = add(c, (math.cos(a) * (R - 1), -9, math.sin(a) * (R - 1)))
-                cyl(b, "IcingDrip", q, 10 + (j % 3) * 4, 6, col, "SmoothPlastic", b.scenery)
+                hd = 10 + (j % 3) * 4
+                q = add(c, (math.cos(a) * (R + 4), -2 - hd / 2, math.sin(a) * (R + 4)))
+                cyl(b, "IcingDrip", q, hd, 6, col, "SmoothPlastic", b.scenery)
             coin_row(b, add(c, mul(r.f, -R * 0.4)), add(c, mul(r.f, R * 0.4)), n=3)
         p0, p1, f, L, w, _ = span(r)
         top = R2.lerp3(p0, p1, 0.5)
@@ -1076,9 +1077,9 @@ def slot32(r, sk, rng):
         ob(b, "ChestBox", sub(c, (0, 50, 0)), f, (w + 30, 92, L + 30), (196, 120, 60), "WoodPlanks")
         for sd in (-1, 1):
             ob(b, "ChestBand", add(c, add(mul(right_of(f), sd * (w / 2 + 15.3)), (0, -40, 0))), f, (0.6, 10, L + 30), GOLD, "Metal")
-        ob(b, "ChestLid", add(c, add(mul(right_of(f), -(w / 2 + 22)), (0, 66, 0))), f, (10, 140, L + 30), (176, 104, 50),
+        ob(b, "ChestLid", add(c, add(mul(right_of(f), -(w / 2 + 50)), (0, 66, 0))), f, (10, 140, L), (176, 104, 50),
            "WoodPlanks")
-        ob(b, "ChestLock", add(c, add(mul(right_of(f), -(w / 2 + 28)), (0, 120, 0))), f, (4, 18, 14), GOLD, "Metal")
+        ob(b, "ChestLock", add(c, add(mul(right_of(f), -(w / 2 + 56)), (0, 120, 0))), f, (4, 18, 14), GOLD, "Metal")
         M.teddy(b, add(c, add(mul(right_of(f), w / 2 + 50), (0, 0, 0))), 40, yaw=math.atan2(-f[2], f[0]) + math.pi / 2)
     end_on_line(r, "Chest Run", margin=600)
     r.log("end")
@@ -1450,7 +1451,8 @@ def pixel_screen(b, c, f, w, h, rows, px_col):
     """The giant screen's bezel round a breakable wall of pixels (smash through it)."""
     rt = right_of(f)
     for sd in (-1, 1):
-        ob(b, "Bezel", add(c, add(mul(rt, sd * (w / 2 + 8)), (0, h / 2, 0))), f, (16, h + 20, 14), (20, 18, 30), collide=True)
+        ob(b, "Bezel", add(c, add(mul(rt, sd * (w / 2 + 8)), (0, (h + 20) / 2 + 0.2, 0))), f, (16, h + 20, 14), (20, 18, 30),
+           collide=True)
     ob(b, "BezelTop", add(c, (0, h + 10, 0)), f, (w + 32, 20, 14), (20, 18, 30))
     ob(b, "ScreenGlow", add(c, (0, h + 21, 0)), f, (w + 30, 1.2, 15), N_CYAN, "Neon")
     nx, ny = len(rows[0]), len(rows)
@@ -1882,9 +1884,9 @@ def container_obj(b, r, col):
 
 
 def excavator_tower(b, hub):
-    ob(b, "ExcavatorCab", add(hub, (0, -2, 0)), (1, 0, 0), (34, 30, 34), K_SAFE, collide=True)
-    ob(b, "ExcavatorWindow", add(hub, (0, 4, 17.3)), (1, 0, 0), (24, 14, 0.4), (60, 80, 100), "Glass")
-    ob(b, "ExcavatorTracks", add(hub, (0, -20, 0)), (1, 0, 0), (50, 10, 40), (40, 40, 40))
+    ob(b, "ExcavatorCab", add(hub, (0, 4.5, 0)), (1, 0, 0), (16, 20, 16), K_SAFE, collide=True)
+    ob(b, "ExcavatorWindow", add(hub, (8.3, 8, 0)), (1, 0, 0), (12, 8, 0.4), (60, 80, 100), "Glass")
+    ob(b, "ExcavatorTracks", add(hub, (0, -26, 0)), (1, 0, 0), (40, 10, 16), (40, 40, 40))
 
 
 def excavator_arm(b, rig, hub, L):
@@ -1981,7 +1983,7 @@ def slot36(r, sk, rng):
             for k in range(5):
                 ringz(b_, add(c, mul(f, -L / 2 + L * (k + 0.5) / 5)), R + 0.6, (230, 120, 30), "SmoothPlastic", th=4,
                       axis=f, parent=rig, name="DrumBand")
-            ob(b_, "MixerChassis", sub(c, (0, R + 26, 0)), f, (90, 30, L + 60), K_SAFE)
+            ob(b_, "MixerChassis", sub(c, (0, R + 40, 0)), f, (90, 24, L + 60), K_SAFE)
             for a in (-1, 1):
                 for sd in (-1, 1):
                     cyl(b_, "MixerWheel", add(c, add(mul(f, a * (L / 2 + 10)), add(mul(right_of(f), sd * 46), (0, -R - 40, 0)))),
@@ -2278,7 +2280,7 @@ def asteroid_obj(b, r, rng):
     M.asteroid(b, sub(c, (0, R * 0.75, 0)), R * 1.6, rng)
     for k in range(4):
         a = TAU * k / 4 + 0.5
-        cyl(b, "Crystal", add(c, (math.cos(a) * R * 0.95, 4, math.sin(a) * R * 0.95)), 14, 5, (140, 90, 255), "Neon", b.scenery)
+        cyl(b, "Crystal", add(c, (math.cos(a) * (R + 5), 2, math.sin(a) * (R + 5))), 14, 5, (140, 90, 255), "Neon", b.scenery)
 
 
 def engine_pad(sk, b, start, f):
@@ -2337,8 +2339,8 @@ def slot38(r, sk, rng):
                      3, [S_CYAN, S_ORANGE][k % 2], "Neon", b.scenery)
         ob(b, "StationModule", sub(R2.lerp3(p0, p1, 0.5), (0, 40, 0)), f, (w + 30, 70, L), S_PANEL, "Metal")
         for k in range(4):
-            cyl(b, "ModuleRing", add(sub(R2.lerp3(p0, p1, 0.5), (0, 40, 0)), mul(f, -L / 2 + 30 + k * (L - 60) / 3)), 8, w + 40,
-                (230, 234, 240), "SmoothPlastic", b.scenery, axis=f)
+            ob(b, "ModuleBand", add(sub(R2.lerp3(p0, p1, 0.5), (0, 44, 0)), mul(f, -L / 2 + 30 + k * (L - 60) / 3)), f,
+               (w + 34, 74, 6), (230, 234, 240))
     # ---- the solar array: its panels roll side to side as the station turns
     with look(sk, surface=GRATE):
         run(r, "Array Gantry", 80, w=70)
@@ -2380,7 +2382,7 @@ def slot38(r, sk, rng):
         run(r, "Maintenance Deck", 380, w=120, cp=True)
         r.along(lambda b_, c, w, i: sweeper(b_, c, w, i, robot_arm, speed=0.24, tower_fn=arm_base), [90, 200, 310])
         r.turn("Dish Curve", -90, 170, cp=True)
-        dish(b, r.centre, 150, r.p[1], r.f)
+        dish(b, r.centre, 80, r.p[1] - 20, r.f)
     # ---- the tractor beam: a UFO carries you across the void
     with look(sk, surface=HULL):
         run(r, "Beam Pad", 100, w=90)
@@ -2391,8 +2393,8 @@ def slot38(r, sk, rng):
         p0, p1, f, L, w, _ = span(r)
         c = R2.lerp3(p0, p1, 0.5)
         rt = right_of(f)
-        ob(b, "ShipHull", add(c, add(mul(rt, -(w / 2 + 50)), (0, 10, 0))), f, (100, 60, L + 120), (210, 214, 224), "SmoothPlastic")
-        ob(b, "ShipCockpit", add(c, add(mul(rt, -(w / 2 + 50)), add(mul(f, L / 2 + 40), (0, 40, 0)))), f, (70, 30, 50),
+        ob(b, "ShipHull", add(c, add(mul(rt, -(w / 2 + 62)), (0, 10, 0))), f, (100, 60, L), (210, 214, 224), "SmoothPlastic")
+        ob(b, "ShipCockpit", add(c, add(mul(rt, -(w / 2 + 62)), add(mul(f, L / 2 - 30), (0, 52, 0)))), f, (70, 30, 50),
            (90, 200, 255), "Glass", transp=0.2)
         for k in range(3):
             cyl(b, "ShipThruster", add(c, add(mul(rt, -(w / 2 + 30 + k * 20)), add(mul(f, -L / 2 - 70), (0, 6, 0)))), 30, 18,
@@ -2582,7 +2584,7 @@ def slot39(r, sk, rng):
         o.plat("Second Ship", 320, 130, cp=True)
         hull(b, r)
         p0, p1, f, L, w, _ = span(r)
-        mast(b, add(R2.lerp3(p0, p1, 0.6), mul(right_of(f), w / 2 - 14)), 220, f)
+        mast(b, add(R2.lerp3(p0, p1, 0.92), mul(right_of(f), w / 2 - 14)), 220, f)
         sea(b, R2.lerp3(p0, p1, 0.5), 900, 700, p0[1] - 160)
         r.along(lambda b_, c, w, i: sweeper(b_, c, w, i, tentacle_arm, speed=0.2, tower_fn=tentacle_root), [170])
         r.turn("Helm Turn", 90, 150)
@@ -2707,19 +2709,17 @@ def spring_pad_rust(sk, b, start, f):
         Pt(b, "PadChevron", CF(add(q, (0, 0.3, 0)), fr.x, fr.y, fr.z), (14, 0.2, 3), (255, 170, 40), "Neon")
 
 
-def piston_pump(b, c, w, i, period=1.8):
-    """Engine pistons pumping up through the block (crush): pass over one while it is down."""
+def oil_drum(b, c, w, i, period=2.6, d=24.0):
+    """A rusty oil drum rolling across the engine block and back (knocks you off)."""
     x, y, z = c
-    for k, lane in enumerate((-1, 0, 1)):
-        if (k + i) % 2 == 1:
-            continue
-        q = (x, y - 26, z + lane * w / 3)
-        root = b.prop_root("Piston")
-        rig = b.rig(root, "Slide", axis_frame(q, UP), 30.0, period, phase=((i + k) * 0.27) % 1, keys="0:0 0.4:0 0.5:1 0.7:1 0.8:0",
-                    name="Pump")
-        cyl(b, "PistonHead", q, 20, w / 3 - 8, (190, 194, 200), "Metal", rig, query=True, attrs={"ObbyHazard": "Crush"}, refl=0.3)
-        cyl(b, "PistonRing", add(q, (0, 6, 0)), 2, w / 3 - 7.4, (255, 170, 40), "Neon", rig)
-        ringz(b, (x, y + 0.2, z + lane * w / 3), (w / 3 - 6) / 2, (40, 40, 44), "Metal", th=0.4, name="PistonBore")
+    z0 = (x, y + d / 2 + 0.5, z - w / 2 + 18)
+    root = b.prop_root("OilDrum")
+    rig = b.rig(root, "Slide", axis_frame(z0, (0, 0, 1)), w - 36, period + 0.35 * i, phase=(i * 0.41) % 1,
+                keys="0:0 0.5:1 1:0", name="Roll")
+    cyl(b, "OilDrum", z0, 34, d, [(40, 90, 140), (170, 50, 40), (60, 120, 60)][i % 3], "CorrodedMetal", rig, axis=(1, 0, 0),
+        query=True, attrs={"ObbyHazard": "Knock"})
+    for k in (-1, 1):
+        cyl(b, "DrumRim", add(z0, (k * 12, 0, 0)), 1.6, d + 0.6, J_RUST, "CorrodedMetal", rig, axis=(1, 0, 0))
 
 
 def scrap_pile(b, base, s, rng):
@@ -2761,10 +2761,10 @@ def slot40(r, sk, rng):
         MX.crane_transfer(r, "Magnet Crane", 440.0, dy=40.0, land_L=160.0, w_land=100, cp=True)
         lip = r.p
         r.turn("Yard Bend", 90, 150)
-    # ---- the engine block: pistons pump up through it
+    # ---- the engine block: oil drums roll across it
     with look(sk, surface=IRON):
         run(r, "Engine Block", 380, w=120, cp=True)
-        r.along(piston_pump, [90, 180, 270])
+        r.along(oil_drum, [90, 180, 270])
         p0, p1, f, L, w, _ = span(r)
         ob(b, "EngineCasting", sub(R2.lerp3(p0, p1, 0.5), (0, 50, 0)), f, (w + 20, 90, L), (80, 84, 90), "Metal")
         for sd in (-1, 1):
