@@ -346,15 +346,15 @@ def slot11(r, sk, rng):
     R2.ramp_jump(r, "Canyon Gap", deg=18, drop=50, w_land=130, slope=3, land_min=300, cp=True)
     ring_on_jump(b, frac=0.55, R=52.0, col=BLUE)
     ring_on_jump(b, frac=0.6, R=26.0, col=ORANGE, side=60.0, high=30.0, coins=True)
-    # ---- the boost ladder: two launch pads straight up onto higher decks, then a sky dive off the top
+    # ---- the boost ladder: one huge launch pad straight up onto the high deck
     o = O.Obby(r, 280)
     o.plat("Ladder Deck", 100, 90)
-    for k in range(3):
-        o.pad(110.0, label="Launch Pad %d" % (k + 1))
-        o.plat("Ladder Deck %d" % (k + 1), 70, 90, cp=(k == 2))
-    road(r, "Sky Dive Run", 100, w=110, boosts=3, every=30, arrows_at=(110,))
-    R2.drop_off(r, "Sky Dive", 120.0, w=120, cp=True)
-    MX.arrows(r, (60, 400))
+    o.pad(200.0, label="Launch Pad")
+    o.plat("High Deck", 60, 90, cp=True)
+    # ---- giant worlds: bounce off the hubs of giant tyres, then across the rolling solar panels (hybrid.py)
+    import hybrid as HY
+    giants_ = HY.mix_in(r, sk, rng, "j_tyres", w=110, link=40.0)
+    giants_ += HY.mix_in(r, sk, rng, "s_solar", w=110, link=40.0)
     # ---- the last blast: a dive into the biggest ring of the stage
     road(r, "Rocket Run", 170, w=110, dy=47, boosts=3, every=26, lines=True)
     R2.ramp_jump(r, "Rocket Ramp", deg=22, drop=40, w_land=130, slope=3, land_min=320, cp=True)
@@ -363,8 +363,8 @@ def slot11(r, sk, rng):
     end_on_line(r, "Blast Out")
     finish_stage(r, rng)
     r.log("end")
-    return ["Drop-In", "Blast Ramp", "Side Ramp Shortcut", "Boost Carve", "Canyon Gap", "Launch Pads", "Sky Dive",
-            "Rocket Ramp"]
+    return ["Drop-In", "Blast Ramp", "Side Ramp Shortcut", "Boost Carve", "Canyon Gap", "Launch Pad"] + giants_ + \
+        ["Rocket Ramp"]
 
 
 # ===================================================================== 2. the split-second splitter
@@ -444,48 +444,18 @@ def slot12(r, sk, rng):
     al.o.drop(60.0, side=dot(sub(after0, al.r.p), right_of(f)) * 0.9)
     al.done()
     accent(b, glow=b.stage_glow)
-    # ---- the crossover: the road splits again round a giant pylon; the high way crosses over the low way
-    r.w = 200.0
-    road(r, "Crossover Fork", 100, w=200, cp=True)
-    fork, f = r.p, r.f
-    r.w = 60.0
-    q0 = r.p
-    r.turn("Low Way", 22, 420, rails=True)
-    r.turn("Low Way 2", -44, 420, rails=True)
-    R2.lay_strips(r, 30, 300, every=60, lanes=2)
-    r.turn("Low Way 3", 22, 420, rails=True)
-    r.w = 200.0
-    join = r.p
-    road(r, "Crossover Join", 120, w=200, boosts=3, every=40, cp=True)
-    # the high way: mirrored, up and over the low way where they cross
-    al = MX.Alt(r, add(fork, mul(rt, 60)), f, 50, B=280.0)
-    accent(b, glow=ORANGE)
-    b.no_under = True
-    al.r.turn("High Way", -22, 420, dy=40, rails=True, line=False)
-    al.r.turn("High Way 2", 44, 420, rails=True, line=False)
-    al.r.turn("High Way 3", -22, 420, dy=-30, rails=True, line=False)
-    b.no_under = False
-    al.r.straight("High Way End", dot(sub(join, al.r.p), f), dy=join[1] - al.r.p[1], lead=40.0, rails=True, line=False)
-    al.done()
-    big = add(add(fork, mul(f, 2 * 420 * math.sin(math.radians(22)) * 1.0)), (0, -260, 0))
-    cyl(b, "CrossPylon", big, 380, 40, DARK, "Metal", b.scenery)
-    cyl(b, "CrossPylonGlow", add(big, (0, 150, 0)), 6, 44, ORANGE, "Neon", b.scenery)
-    accent(b, glow=b.stage_glow)
-    # ---- the lane dash: barriers close one side lane at a time, the centre stays open
-    road(r, "Lane Dash", 420, w=120, dy=54, boosts=3, every=45, cp=False, lines=True)
-    for k, d in enumerate((70, 150, 230, 310, 390)):
+    # ---- giant worlds: floating pixel blocks, then up a staircase of giant books (hybrid.py)
+    import hybrid as HY
+    giants_ = HY.mix_in(r, sk, rng, "a_pixels", w=120, link=60.0)
+    road(r, "Lane Dash", 200, w=120, boosts=3, every=45, cp=False, lines=True)
+    for k, d in enumerate((60, 140)):
         p, ff = MX.at_road(r, d)
         lane_block(b, p, ff, 120, -1 if k % 2 == 0 else 1)
-    # ---- the commit jump: three lanes of landing, a ring over each
-    road(r, "Commit Run", 120, w=120, boosts=3, every=30, arrows_at=(60,))
-    R2.ramp_jump(r, "Commit Jump", deg=22, drop=60, w_land=160, slope=3, land_min=320, cp=True)
-    ring_on_jump(b, frac=0.5, R=58.0, col=BLUE)
-    ring_on_jump(b, frac=0.5, R=28.0, col=RED, side=70.0, high=25.0, coins=True)
-    ring_on_jump(b, frac=0.5, R=28.0, col=GREEN, side=-70.0, high=25.0, coins=True)
+    giants_ += HY.mix_in(r, sk, rng, "d_books", w=120, link=60.0)
     end_on_line(r, "Splitter Out")
     finish_stage(r, rng)
     r.log("end")
-    return ["Three-Way Split", "Hop Line", "Safe Route", "Risky Route", "Crossover", "Lane Dash", "Commit Jump"]
+    return ["Three-Way Split", "Hop Line", "Safe Route", "Risky Route"] + giants_[:1] + ["Lane Dash"] + giants_[1:]
 
 
 # ===================================================================== 3. the giant pinball run
@@ -594,22 +564,15 @@ def slot13(r, sk, rng):
     r.along(spinner, [100], i0=0, side=1, R=78.0)
     r.along(spinner, [195], i0=1, side=-1, R=78.0)
     r.along(flippers, [288], i0=0)
-    # 4. ramp shots: angled ramps fling the car left and right between raised platforms
-    o = O.Obby(r, 290)
-    o.plat("Shot Deck", 60, 70)
-    o.kick(0, side=60, deg=18, label="Ramp Shot 1")
-    o.plat("Shot Deck 1", 60, 64, cp=True)
-    o.pad(50, side=-60, label="Ramp Shot 2")
-    o.plat("Shot Deck 2", 60, 64)
-    o.kick(0, side=60, deg=18, label="Ramp Shot 3")
-    o.plat("Shot Deck 3", 60, 64)
-    o.pad(50, side=-60, label="Ramp Shot 4")
-    o.plat("Shot Deck 4", 90, 80, cp=True)
+    # 4. giant worlds: a giant keyboard whose keys sink, then spinning tops and a toy train (hybrid.py)
+    import hybrid as HY
+    giants_ = HY.mix_in(r, sk, rng, "a_keyboard", w=120, link=60.0)
+    giants_ += HY.mix_in(r, sk, rng, "t_tops", w=130, link=60.0)
     # 5. the bumper bend: a banked curve, bumpers on the outside, a spinner at the apex
     r.w = 130.0
-    r.turn("Bumper Bend", 28, 350, bank=10, rails=True)
+    r.turn("Bumper Bend", 28, 350, dy=40, bank=10, rails=True)
     bumper_field(r, [(50, 45), (120, 50)], 130, rng)
-    r.turn("Bumper Bend 2", -56, 350, bank=10, rails=True)
+    r.turn("Bumper Bend 2", -56, 350, dy=60, bank=10, rails=True)
     bumper_field(r, [(70, -48), (170, -50), (270, -46)], 130, rng)
     R2.lay_strips(r, 40, 300, every=60, lanes=1)
     r.turn("Bumper Bend 3", 28, 350, bank=10, rails=True)
@@ -625,7 +588,7 @@ def slot13(r, sk, rng):
     end_on_line(r, "Pinball Out")
     finish_stage(r, rng)
     r.log("end")
-    return ["Plunger", "Playfield", "Spinners", "Flippers", "Ramp Shots", "Bumper Bend", "Jackpot", "Drain"]
+    return ["Plunger", "Playfield", "Spinners", "Flippers"] + giants_ + ["Bumper Bend", "Jackpot", "Drain"]
 
 
 # ===================================================================== 4. the skyline leap
@@ -703,23 +666,18 @@ def slot14(r, sk, rng):
     al.done()
     # where the needle lands: far down the landing runway, on its right half
     accent(b, glow=b.stage_glow)
-    # 5. the skyline bend round a tower, then rooftop hops
+    # 5. giant worlds: hop across floating asteroids, then a deck where robot arms sweep (hybrid.py)
+    import hybrid as HY
     r.w = 120.0
-    r.turn("Skyline Bend", 30, 330, bank=10, rails=True)
-    r.turn("Skyline Bend 2", -60, 330, bank=10, rails=True)
-    R2.lay_strips(r, 40, 340, every=60, lanes=2)
-    r.turn("Skyline Bend 3", 30, 330, bank=10, rails=True)
-    road(r, "Rooftop Run", 100, w=100, boosts=3, every=30)
-    for k in range(3):
-        MX.hop(r, "Rooftop Hop %d" % (k + 1), drop=15.0 + 5 * k, deg=10.0)
-        p = r.p
-        sky_tower(b, (p[0] - 40, Y0 - 700, p[2]), p[1] - 14, 34, [ORANGE, BLUE, WHITE][k], rng, collide=False, spire=False)
-    # 6. the run-out, back up to the canyon road
-    road(r, "Skyline Run-Out", 260, w=110, dy=45, boosts=3, every=35, cp=True, lines=True)
+    giants_ = HY.mix_in(r, sk, rng, "s_asteroids", w=120, link=80.0)
+    road(r, "Rooftop Run", 100, w=110, boosts=3, every=30)
+    giants_ += HY.mix_in(r, sk, rng, "s_arms", w=110, link=60.0)
+    # 6. the run-out to the canyon road
+    road(r, "Skyline Run-Out", 160, w=110, boosts=3, every=35, cp=True, lines=True)
     end_on_line(r, "Skyline Out")
     finish_stage(r, rng)
     r.log("end")
-    return ["Tower Slalom", "Sky Launch", "Skyline Ramp", "Needle Gap", "Skyline Bend", "Rooftop Hops"]
+    return ["Tower Slalom", "Sky Launch", "Skyline Ramp", "Needle Gap"] + giants_
 
 
 # ===================================================================== 5. rolling thunder
@@ -764,15 +722,10 @@ def slot15(r, sk, rng):
         p, f = MX.at_road(r, d)
         gate_ring(b, add(p, (0, 30, 0)), f, 78, p[1], [ORANGE, BLUE][k % 2], roll=k * 0.35)
     line_marks(r)
-    # 2. the sweepers: big banked turns, the racing line painted on
+    # 2. giant worlds: hop across giant dinner plates (hybrid.py)
+    import hybrid as HY
     r.w = 110.0
-    r.turn("Sweeper", 50, 420, bank=16, rails=True, cp=True)
-    line_marks(r, col=BLUE)
-    r.turn("Sweeper 2", -100, 420, bank=16, rails=True)
-    line_marks(r, col=ORANGE)
-    R2.lay_strips(r, 60, 640, every=90, lanes=2)
-    r.turn("Sweeper 3", 50, 420, bank=16, rails=True)
-    line_marks(r, col=BLUE)
+    giants_ = HY.mix_in(r, sk, rng, "k_plates", w=110)
     # 3. the thunder bowl: once round a giant spinning ring, climbing, and over your own way in
     road(r, "Bowl Entry", 100, w=110, boosts=3, every=30, cp=True)
     b.no_under = True
@@ -786,10 +739,9 @@ def slot15(r, sk, rng):
     giant_ring(b, (C[0], r.p[1] + 120, C[2]), 120, (1, 0, 0), col=ORANGE, spin=0.05, th=16.0)
     giant_ring(b, (C[0], r.p[1] + 120, C[2]), 90, (0, 0, 1), col=BLUE, spin=-0.04, th=12.0)
     cyl(b, "BowlMast", (C[0], (r.p[1] + Y0 - 900) / 2, C[2]), r.p[1] - (Y0 - 900), 30, DARK, "Metal", b.scenery)
-    # 4. the high platforms, linked by short hops
+    # 4. giant worlds: a pirate ship's deck, barrels rolling across it as she heels (hybrid.py)
     road(r, "Platform Run", 80, w=100, boosts=3, every=26)
-    for k in range(3):
-        MX.hop(r, "Platform Hop %d" % (k + 1), drop=18.0, deg=10.0 + 2 * k, land_extra=40.0)
+    giants_ += HY.mix_in(r, sk, rng, "p_barrels", w=110)
     # 5. the roll ramp: off a curved ramp through a ring
     road(r, "Roll Run", 120, w=110, boosts=3, every=28, arrows_at=(60,), lines=True)
     R2.ramp_jump(r, "Roll Ramp", deg=22, drop=40, w_land=140, slope=3, land_min=300, cp=True)
@@ -801,7 +753,7 @@ def slot15(r, sk, rng):
     end_on_line(r, "Thunder Out")
     finish_stage(r, rng)
     r.log("end")
-    return ["Barrel Gates", "Sweepers", "Thunder Bowl", "High Platforms", "Roll Ramp", "Downhill Burst"]
+    return ["Barrel Gates"] + giants_[:1] + ["Thunder Bowl"] + giants_[1:] + ["Roll Ramp", "Downhill Burst"]
 
 
 # ===================================================================== 6. the cracking canyon
@@ -842,18 +794,11 @@ def slot16(r, sk, rng):
     road(r, "Canyon Approach", 140, w=100, dy=30, boosts=3, every=30, arrows_at=(70,), lines=True)
     # 1. cracking road and tilting spans: keep moving
     crack_span(r, "Cracking Road", 320, 100, delay=0.35, cp=True)
-    road(r, "Rock Pier", 60, w=100)
-    MX.tilt_deck(r, "Tilting Span", 160, 90, amp_deg=10, period=3.4)
-    road(r, "Rock Pier 2", 60, w=100, cp=True)
-    MX.tilt_deck(r, "Tilting Span 2", 160, 90, amp_deg=12, period=3.0, phase=0.5)
-    road(r, "Rock Pier 3", 60, w=100)
-    crack_span(r, "Cracking Road 2", 240, 100, delay=0.28)
-    # 2. mesa hops: jump from mesa to mesa
-    road(r, "Mesa Run", 100, w=100, dy=25, boosts=3, every=26, cp=True)
-    for k in range(3):
-        MX.hop(r, "Mesa Hop %d" % (k + 1), drop=20.0, deg=11.0, land_extra=50.0)
-        p, ff = MX.at_road(r, 40)
-        mesa(b, p, 100, 120, ff, rng)
+    # 2. giant worlds: a flower launch over lily pads and a waterfall, then scaffolding and an excavator (hybrid.py)
+    import hybrid as HY
+    giants_ = HY.mix_in(r, sk, rng, "f_lilies", w=100, link=60.0)
+    road(r, "Mesa Run", 40, w=100, cp=True)
+    giants_ += HY.mix_in(r, sk, rng, "b_scaffold", w=100, link=60.0)
     # 3. the breakaway bridge: a long bridge that falls apart right behind you; or the ledges below it
     r.w = 200.0
     road(r, "Bridge Head", 100, w=200, cp=True, arrows_at=(50,))
@@ -872,7 +817,7 @@ def slot16(r, sk, rng):
             MX.lamp(b, add(q, (0, 92, 0)), col=ORANGE, d=5.0, pulse=0.8)
     r.w = 200.0
     merge = r.p
-    road(r, "Bridge Tail", 220, w=200, boosts=3, every=40, cp=True)
+    road(r, "Bridge Tail", 120, w=200, boosts=3, every=40, cp=True)
     # the ledge route: down onto stable ledges along the canyon side, hop along them, pad back up to the tail
     al = MX.Alt(r, add(head, mul(rt, 70)), f, 50, B=260.0)
     accent(b, glow=BLUE)
@@ -891,18 +836,18 @@ def slot16(r, sk, rng):
     al.done()
     accent(b, glow=b.stage_glow)
     # 4. the crumbling launch: cracking road straight onto a big jump over the canyon
-    crack_span(r, "Crumbling Run", 200, 110, delay=0.3)
+    crack_span(r, "Crumbling Run", 160, 110, delay=0.3)
     road(r, "Launch Plate", 100, w=110, boosts=3, every=24, arrows_at=(60,))
     R2.ramp_jump(r, "Canyon Cross", deg=22, drop=60, w_land=140, slope=3, land_min=300, cp=True)
     ring_on_jump(b, frac=0.5, R=56.0, col=ORANGE)
     ring_on_jump(b, frac=0.5, R=24.0, col=BLUE, high=40.0, side=-40.0, coins=True)
     # 5. the last crack-up, out onto a boosted run
-    crack_span(r, "Last Crack", 240, 110, delay=0.25)
-    road(r, "Canyon Exit", 200, w=110, dy=60, boosts=3, every=40, cp=True, lines=True)
+    crack_span(r, "Last Crack", 160, 110, delay=0.25)
+    road(r, "Canyon Exit", 160, w=110, dy=40, boosts=3, every=40, cp=True, lines=True)
     end_on_line(r, "Canyon Out")
     finish_stage(r, rng)
     r.log("end")
-    return ["Cracking Road", "Tilting Spans", "Mesa Hops", "Breakaway Bridge", "Ledge Route", "Canyon Cross", "Last Crack"]
+    return ["Cracking Road"] + giants_ + ["Breakaway Bridge", "Ledge Route", "Canyon Cross", "Last Crack"]
 
 
 # ===================================================================== 7. the mega ramp cascade
@@ -959,26 +904,23 @@ def slot17(r, sk, rng):
     al2.done()
     al.done()
     accent(b, glow=b.stage_glow)
-    # the curved road on from the landing, straight into the pads
+    # giant worlds: marshmallow bounces and a candy-cane bridge, then a gravel conveyor and a dump truck (hybrid.py)
+    import hybrid as HY
     r.w = 120.0
-    r.turn("Cascade Curve", 20, 420, bank=12, rails=True)
-    r.turn("Cascade Curve 2", -40, 420, bank=12, rails=True)
-    R2.lay_strips(r, 30, 260, every=40, lanes=3)
-    r.turn("Cascade Curve 3", 20, 420, bank=12, rails=True)
-    # two pads straight up to the mega deck
+    giants_ = HY.mix_in(r, sk, rng, "c_marsh", w=120, link=60.0)
+    giants_ += HY.mix_in(r, sk, rng, "b_load", w=120, link=60.0)
+    # one pad straight up to the mega deck
     o = O.Obby(r, 300)
     o.plat("Pad Deck", 60, 100)
-    o.pad(118.0, label="Cascade Pad 1")
-    o.plat("Pad Deck 1", 60, 110, cp=True)
-    o.pad(118.0, label="Cascade Pad 2")
+    o.pad(118.0, label="Cascade Pad")
     o.plat("Mega Deck", 80, 140, cp=True)
     # the biggest launch of the cascade
     road(r, "Mega Run", 100, w=140, boosts=3, every=22, arrows_at=(50, 95), lines=True)
-    cascade_jump(r, "Mega Launch", 30, 140, 200, 340, ORANGE, rings=2)
+    cascade_jump(r, "Mega Launch", 30, 40, 200, 340, ORANGE, rings=2)
     end_on_line(r, "Cascade Out")
     finish_stage(r, rng)
     r.log("end")
-    return ["Cascade 1", "Cascade 2", "Expert Line", "Cascade Curve", "Cascade Pads", "Mega Launch"]
+    return ["Cascade 1", "Cascade 2", "Expert Line"] + giants_ + ["Cascade Pad", "Mega Launch"]
 
 
 # ===================================================================== 8. the laser slalom
@@ -1079,36 +1021,20 @@ def slot18(r, sk, rng):
     R2.lay_strips(r, 20, 540, every=60, lanes=1)
     for k, d in enumerate((80, 180, 280, 380, 480)):
         laser_fence(r, d, W, gap=48.0, off=(12.0 if k % 2 == 0 else -12.0), slot=(1 if k % 2 == 0 else -1))
-    # 2. laser hurdles: little kickers over low beams
-    road(r, "Hurdle Run", 80, w=W, boosts=3, every=26)
-    for k in range(3):
-        MX.hop(r, "Laser Hurdle %d" % (k + 1), drop=10.0, deg=10.0, land_extra=30.0)
-        # the low beam across the gap the car jumps
-        j = last_ramp(b)
-        lip, tgt = j[1], j[2]
-        mid = R2.lerp3(lip, tgt, 0.35)
-        f = RT.flat(sub(tgt, lip))
-        laser_sheet(b, (mid[0], lip[1] - 12, mid[2]), f, W - 4, h=6.0)
+    # 2. giant worlds: up a giant arcade cabinet's control panel and off its marquee (hybrid.py)
+    import hybrid as HY
+    giants_ = HY.mix_in(r, sk, rng, "a_panel", w=W, link=60.0)
     # 3. sweeping beams: each one covers half the road and slides across
     road(r, "Sweeper Run", 460, w=W, dy=36, cp=True)
     R2.lay_strips(r, 20, 440, every=70, lanes=1)
     r.along(laser_sweeper, [90, 220, 350], i0=0)
-    # 4. the laser bend: a banked bend between emitter towers
-    r.turn("Laser Bend", 30, 400, bank=12, rails=True)
-    r.turn("Laser Bend 2", -60, 400, bank=12, rails=True)
-    R2.lay_strips(r, 30, 380, every=60, lanes=2)
-    for d in (80, 220, 360):
-        p, ff = MX.at_road(r, d)
-        for s_ in (-1, 1):
-            emitter(b, add(p, mul(right_of(ff), s_ * (W / 2 + 10))), h=40.0, col=BLUE)
-    r.turn("Laser Bend 3", 30, 400, bank=12, rails=True)
+    # 4. giant worlds: through a giant wardrobe past swinging coats, then toy cars on the rug (hybrid.py)
+    giants_ += HY.mix_in(r, sk, rng, "d_wardrobe", w=W, link=60.0)
     # 5. pulse gates: each half lights up in turn
-    road(r, "Pulse Gates", 420, w=W, cp=True)
-    R2.lay_strips(r, 20, 400, every=70, lanes=1)
-    r.along(pulse_gate, [90, 210, 330], i0=0)
-    # 6. the laser rotors
-    road(r, "Rotor Run", 340, w=W, dy=30, cp=True)
-    r.along(laser_rotor, [100, 250], i0=0)
+    road(r, "Pulse Gates", 300, w=W, dy=56, cp=True)
+    R2.lay_strips(r, 20, 280, every=70, lanes=1)
+    r.along(pulse_gate, [70, 160, 250], i0=0)
+
     # 7. the prism jump: through a ring of light
     road(r, "Prism Run", 120, w=W, boosts=3, every=26, arrows_at=(60,), lines=True)
     R2.ramp_jump(r, "Prism Jump", deg=22, drop=40, w_land=140, slope=3, land_min=300, cp=True)
@@ -1117,7 +1043,7 @@ def slot18(r, sk, rng):
     end_on_line(r, "Laser Out")
     finish_stage(r, rng)
     r.log("end")
-    return ["Laser Fences", "Laser Hurdles", "Sweeping Beams", "Laser Bend", "Pulse Gates", "Laser Rotors", "Prism Jump"]
+    return ["Laser Fences"] + giants_[:2] + ["Sweeping Beams"] + giants_[2:] + ["Pulse Gates", "Prism Jump"]
 
 
 # ===================================================================== 9. the final speed frenzy
@@ -1159,12 +1085,12 @@ def slot19(r, sk, rng):
         neon_arch(b, r.ahead(d - 280), r.f, W, [ORANGE, BLUE][d // 100 % 2], h=36)
     # 2. the left-right steering challenge
     chicane(r, "Frenzy Chicane", 32, 300, 90, first=1)
-    road(r, "Chicane Link", 80, w=90, boosts=3, every=26, cp=True)
-    chicane(r, "Frenzy Chicane B", 32, 300, 90, first=-1)
-    # 3. bigger and bigger gaps
+    # 3. giant worlds: the chocolate river's current, then giant bouncy balls (hybrid.py)
+    import hybrid as HY
+    giants_ = HY.mix_in(r, sk, rng, "c_river", w=W, link=60.0)
+    giants_ += HY.mix_in(r, sk, rng, "t_balls", w=W, link=60.0)
+    # 4. bigger and bigger gaps
     road(r, "Gap Run", 100, w=W, boosts=3, every=24, lines=True)
-    MX.hop(r, "Gap 1", drop=16.0, deg=10.0, land_extra=60.0)
-    R2.lay_strips(r, 10, 100, every=24, lanes=3)
     R2.ramp_jump(r, "Gap 2", deg=16, drop=40, w_land=W, slope=2, land_min=260, cp=True)
     ring_on_jump(b, frac=0.5, R=40.0, col=BLUE)
     Lr = MX.last_len(r)
@@ -1172,19 +1098,17 @@ def slot19(r, sk, rng):
     R2.ramp_jump(r, "Gap 3", deg=22, drop=70, w_land=130, slope=2, land_min=300, cp=True)
     ring_on_jump(b, frac=0.5, R=56.0, col=ORANGE)
     ring_on_jump(b, frac=0.55, R=24.0, col=WHITE, high=50.0, coins=True)
-    # 4. the medley: a bumper field, a laser fence, cracking road - everything at once
-    road(r, "Frenzy Medley", 420, w=130, dy=60, cp=True)
-    R2.lay_strips(r, 20, 400, every=60, lanes=1)
-    bumper_field(r, [(60, -40), (90, 45), (150, -50), (200, 38)], 130, rng)
-    laser_fence(r, 280, 130, gap=50.0, off=10.0, slot=-1)
-    laser_fence(r, 370, 130, gap=50.0, off=-10.0, slot=1)
-    crack_span(r, "Frenzy Crack", 240, 110, delay=0.25)
-    road(r, "Frenzy Sprint", 200, w=W, dy=66, boosts=3, every=30, cp=True, lines=True)
-    chicane(r, "Last Chicane", 26, 340, 90, first=1)
+    # 5. the medley: a bumper field and a laser fence on the climb, then cracking road
+    road(r, "Frenzy Medley", 300, w=130, cp=True)
+    R2.lay_strips(r, 20, 280, every=60, lanes=1)
+    bumper_field(r, [(60, -40), (90, 45), (150, -50)], 130, rng)
+    laser_fence(r, 240, 130, gap=50.0, off=10.0, slot=-1)
+    crack_span(r, "Frenzy Crack", 160, 110, delay=0.25)
+    road(r, "Frenzy Sprint", 360, w=W, dy=126, boosts=3, every=30, cp=True, lines=True)
     end_on_line(r, "Frenzy Out")
     finish_stage(r, rng)
     r.log("end")
-    return ["Boost Runway", "Chicanes", "Growing Gaps", "Frenzy Medley", "Last Chicane"]
+    return ["Boost Runway", "Chicane"] + giants_ + ["Growing Gaps", "Frenzy Medley"]
 
 
 def finish_ring(b, c, f, w):
@@ -1215,17 +1139,14 @@ def slot20(r, sk, rng):
     R2.lay_strips(r, 20, 280, every=70, lanes=1)
     bumper_field(r, [(45, -45), (80, 40), (120, -35), (160, 50)], 130, rng)
     r.along(spinner, [255], i0=5, side=1, speed=0.2, R=70.0)
-    road(r, "Reprise Hop Run", 90, w=W, boosts=3, every=26)
-    for k in range(2):
-        MX.hop(r, "Reprise Hop %d" % (k + 1), drop=16.0, deg=11.0, land_extra=50.0)
-    road(r, "Reprise Gates", 260, w=100, dy=32, boosts=3, every=50, cp=True)
-    for k, d in enumerate((50, 130, 210)):
+    # giant worlds: launch pads up a giant birthday cake, then a toy seesaw and a toy castle's battlements
+    import hybrid as HY
+    giants_ = HY.mix_in(r, sk, rng, "k_cake_s", w=100, link=60.0)
+    road(r, "Reprise Gates", 200, w=100, boosts=3, every=50, cp=True)
+    for k, d in enumerate((50, 130)):
         p, ff = MX.at_road(r, d)
         gate_ring(b, add(p, (0, 30, 0)), ff, 76, p[1], [BLUE, ORANGE][k % 2], roll=k * 0.4)
-    road(r, "Reprise Ramp Run", 100, w=W, boosts=3, every=24, arrows_at=(50,), lines=True)
-    R2.ramp_jump(r, "Reprise Ramp", deg=18, drop=40, w_land=120, slope=2, land_min=280, cp=True)
-    ring_on_jump(b, frac=0.5, R=48.0, col=BLUE)
-    road(r, "Reprise Climb", 160, w=W, dy=36, boosts=3, every=30, lines=True)
+    giants_ += HY.mix_in(r, sk, rng, "t_seesaw", w=W, link=60.0)
     # 2. the collapsing bridge: one last commitment
     r.w = 90.0
     crack_span(r, "Collapsing Bridge", 520, 90, delay=0.18, rate=150.0)
@@ -1263,7 +1184,8 @@ def slot20(r, sk, rng):
     finish_ring(b, add(r.p, mul(r.f, max(40.0, r.X1 - 60 - r.p[0]))), (1, 0, 0), 200)
     finish_stage(r, rng)
     r.log("end")
-    return ["Reprise", "Collapsing Bridge", "Finale Pad", "Pulse Run", "Final Jump", "Finish Platform", "Finish Ring"]
+    return ["Reprise"] + giants_ + ["Collapsing Bridge", "Finale Pad", "Pulse Run", "Final Jump", "Finish Platform",
+                                    "Finish Ring"]
 
 
 LEVELS = {11: slot11, 12: slot12, 13: slot13, 14: slot14, 15: slot15, 16: slot16, 17: slot17, 18: slot18, 19: slot19, 20: slot20}

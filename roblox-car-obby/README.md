@@ -17,6 +17,41 @@ How the turns work:
   `python3 generator/test_course.py generator good.rbxl out.rbxl random`.
 - The dev course picker can also load `course2` directly.
 
+## Levels 1-20: road and giant worlds mixed
+
+Every one of the 20 road levels (Obby 1 and Obby 2) is now a mix. Each keeps its own fast road stretches, machines
+and big jumps, and takes two giant-object set pieces from the Giant Worlds (levels 31-40) in between them: road,
+giant world, road, giant world, road. No two levels share a set piece, so all 20 are different.
+
+| Level | Giant set pieces mixed in | Road content they replaced |
+|-------|---------------------------|----------------------------|
+| 1 Launch Runway | Springs up giant ABC blocks; the chopping board's knives and the hob's burner rings | Most of the hammer corridor and its S-bend |
+| 2 Collapsing Highway | A chocolate bar whose squares break off; leaves that rock in the breeze | The off-ramp spans and the return curve |
+| 3 The Loop | Round two giant iced donuts; a rocket engine launch through energy rings | The long gap, the split landing and the hidden ledge |
+| 4 Crusher Works | A giant engine block with rolling oil drums and a fan duct; a stack of shipping containers | The roller bed and the magnet crane |
+| 5 Bridge Works | A UFO tractor beam; a concrete pipe and a cement-mixer drum | The gear turntable, the pendulum ferry, the second swing span and two tilts |
+| 6 Demolition Yard | Hops across crushed cars; the junkyard magnet crane | The wrecking S-bend and the scrap heap |
+| 7 Corkscrew Tower | A branch spiralling round a giant tree, then the falling leaves; a swirl down the sink drain | The banked slalom |
+| 8 Fan Tunnel | A skateboard ramp onto comic books; the claw machine | The pipe bend, the close fans and one updraft |
+| 9 Smash Yard | A baseplate of toy-brick walls; spinning arcade coins and a giant pixel screen to smash | The barricade run and the wall gauntlet |
+| 10 Final Gauntlet | A pirate cannon shot to a second ship (kraken); giant lollipop hops | The rotating bridges and the narrow jumps |
+| 11 Boost Blast | Giant tyre bounces; rolling solar panels | Two of the three launch pads and the sky dive |
+| 12 Splitter | Floating pixel blocks; a staircase of giant books | The crossover and the commit jump |
+| 13 Pinball Run | A giant keyboard whose keys sink; spinning tops and a toy train | The ramp shots |
+| 14 Skyline Leap | Asteroid hops; robot arms sweeping a deck | The skyline bend and the rooftop hops |
+| 15 Rolling Thunder | Giant dinner plates; a pirate deck with rolling barrels | The banked sweepers and the high platforms |
+| 16 Cracking Canyon | A flower launch over lily pads and a waterfall; scaffolding and an excavator | The tilting spans and the mesa hops |
+| 17 Mega Ramp Cascade | Marshmallow bounces and a candy-cane bridge; a crane's swinging load | The cascade curve and one launch pad |
+| 18 Laser Slalom | A giant arcade cabinet's control panel and marquee jump; the wardrobe and toy cars on the rug | The laser hurdles, the laser bend and the rotors |
+| 19 Speed Frenzy | The chocolate river; giant bouncy balls | The second chicane, the first gap and the last chicane |
+| 20 Grand Finale | Launch pad up a giant birthday cake; a toy seesaw and a toy castle's battlements | The reprise hops and ramp |
+
+- The tables in the two sections below describe each level's road content; the stretches named above were replaced.
+- **Code:** `generator/hybrid.py` holds the 50 set pieces (compact, height-neutral versions of the Giant Worlds
+  sections) and `wear()`, which dresses Obby 1's machine skin or Obby 2's speedway skin with a giant world's surface
+  while a piece is laid. `mech.py` and `speedway.py` call `hybrid.mix_in()` where each piece goes.
+- The validator reports 0 issues on levels 1-20 and the clipping audit is clean. **Not tested in Roblox Studio.**
+
 ## Levels 1-10: the Mechanical Playground
 
 Levels 1-10 form one long course in the sky, built from dark steel machinery. The roads are coloured, with hazard stripes,

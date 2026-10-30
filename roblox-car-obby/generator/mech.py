@@ -331,33 +331,25 @@ def slot1(r, sk, rng):
     sk.title = "Launch Runway"
     road(r, "Corridor Entry", 160, w=80, cp=True, arrows_at=(80,))
     r.log("corridor")
-    L = 1700.0
+    L = 420.0
     road(r, "Hammer Corridor", L, w=80)
-    kinds = [side_hammer, sweep_arm, O.pusher, side_hammer, sweep_arm, O.pusher, side_hammer, sweep_arm, O.pusher,
-             side_hammer, sweep_arm, side_hammer]
+    kinds = [side_hammer, sweep_arm, O.pusher]
     at = [130 + 130 * k for k in range(len(kinds))]
     for k, (fn, d) in enumerate(zip(kinds, at)):
         r.along(fn, [d], i0=k)
     _corridor_shell(r, L, 80, rng)
     road(r, "Corridor Exit", 300, w=80, dy=60, boosts=2, every=60, cp=True)
-    # ---- the corridor's second hall: an S-bend of sweeping arms and hammers, then a last row of hammers
-    r.turn("Hammer Bend", 30, 360, rails=True)
-    r.along(sweep_arm, [100], i0=0)
-    _corridor_shell(r, 0, 80, rng)
-    r.turn("Hammer Bend Swing", -60, 360, rails=True)
-    r.along(side_hammer, [70], i0=1)
-    r.along(O.pusher, [150, 220], i0=0)
-    r.along(sweep_arm, [300], i0=1)
-    _corridor_shell(r, 0, 80, rng)
-    r.turn("Hammer Bend Back", 30, 360, rails=True)
-    r.along(side_hammer, [90], i0=2)
-    _corridor_shell(r, 0, 80, rng)
-    road(r, "Last Hammers", 280, w=80, cp=True)
-    r.along(side_hammer, [90, 200], i0=5)
+    # ---- giant worlds: up the ABC blocks, then the chopping board and the hob (hybrid.py)
+    import hybrid as HY
+    giants_ = HY.mix_in(r, sk, rng, "t_blocks", w=90)
+    road(r, "Block Run", 80, w=90, boosts=1, every=40)
+    giants_ += HY.mix_in(r, sk, rng, "k_board", w=80)
+    road(r, "Last Hammers", 180, w=80, cp=True)
+    r.along(side_hammer, [90], i0=5)
     _corridor_shell(r, 0, 80, rng)
     road(r, "Hammer Exit", 160, w=80, dy=15, boosts=2, every=50, arrows_at=(80,))
     r.log("end")
-    return ["Launch Runway", "Giant Ramp", "High Line", "Low Road", "Hammer Corridor", "Hammer Bend"]
+    return ["Launch Runway", "Giant Ramp", "High Line", "Low Road", "Hammer Corridor"] + giants_ + ["Last Hammers"]
 
 
 def _axes(z):
@@ -514,12 +506,12 @@ def slot2(r, sk, rng):
     accent(b, ACC["highway"])
     r.turn("Off-Ramp Curve", -120, 460, dy=-60, rails=True)
     R2.lay_strips(r, 80, 900, every=110, lanes=2)
-    tilt_deck(r, "Last Tilt", 150, 70, amp_deg=8, period=3.2, phase=0.25)
-    retract_deck(r, "Last Retract", 130, 70, phase=0.6, side=-1)
-    road(r, "Off-Ramp", 300, w=80, dy=-60, boosts=2, cp=True)
-    r.turn("Exit Curve", 60, 460, rails=True)
-    # ---- back across to the centre line on a last diagonal of collapsing spans
-    r.turn("Return Curve", -50, 400, rails=True)
+    # ---- giant worlds: the chocolate bar that breaks under you, the leaves that rock (hybrid.py)
+    import hybrid as HY
+    giants_ = HY.mix_in(r, sk, rng, "c_bar", w=80)
+    road(r, "Off-Ramp", 200, w=80, dy=-60, boosts=2, cp=True)
+    giants_ += HY.mix_in(r, sk, rng, "f_leaves", w=70)
+    # ---- a last run of collapsing spans
     tilt_deck(r, "Return Tilt", 150, 70, amp_deg=9, period=3.4, phase=0.1)
     road(r, "Return Pier", 64, w=70)
     R2.sink_board(r, "Return Fall", 200, 70, cell=40.0, cols=(ACC["highway"], mix(ACC["highway"], (0, 0, 0), 0.4)),
@@ -527,10 +519,9 @@ def slot2(r, sk, rng):
     road(r, "Return Pier 2", 26, w=70, cp=True)
     retract_deck(r, "Return Retract", 130, 70, phase=0.35, side=1)
     road(r, "Return Pier 3", 60, w=70)
-    r.turn("Return Straighten", 50, 400, rails=True)
-    R2.lay_strips(r, 60, 300, every=80, lanes=2)
+    r.turn("Return Straighten", 60, 400, rails=True)
     r.log("end")
-    return ["Collapsing Highway", "Tilting Span", "Retracting Span", "Falling Span", "Three-Way Split"]
+    return ["Collapsing Highway", "Tilting Span", "Retracting Span", "Falling Span", "Three-Way Split"] + giants_ + ["Return Spans"]
 
 
 # ===================================================================== 4. the enormous loop
@@ -670,15 +661,36 @@ def slot3(r, sk, rng):
     r.turn("Loop Run-Out", 26, 400, rails=True)
     R2.lay_strips(r, 30, 150, every=60, lanes=2)
     r.turn("Loop Run-Out 2", -26, 400, rails=True)
-    air_sequence(r, rng)
+    giants_ = air_hybrid(r, sk, rng)
     r.log("end")
-    return ["Acceleration Ramp", "Giant Loop", "Bypass", "Hole Shortcut", "Recovery Deck", "Sky Ramps", "Split Landing",
-            "Hidden Ledge"]
+    return ["Acceleration Ramp", "Giant Loop", "Bypass", "Hole Shortcut", "Recovery Deck", "Sky Ramp"] + giants_
 
 
 def last_len(r):
     pts = r.last[0]
     return sum(math.dist(a_, c_) for a_, c_ in zip(pts, pts[1:]))
+
+
+def air_hybrid(r, sk, rng):
+    """The air strip and the sky ramp, then giant worlds: round two donuts, and a rocket engine's launch through the
+    energy rings (hybrid.py)."""
+    import hybrid as HY
+    b = r.b
+    col = ACC["air"]
+    accent(b, col)
+    road(r, "Air Strip", 160, w=80, dy=60, boosts=3, every=35, cp=True, arrows_at=(80, 150))
+    for d in (50, 120):
+        gantry(b, r.ahead(d - 160), r.f, 80, h=40)
+    R2.ramp_jump(r, "Sky Ramp", deg=24, drop=20, w_land=90, slope=2, land_min=280, cp=True)
+    Lr = last_len(r)
+    r.along(sweep_arm, [Lr - 60], i0=0)
+    road(r, "Sky Deck", 70, w=80, boosts=3, every=30, arrows_at=(40,))
+    names = HY.mix_in(r, sk, rng, "c_donut", w=80)
+    road(r, "Ring Run", 200, w=90, boosts=3, every=50, cp=True)
+    r.along(sweep_arm, [60, 150], i0=1)
+    names += HY.mix_in(r, sk, rng, "s_engine", w=90)
+    accent(b, col)
+    return names
 
 
 def air_sequence(r, rng):
@@ -896,11 +908,8 @@ def slot4(r, sk, rng):
     road(r, "Floor Pier", 50, w=W)
     retract_deck(r, "Shift Floor 2", 110, W, period=3.6, phase=0.55, side=-1)
     road(r, "Roller Pier", 60, w=W, cp=True)
-    R2.belt_road(r, "Roller Bed", 300, 45.0, direction="back", w=W)
-    r.along(grinder, [70, 150, 230], i0=0)
-    road(r, "Piston Hall", 420, w=W, cp=True)
-    pist = [(O.pusher, 80, 0), (side_hammer, 140, 1), (O.pusher, 190, 3), (sweep_arm, 260, 2), (O.pusher, 320, 2),
-            (side_hammer, 320, 5)]
+    road(r, "Piston Hall", 300, w=W, cp=True)
+    pist = [(O.pusher, 70, 0), (side_hammer, 130, 1), (O.pusher, 180, 3), (sweep_arm, 240, 2)]
     for fn, d, k in pist:
         r.along(fn, [d], i0=k)
     p_out = r.p
@@ -926,19 +935,18 @@ def slot4(r, sk, rng):
     accent(b, col)
     R2.ramp_jump(r, "Machine Launch", deg=20, drop=40, w_land=110, slope=4, land_min=360, cp=True)
     kind, lip, tgt, H, V = [j for j in b.jumps if j[0] == "ramp"][-1]
-    road(r, "Works Run-Out", 200, w=90, boosts=2, every=60)
-    # ---- the magnet crane: it picks the car up off the loading bay and swings it over the void
-    road(r, "Loading Bay", 140, w=70, cp=True, arrows_at=(60,))
-    crane_transfer(r, "Magnet Crane", 520, dy=40, turn=0, land_L=220, w_land=80, cp=True)
-    # ---- the hammer belt: a fast belt past swinging hammers and sweeping arms
-    R2.belt_road(r, "Hammer Belt", 580, 60.0, direction="along", w=80, cp=False)
-    r.along(side_hammer, [90, 310, 520], i0=3)
-    r.along(sweep_arm, [200, 420], i0=3)
+    road(r, "Works Run-Out", 60, w=90, boosts=1, every=40)
+    # ---- giant worlds: a giant engine block and its fan duct, then a stack of shipping containers (hybrid.py)
+    import hybrid as HY
+    giants_ = HY.mix_in(r, sk, rng, "j_engine", w=80)
+    R2.belt_road(r, "Hammer Belt", 170, 60.0, direction="along", w=80, cp=True)
+    r.along(side_hammer, [60], i0=3)
+    r.along(sweep_arm, [120], i0=3)
     _corridor_shell(r, 0, 80, rng)
-    road(r, "Works Exit", 200, w=80, dy=12, boosts=2, every=60, cp=True)
+    giants_ += HY.mix_in(r, sk, rng, "b_containers", w=80)
     r.log("end")
-    return ["Crusher Plates", "Lane Walls", "Shift Floor", "Roller Bed", "Piston Hall", "Exit Tunnel", "Machine Launch",
-            "Magnet Crane", "Hammer Belt"]
+    return ["Crusher Plates", "Lane Walls", "Shift Floor", "Piston Hall", "Exit Tunnel", "Machine Launch"] + giants_ + \
+        ["Hammer Belt", "Works Exit"]
 
 
 def crane_head(b, head, home):
@@ -1110,22 +1118,18 @@ def slot5(r, sk, rng):
     pier(r, "See-Saw Pier", 150, cp=True, w=90)
     ss_mid = sub(r.p, mul(r.f, 75))
     # 5. the big bend over the gear canyon: a turntable gear, the pendulum ferry
+    # 5. giant worlds over the canyon: a UFO's tractor beam, then a concrete pipe and a cement mixer (hybrid.py)
+    import hybrid as HY
     r.turn("Canyon Bend", 30, 500, rails=True)
-    R2.lay_strips(r, 40, 220, every=60, lanes=2)
-    R2.gear_bridge(r, "Gear Turntable", 110, 3.0, col=col, teeth_col=STEEL, gap=12.0)
-    pier(r, "Gear Pier", 50)
+    giants_ = HY.mix_in(r, sk, rng, "s_beam", w=70)
     r.turn("Canyon Bend 2", -60, 500, rails=True)
-    R2.pendulum_ferry(r, "Pendulum Ferry", Lp=260.0, amp_deg=26.0, period=5.4, deck=(90.0, 70.0), col=col)
+    giants_ += HY.mix_in(r, sk, rng, "b_mixer", w=70, link=220.0)
     pier(r, "Ferry Pier", 70, cp=True)
     r.turn("Canyon Bend 3", 30, 500, rails=True)
-    # 6. the second swing span and the tilt gauntlet
-    swing_span(r, "Swing Span 2", 300, w=56, period=3.8, ease=1.3, phase=0.5, col=(90, 150, 255))
-    pier(r, "Gauntlet Pier", 90, cp=True)
+    # 6. a last tilting bridge
+    pier(r, "Gauntlet Pier", 60, cp=True)
     merge0 = None
-    for k in range(3):
-        seesaw(r, "Tilt %d" % (k + 1), 160, w=60, amp_deg=9 + k, period=3.6 + 0.3 * k, hold=1.4, phase=k * 0.33)
-        if k < 2:
-            pier(r, "Tilt Pier %d" % (k + 1), 30)
+    seesaw(r, "Tilt 1", 160, w=60, amp_deg=9, period=3.6, hold=1.4, phase=0.0)
     PW = 420.0
     r.w = PW  # (a broad landing plaza: the side spur drives straight onto its right side)
     merge0 = r.p
@@ -1173,8 +1177,8 @@ def slot5(r, sk, rng):
     al.done()
     accent(b, col)
     r.log("end")
-    return ["Swing Span", "Sectional Bridge", "Crossroads Turntable", "Side Spur", "See-Saw Bridge", "Gear Turntable",
-            "Pendulum Ferry", "Tilt Gauntlet", "Lower Spinners"]
+    return ["Swing Span", "Sectional Bridge", "Crossroads Turntable", "Side Spur", "See-Saw Bridge"] + giants_ + \
+        ["Tilt Bridge", "Lower Spinners"]
 
 
 # ===================================================================== 8. the wrecking-ball section
@@ -1303,29 +1307,18 @@ def slot6(r, sk, rng):
     r.along(wrecking_ball, [500], i0=3)
     r.along(ball_lane, [580], i0=4)
     dress_road(r, rng)
-    # 2. the wrecking bend: an S through more frames
-    r.turn("Wrecking Bend", 30, 460, rails=True)
-    r.along(ball_lane, [110], i0=1)
-    dress_road(r, rng, chains=True)
-    r.turn("Wrecking Bend 2", -60, 460, rails=True)
-    r.along(wrecking_ball, [90, 300], i0=2)
-    r.along(ball_high, [200], i0=3)
-    dress_road(r, rng)
-    r.turn("Wrecking Bend 3", 30, 460, rails=True)
-    r.along(ball_lane, [120], i0=5)
+    # 2. giant worlds: hop across the roofs of crushed cars (hybrid.py)
+    import hybrid as HY
+    giants_ = HY.mix_in(r, sk, rng, "j_wrecks", w=72)
     # 3. the opposite pair, then the wide escape ramp
     road(r, "Pair Run", 280, w=72, dy=40, cp=True)
     r.along(ball_pair, [140], i0=0)
     dress_road(r, rng, chains=True)
     road(r, "Escape Run", 160, w=130, boosts=3, every=40, arrows_at=(80,))
     R2.ramp_jump(r, "Escape Ramp", deg=20, drop=70, w_land=140, slope=3, land_min=300, cp=True)
-    # 4. the scrap heap: low balls down the lanes over a littered road
-    road(r, "Scrap Heap", 420, w=90, dy=50, cp=True)
-    r.along(ball_lane, [80, 170, 260, 350], i0=0)
-    dress_road(r, rng, every=100, chains=True)
-    road(r, "Heap Edge", 120, w=90, boosts=3, every=35)
-    R2.drop_off(r, "Demolition Drop", 60.0, w=90, cp=True)
-    r.along(ball_high, [230], i0=4)
+    # 4. giant worlds: the junkyard magnet lifts the car over the crusher (hybrid.py)
+    road(r, "Scrap Run", 100, w=90, cp=True)
+    giants_ += HY.mix_in(r, sk, rng, "j_magnet", w=72)
     # 5. the ball run and the wrecker launch
     road(r, "Ball Run", 420, w=72, dy=51, cp=True)
     r.along(ball_pair, [100, 300], i0=1)
@@ -1334,8 +1327,7 @@ def slot6(r, sk, rng):
     road(r, "Launch Run", 160, w=90, boosts=3, every=40, arrows_at=(80,))
     R2.ramp_jump(r, "Wrecker Launch", deg=20, drop=60, w_land=100, slope=3, land_min=300, cp=True)
     r.log("end")
-    return ["Wrecking Row", "Wrecking Bend", "Opposite Pair", "Escape Ramp", "Scrap Heap", "Demolition Drop", "Ball Run",
-            "Wrecker Launch"]
+    return ["Wrecking Row"] + giants_[:1] + ["Opposite Pair", "Escape Ramp"] + giants_[1:] + ["Ball Run", "Wrecker Launch"]
 
 
 # ===================================================================== 9. the high-speed corkscrew
@@ -1479,22 +1471,19 @@ def slot7(r, sk, rng):
     p0, f = r.p, r.f
     road(r, "Exit Tunnel", 340, w=80, boosts=3, every=40, cp=True)
     tunnel(b, p0, f, 340, 80, col)
-    # the banked slalom through gantries and arms
-    r.turn("Slalom", 45, 400, rails=True)
-    r.along(sweep_arm, [160], i0=0)
-    r.turn("Slalom 2", -90, 400, rails=True, cp=True)
-    r.along(O.pusher, [120, 320], i0=1)
-    r.along(sweep_arm, [450], i0=1)
-    r.turn("Slalom 3", 45, 400, rails=True)
-    R2.lay_strips(r, 40, 260, every=70, lanes=2)
-    lifts(r, 2, 100.0, label="Tower Lift")
-    road(r, "Spiral Entry 2", 200, w=80, boosts=3, every=40, cp=True)
+    # giant worlds: a branch spiralling round a giant tree, then a swirl down a giant sink's drain (hybrid.py)
+    import hybrid as HY
+    giants_ = HY.mix_in(r, sk, rng, "f_tree", w=80, link=60.0)
+    road(r, "Arm Run", 120, w=80, boosts=2, every=40, cp=True)
+    giants_ += HY.mix_in(r, sk, rng, "k_sink", w=80, link=60.0)
+    lifts(r, 2, 130.0, label="Tower Lift")
+    road(r, "Spiral Entry 2", 140, w=80, boosts=3, every=40, cp=True)
     corkscrew(r, "Corkscrew B", 2, 180.0, 400.0, -70.0, 30.0, (255, 160, 220), rng)
     p0, f = r.p, r.f
     road(r, "Exit Tunnel 2", 300, w=80, dy=-8, boosts=3, every=40, cp=True)
     tunnel(b, p0, f, 300, 80, (255, 160, 220))
     r.log("end")
-    return ["Piston Lifts", "Corkscrew", "Spiral Hops", "Exit Tunnel", "Banked Slalom", "Corkscrew B"]
+    return ["Piston Lifts", "Corkscrew", "Spiral Hops", "Exit Tunnel"] + giants_ + ["Corkscrew B"]
 
 
 # ===================================================================== 10. the giant fan tunnel
@@ -1639,30 +1628,24 @@ def slot8(r, sk, rng):
     duct(b, p0, f, 400, 150, col=col)
     r.w = W
     road(r, "Duct Out", 120, w=W, boosts=2, every=40)
-    # 4. the pipe bend: out in the open between huge pipes
-    r.turn("Pipe Bend", 30, 400, bank=8, rails=True)
-    r.turn("Pipe Bend 2", -60, 400, bank=8, rails=True)
-    R2.lay_strips(r, 60, 360, every=80, lanes=2)
-    r.turn("Pipe Bend 3", 30, 400, bank=8, rails=True)
-    # 5. the close fans: a fast run of fans close together, then out into the open air
-    p0, f = r.p, r.f
-    road(r, "Close Fans", 340, w=W, boosts=3, every=50, cp=True)
-    r.along(fan, [60, 115, 170, 225, 280], i0=0, R=48.0, n=3, speed=0.45)
-    duct(b, p0, f, 340, W, col=col)
-    road(r, "Fan Exit", 120, w=W, boosts=3, every=30)
-    R2.ramp_jump(r, "Open Air Jump", deg=22, drop=90, w_land=120, slope=3, land_min=360, cp=True)
+    # 4. giant worlds: off a skateboard's tail onto the comics, then the claw machine (hybrid.py)
+    import hybrid as HY
+    giants_ = HY.mix_in(r, sk, rng, "d_skate", w=W)
+    giants_ += HY.mix_in(r, sk, rng, "a_claw", w=W)
+    road(r, "Fan Exit", 100, w=W, boosts=3, every=30)
+    R2.ramp_jump(r, "Open Air Jump", deg=22, drop=40, w_land=120, slope=3, land_min=320, cp=True)
     # 6. updraft fans lift the car back up
     o = O.Obby(r, 260)
     o.plat("Updraft Deck", 100, 80, cp=True)
-    for k in range(2):
-        o.pad(48.0, label="Updraft %d" % (k + 1))
+    for k in range(1):
+        o.pad(94.0, label="Updraft %d" % (k + 1))
         src = [j for j in b.jumps if j[0] == "oup"][-1][1]
         fan_art(b, src, r.f, 80)
-        o.plat("Updraft Deck %d" % (k + 1), 140, 80, cp=(k == 1))
-    road(r, "Vent Run", 180, w=W, boosts=2, every=60)
+        o.plat("Updraft Deck %d" % (k + 1), 140, 80, cp=True)
+    road(r, "Vent Run", 140, w=W, boosts=2, every=60)
     r.along(fan, [100], i0=5, R=48.0, n=4, speed=0.35)
     r.log("end")
-    return ["Fan Duct", "Shutters", "Split Duct", "Pipe Bend", "Close Fans", "Open Air Jump", "Updraft Fans"]
+    return ["Fan Duct", "Shutters", "Split Duct"] + giants_ + ["Open Air Jump", "Updraft Fans"]
 
 
 # ===================================================================== 11. the destructible zone
@@ -1760,22 +1743,17 @@ def slot9(r, sk, rng):
     W = 90.0
     road(r, "Smash Approach", 200, w=W, cp=True, boosts=3, every=40, arrows_at=(100,))
     # 1. crate alley: crates in some lanes, reinforced gates in others (smash a crate, dodge a gate)
-    road(r, "Crate Alley", 560, w=W, cp=True)
-    R2.lay_strips(r, 20, 540, every=45, lanes=3)
-    for d, pat in ((100, "gb b"), (200, "bbg"), (300, "bbb"), (400, "gbg"), (500, "bbb")):
+    road(r, "Crate Alley", 400, w=W, cp=True)
+    R2.lay_strips(r, 20, 380, every=45, lanes=3)
+    for d, pat in ((100, "gb b"), (200, "bbg"), (300, "bbb")):
         lane_row(r, d, W, pat.replace(" ", "."))
-    for d in (60, 260, 460):
+    for d in (60, 260):
         p, f = at_road(r, d)
         crate_stacks(b, p, f, W, rng)
-    # 2. the barricade run: full-width brick walls
-    road(r, "Barricade Run", 480, w=W, dy=40, cp=True)
-    R2.lay_strips(r, 20, 460, every=40, lanes=3)
-    for d in (130, 270, 410):
-        p, f = at_road(r, d)
-        brick_wall(b, p, f, W - 4, h=28.0, kind="brick")
-        for s_ in (-1, 1):
-            Pt(b, "BarricadePost", CF(add(p, add(mul(right_of(f), s_ * (W / 2 + 3)), (0, 18, 0))), *_axes(f)), (6, 36, 6), STEEL,
-               "Metal", b.scenery)
+    # 2. giant worlds: a baseplate of toy-brick walls to smash (hybrid.py)
+    import hybrid as HY
+    giants_ = HY.mix_in(r, sk, rng, "t_bricks", w=W)
+    road(r, "Barricade Climb", 140, w=W, dy=40, cp=True)
     # 3. the fork: the open way bends round to the right; the cracked wall on the left hides the straight shortcut
     road(r, "Smash Fork", 120, w=240, cp=True, arrows_at=())
     fork_end, f = r.p, r.f
@@ -1808,31 +1786,27 @@ def slot9(r, sk, rng):
     R2.lay_strips(al.r, 40, dot(sub(merge0, a), f) - 40, every=80, lanes=1)
     al.done()
     accent(b, col)
-    # 4. the wall gauntlet: brick walls between side pushers
+    # 4. giant worlds: spinning arcade coins, then smash through a giant screen of pixels (hybrid.py)
     r.w = W
-    road(r, "Wall Gauntlet", 480, w=W, dy=25, cp=True)
-    R2.lay_strips(r, 20, 460, every=45, lanes=3)
-    for d in (90, 250, 410):
-        p, ff = at_road(r, d)
-        brick_wall(b, p, ff, W - 4, h=28.0, kind="brick")
-    r.along(O.pusher, [170, 330], i0=1)
+    giants_ += HY.mix_in(r, sk, rng, "a_screen", w=W)
+    road(r, "Gauntlet Climb", 120, w=W, dy=25, cp=True)
     # 5. reinforced maze: weave between the gates
-    road(r, "Reinforced Maze", 420, w=W, cp=True)
-    R2.lay_strips(r, 20, 400, every=50, lanes=3)
-    for d, pat in ((80, "gbg"), (170, "bbg"), (260, "gbg"), (350, "gbb")):
+    road(r, "Reinforced Maze", 300, w=W, cp=True)
+    R2.lay_strips(r, 20, 280, every=50, lanes=3)
+    for d, pat in ((80, "gbg"), (170, "bbg"), (260, "gbb")):
         lane_row(r, d, W, pat, kind="brick")
     road(r, "Launch Run", 160, w=W, boosts=3, every=35, arrows_at=(80,))
     R2.ramp_jump(r, "Smash Launch", deg=20, drop=60, w_land=110, slope=3, land_min=320, cp=True)
     p, ff = at_road(r, 250)
     brick_wall(b, p, ff, 106, h=26.0, kind="crate", nx=9)
     # 6. the debris field: crate walls to smash on the way out
-    road(r, "Debris Field", 320, w=110, boosts=3, every=40, cp=True)
-    for d in (80, 170):
+    road(r, "Debris Field", 140, w=110, boosts=3, every=40, cp=True)
+    for d in (80,):
         p, ff = at_road(r, d)
         brick_wall(b, p, ff, 106, h=26.0, kind="crate", nx=9)
         crate_stacks(b, p, ff, 110, rng)
     r.log("end")
-    return ["Crate Alley", "Barricade Run", "Hidden Shortcut", "Detour", "Wall Gauntlet", "Reinforced Maze", "Smash Launch"]
+    return ["Crate Alley"] + giants_[:1] + ["Hidden Shortcut", "Detour"] + giants_[1:] + ["Reinforced Maze", "Smash Launch"]
 
 
 # ===================================================================== 12. the final gauntlet and the finish
@@ -1898,30 +1872,20 @@ def slot10(r, sk, rng):
     R2.sink_board(r, "Collapsing Straight 2", 200, W, cell=40.0, cols=(col, mix(col, (0, 0, 0), 0.45)),
                   mats=("SmoothPlastic", "SmoothPlastic"), delay=0.28, rate=100.0)
     # 2. the hammer medley
-    road(r, "Hammer Medley", 720, w=W, dy=50, cp=True)
-    for k, d in enumerate((90, 200, 310, 420, 530, 640)):
+    road(r, "Hammer Medley", 320, w=W, dy=50, cp=True)
+    for k, d in enumerate((90, 210)):
         r.along(medley, [d], i0=k)
     _corridor_shell(r, 0, W, rng)
-    # 3. the rotating bridges
-    road(r, "Bridge Pier", 80, w=W, cp=True)
-    swing_span(r, "Final Swing", 280, w=56, period=3.6, ease=1.2)
-    pier(r, "Final Pier", 60, w=W)
-    seesaw(r, "Final See-Saw", 220, w=60, amp_deg=10, period=4.0, hold=1.8)
-    pier(r, "Final Pier 2", 70, w=W, cp=True)
-    # 4. the narrow jumps
-    o = O.Obby(r, 260)
-    o.plat("Narrow Deck", 80, 40)
-    o.kick(0, label="Narrow Jump")
-    o.plat("Narrow Beam", 90, 20)
-    o.kick(0, label="Narrow Jump 2")
-    o.plat("Narrow Landing", 60, 50, cp=True)
-    road(r, "Last Plates", 260, w=W)
-    r.along(crusher_plates, [90, 190], i0=2)
+    # 3. giant worlds: a pirate cannon shot across to a second ship, then the giant lollipops (hybrid.py)
+    import hybrid as HY
+    giants_ = HY.mix_in(r, sk, rng, "p_cannon", w=W)
+    road(r, "Final Pier", 60, w=W, cp=True)
+    giants_ += HY.mix_in(r, sk, rng, "c_lollies", w=W, link=60.0)
     # 5. the boost run to the giant ramp
     r.w = 110.0
-    road(r, "Final Boost", 420, w=110, dy=60, boosts=3, every=35, cp=True, arrows_at=(100, 300, 400))
-    for d in (60, 200, 340):
-        gantry(b, r.ahead(d - 420), r.f, 110, h=46)
+    road(r, "Final Boost", 360, w=110, dy=60, boosts=3, every=35, cp=True, arrows_at=(100, 300))
+    for d in (60, 200, 320):
+        gantry(b, r.ahead(d - 360), r.f, 110, h=46)
     R2.ramp_jump(r, "Final Ramp", deg=26, drop=110, w_land=160, slope=3, land_min=360, cp=True)
     kind, lip, tgt, H, V = [j for j in b.jumps if j[0] == "ramp"][-1]
     f = r.f
@@ -1950,8 +1914,7 @@ def slot10(r, sk, rng):
             ball(b, "Firework", add(q, (0, 64, 0)), 7, [(255, 80, 80), (80, 200, 255), (255, 230, 90)][(d // 80) % 3], "Neon",
                  b.scenery)
     r.log("end")
-    return ["Collapsing Straight", "Hammer Medley", "Final Swing", "Final See-Saw", "Narrow Jumps", "Final Boost",
-            "Final Ramp", "Recovery Deck", "Finish Arch"]
+    return ["Collapsing Straight", "Hammer Medley"] + giants_ + ["Final Boost", "Final Ramp", "Recovery Deck", "Finish Arch"]
 
 
 LEVELS = {1: slot1, 2: slot2, 3: slot3, 4: slot4, 5: slot5, 6: slot6, 7: slot7, 8: slot8, 9: slot9, 10: slot10}

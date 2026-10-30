@@ -99,8 +99,16 @@ def build_level(fac, unit_, level_folder, level_id, length, templates):
     if os.environ.get("GALLERY") and level_id == 1:
         import gallery
         used = gallery.build(r, skin, rng)
+    elif os.environ.get("HYTEST") and level_id in (1, 11):
+        import hybrid
+        used = hybrid.test_slot(r, skin, rng, os.environ["HYTEST"].split(","))
     else:
         used = epic_levels.LEVELS[level_id](r, skin, rng)
+    if os.environ.get("SEGLOG"):
+        for (lab, s0, s1) in r.segs:
+            if s1 > s0:
+                p, q = b.samples[s0], b.samples[s1 - 1]
+                print("   SEG %-28s x %6.0f -> %6.0f  h %5.0f  z %6.0f" % (lab, p[0] - X0, q[0] - X0, q[1] - Y0, q[2] - ZC))
     # home: arrive on the centre line heading down the course
     end = (X1 - 110, Y0, ZC)
     import rush
