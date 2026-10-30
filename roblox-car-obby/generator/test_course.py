@@ -1,7 +1,7 @@
 """Pin the races to the built courses instead of a random ten: by default Obby 1 (course1, levels 1-10, packed in the
-place) and Obby 2 (course2, levels 11-20) take turns, one race each.
+place), Obby 3 (course4, levels 31-40, Giant Worlds) and Obby 2 (course2, levels 11-20) take turns, one race each.
 
-usage: python3 -I test_course.py <tools dir> <in.rbxl> <out.rbxl> [course keys, default "course2,course1"; "random" restores]
+usage: python3 -I test_course.py <tools dir> <in.rbxl> <out.rbxl> [course keys, default "course1,course4,course2"; "random" restores]
 Adds workspace attribute ObbyDefaultCourse, read by ServerScriptService.WorldRotation at every intermission: one key, or
 a comma list taking turns (the next after the course now loaded).
 """
@@ -41,7 +41,7 @@ def patch(place, key):
 
 def main():
     p = rbxl.load(sys.argv[2])
-    patch(p, sys.argv[4] if len(sys.argv) > 4 else "course2,course1")
+    patch(p, sys.argv[4] if len(sys.argv) > 4 else "course1,course4,course2")
     rbxl.save(p, sys.argv[3])
     print("saved", sys.argv[3], "ObbyMix", rbxl.attrs(p.roots[0]).get("ObbyMix"), "default",
           rbxl.attrs(p.roots[0]).get("ObbyDefaultCourse"))

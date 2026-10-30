@@ -24,7 +24,8 @@ threading.stack_size(512 * 1024 * 1024)
 POS_ATTR = {"CheckpointCFrame", "ClockRest", "BrickFace", "HeadHome", "TrolleyHome", "RideA", "RideB", "RideC", "RideD"}
 import os
 EXPORT = os.environ.get("EXPORT_DIR")
-SHOWCASE = set(range(1, 21))  # (1-10 Obby 1, the Mechanical Playground; 11-20 Obby 2, the Extreme Speedway)
+SHOWCASE = set(range(1, 21)) | set(range(31, 41))  # (1-10 Obby 1, the Mechanical Playground; 11-20 Obby 2,
+# the Extreme Speedway; 31-40 Obby 3, Giant Worlds)
 INDEX_ATTR = {"CheckpointIndex", "CpIndex"}
 
 

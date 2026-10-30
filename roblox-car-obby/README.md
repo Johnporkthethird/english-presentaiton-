@@ -1,17 +1,18 @@
-# Car obby: 100 object-world levels, two built courses
+# Car obby: 100 levels, three built courses
 
 ## Testing the new levels
 
 Open `good.rbxl` in Roblox Studio and press Play.
 - **Obby 1** (the Mechanical Playground, levels 1-10) is packed in Workspace (`OBBY1`-`OBBY10`), so the first race
   plays it. The course is joined to the start grid, the racing line (`RACING_START.CoursePath`) and the finish stadium.
-- **Obby 2** (the Extreme Speedway, levels 11-20, the game's `course2`) comes in at the next intermission.
-- After that the two take turns, one race each.
+- **Obby 3** (Giant Worlds, levels 31-40, the game's `course4`) comes in at the next intermission.
+- **Obby 2** (the Extreme Speedway, levels 11-20, the game's `course2`) comes after that.
+- Then the three take turns, one race each.
 
 How the turns work:
-- The workspace attribute `ObbyDefaultCourse = "course2,course1"` sets the pin. The WorldRotation script reads it, and
+- The workspace attribute `ObbyDefaultCourse = "course1,course4,course2"` sets the pin. The WorldRotation script reads it, and
   a list of keys takes turns.
-- To play only one obby, set the pin to `course1` or `course2`.
+- To play only one obby, set the pin to `course1`, `course2` or `course4`.
 - To go back to the normal random ten of the 100 levels, delete the attribute, or run
   `python3 generator/test_course.py generator good.rbxl out.rbxl random`.
 - The dev course picker can also load `course2` directly.
@@ -49,7 +50,7 @@ track and its machines. The ten course slots run straight into each other:
 - Code: `generator/mech.py` has the whole course; `generator/obby.py` has the links between platforms.
 - The validator reports 0 issues on levels 1-10, and the clipping audit is clean (see below). **Not tested in
   Roblox Studio.**
-- Levels 21-100 are still the earlier object-world versions below.
+- Levels 21-30 and 41-100 are still the earlier object-world versions below.
 
 ## Levels 11-20: Obby 2, the Extreme Speedway
 
@@ -104,6 +105,39 @@ to wait for.
 - The validator reports 0 issues on levels 11-20 (and 1-10). It flies every jump and alternate-route jump at the
   slowest and fastest take-off speeds. **Not tested in Roblox Studio.**
 
+## Levels 31-40: Obby 3, Giant Worlds
+
+A third course with no ordinary roads. The car is shrunk down and every surface you drive on is a giant object:
+a countertop, a plate, a toy block, a mushroom cap, a ship's deck. Every jump goes from one object to the next.
+Each level is its own little world with its own shapes, colours and lighting (time of day, haze, glow).
+
+| Level | World | What you drive on and through |
+|-------|-------|-------------------------------|
+| 31 | The Giant Kitchen | Countertop over navy cabinets, a chopping board with chopping knives, down a spoon's handle and out of its bowl over the hob, burner rings that heat up, dinner-plate hops, a toaster that fires you up to the spice shelf, rolling pins across the dough, a swirl down the sink drain, shelf to shelf through the fridge, a cheese wheel, pancakes, a cookie, a fork bridge, up a three-tier cake, coffee mugs, the tablecloth home |
+| 32 | The Toybox | Toy soldiers on the shelf, springs up a staircase of giant ABC blocks, an orange toy track, a baseplate of toy-brick walls to smash (or solid stacks to steer round), a toy train shuttling down the track, spinning tops on the play table, giant bouncy balls, a spring up to a toy castle's battlements, a toy-car ramp, a seesaw, the toy chest |
+| 33 | The Candy Kingdom | Wafer walk lined with candy canes, a chocolate river whose current carries you past gummy bears, chocolate falls, lollipop hops, round a giant iced donut, marshmallow bounces, a narrow candy-cane bridge, a chocolate bar whose squares break off, cupcake climb, wobbly jelly cubes, gingerbread houses |
+| 34 | The Abandoned Arcade | Night and neon. Rows of giant cabinets, up a control panel past oversized buttons, off the marquee, a giant keyboard whose keys sink, floating pixel blocks, a pinball table, spinning giant coins, a claw machine that carries you over the gap, and a screen of pixels you smash straight through |
+| 35 | The Enchanted Forest | Dusk, fireflies, glowing plants. Along a mossy fallen log, toadstool bounces, a branch spiralling round a giant tree, floating leaves (one rocks in the breeze), a flower that launches you, lily pads over the pond, a waterfall drop, a fairy ring of mushrooms |
+| 36 | Construction Chaos | A narrow steel girder, a tower crane that lifts you onto a container stack, container hops, a swinging load, wrecking balls, through a giant concrete pipe, along a turning cement-mixer drum, up scaffolding, an excavator arm, brick stacks to smash, a gravel conveyor and a dump-truck ramp |
+| 37 | The Giant Bedroom | The desk, a staircase of books, a keyboard whose keys sink, a desk lamp's shade as the ramp onto the bed, pillow bounces, a pillow launch into the wardrobe past swinging coats, the chair, toy cars racing across the rug, a skateboard ramp onto comic books |
+| 38 | The Space Station | Docking bay, solar panels that roll, asteroid hops, a rocket engine launch, a jump through energy rings, robot arms, round a satellite dish, a UFO tractor beam, along a spaceship's wing and off its tip |
+| 39 | The Pirate Ship | A stormy sea. Barrels rolling across the deck, a cannon fires you up the rigging to the crow's nest, out along the yardarm, a cannon shot to a second ship (a kraken's tentacle sweeps its deck), a swaying rope bridge, floating treasure, an anchor swinging across the stern, walk the plank onto a raft and a sandbar island |
+| 40 | Junkyard Giants | Scrap heaps, bouncing off tyre stacks, hops across crushed cars' roofs, a magnet crane over the crusher, engine pistons pumping up through the block, giant fans in a duct, springs up the scrap mountain, a claw arm on the summit |
+
+- **Exploration:** coins sit on the risky lines, along the flights and on the high ledges (the game's own coins, on
+  `CoinSpot` parts). Several stretches have a safe side and a fast side (brick walls versus solid stacks, a train on
+  one lane, sweeping arms that leave one half open).
+- **Machines** all use the game's existing systems: launch pads and bounce caps, `ObbyPropAnim` rigs (knives, rolling
+  pins, tops, trains, coats, robot arms, tentacles, pistons), clock rotors (seesaw, rocking leaf, solar panels,
+  rope bridge, swinging load), sinking tiles (keyboard keys, chocolate bar), brick walls, conveyors (chocolate river,
+  gravel conveyor), and the magnet ride (crane, claw, UFO).
+- **Where they sit:** the slots of the old object-world levels 31-40 (their code is still in the generator). The
+  rotation pin is now `ObbyDefaultCourse = "course1,course4,course2"`: Obby 1, then Giant Worlds, then Obby 2. The
+  dev course picker lists it as "LEVELS 31-40".
+- **Code:** `generator/giants.py` (each level is a `slotNN` function; the skin draws each stretch with the current
+  surface, and object art is built round it).
+- The validator reports 0 issues on levels 31-40. **Not tested in Roblox Studio.**
+
 ## Clipping audit and tidy pass (all levels)
 
 `generator/audit.py` checks a built place for parts that clip into each other:
@@ -114,7 +148,7 @@ to wait for.
 
 Levels 1-20 audit clean. The one leftover is a thin floor decal on a sloped road.
 
-The older levels (21-100) had machines sweeping into their neighbours. These are fixed at the source:
+The older levels (21-30, 41-100) had machines sweeping into their neighbours. These are fixed at the source:
 - **Turntables:** sectors now end inside the disc. Their corners used to cut a few studs into the decks on either side.
 - **Rotating doors:** the hub is higher and the blades shorter, so they no longer turn through the deck.
 - **Hub posts:** the posts under turntables and spinning crosses are smaller, so the moving parts clear them.

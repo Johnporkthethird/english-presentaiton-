@@ -1677,7 +1677,8 @@ def at_road(r, d):
     return R2.lerp3(pts[i], pts[i + 1], (d - cum[i]) / max(cum[i + 1] - cum[i], 1e-6)), RT.flat(sub(pts[i + 1], pts[i]))
 
 
-def brick_wall(b, c, f, w, h=24.0, kind="crate", speed=150.0, respawn=6.0, nx=None, ny=None):
+def brick_wall(b, c, f, w, h=24.0, kind="crate", speed=150.0, respawn=6.0, nx=None, ny=None, cols=None, mat=None,
+               depth=None):
     """A wall the game's arcade script smashes when a car hits it fast enough (bricks fly off and come back a few
     seconds later). c: the bottom centre on the road; f: the way the car comes."""
     import rbxl
@@ -1688,13 +1689,14 @@ def brick_wall(b, c, f, w, h=24.0, kind="crate", speed=150.0, respawn=6.0, nx=No
     if kind == "crate":
         nx = nx or max(1, int(round(w / 12)))
         ny = ny or 2
-        cols = [(196, 140, 70), (170, 116, 56)]
-        mat = "WoodPlanks"
+        cols_k = [(196, 140, 70), (170, 116, 56)]
+        mat_k = "WoodPlanks"
     else:
         nx = nx or max(2, int(round(w / 8)))
         ny = ny or 4
-        cols = [(170, 72, 52), (150, 60, 44), (190, 90, 66)]
-        mat = "Brick"
+        cols_k = [(170, 72, 52), (150, 60, 44), (190, 90, 66)]
+        mat_k = "Brick"
+    cols, mat = cols or cols_k, mat or mat_k
     bw, bh = w / nx, h / ny
     for j in range(ny):
         for i in range(nx):
@@ -1703,7 +1705,8 @@ def brick_wall(b, c, f, w, h=24.0, kind="crate", speed=150.0, respawn=6.0, nx=No
             if x > w / 2 - bw * 0.25:
                 continue
             q = add(c, add(mul(rt, -x), (0, bh * (j + 0.5), 0)))
-            Pt(b, "Brick", CF(q, fr.x, fr.y, fr.z), (bw - 0.4, bh - 0.4, 6 if kind != "crate" else bw - 1), cols[(i + j) % len(cols)],
+            Pt(b, "Brick", CF(q, fr.x, fr.y, fr.z), (bw - 0.4, bh - 0.4, depth or (6 if kind != "crate" else bw - 1)),
+               cols[(i + j) % len(cols)],
                mat, m, collide=True, attrs={"Brick": True})
     return m
 
