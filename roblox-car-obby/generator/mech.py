@@ -178,36 +178,45 @@ def side_hammer(b, c, w, i, period=2.6):
     """A hammer on a post at the road's edge, swinging its arm flat across the road and back (knocks you off)."""
     x, y, z = c
     s = 1 if i % 2 == 0 else -1
-    post = (x, y, z + s * (w / 2 + 10))
-    L = w * 0.85
-    cyl(b, "HammerPost", add(post, (0, 14, 0)), 28, 12, STEEL, "Metal", b.scenery, collide=True)
+    post = (x, y, z + s * (w / 2 + 22))  # (out past the rail: the head never touches it)
+    L = w * 0.85 + 12
+    cyl(b, "HammerPost", add(post, (0, 18, 0)), 36, 12, STEEL, "Metal", b.scenery, collide=True)
     stripe_box(b, "HammerBase", CF(add(post, (0, 3, 0))), (16, 6, 16))
     root = b.prop_root("SideHammer")
     # the arm points along the road at rest; it swings in across it (about the post's vertical axis)
-    rig = b.rig(root, "Hinge", axis_frame(add(post, (0, 9, 0)), (0, 1, 0)), 90.0 * s, period, phase=(i * 0.27) % 1,
+    hy = 17  # (the head's foot clears the rails it swings over, on a climbing road too)
+    rig = b.rig(root, "Hinge", axis_frame(add(post, (0, hy, 0)), (0, 1, 0)), 90.0 * s, period, phase=(i * 0.27) % 1,
                 keys="0:0 0.35:0 0.5:1 0.75:1 0.95:0", name="Swing")
-    arm_c = add(post, (L / 2, 9, 0))
+    arm_c = add(post, (L / 2, hy, 0))
     Pt(b, "HammerArm", CF(arm_c), (L, 4, 4), STEEL_LT, "Metal", rig)
-    head = add(post, (L, 9, 0))
+    head = add(post, (L, hy, 0))
     Pt(b, "HammerHead", CF(head), (12, 16, 22), (200, 40, 40), "Metal", rig, query=True, attrs={"ObbyHazard": "Knock"})
     stripe_box(b, "HammerFace", CF(add(head, (6.2, 0, 0))), (0.4, 16, 22), parent=rig)
+    for k in (-1, 1):
+        Pt(b, "HammerCap", CF(add(head, (0, 0, k * 11.6))), (13, 17, 1.4), STEEL_DK, "Metal", rig)
+        for j in (-1, 1):
+            ball(b, "HammerBolt", add(head, (-6.4, j * 5, k * 7)), 2.2, STEEL_LT, "Metal", rig)
+    ball(b, "HammerLamp", add(head, (0, 9, 0)), 3.0, (255, 60, 40), "Neon", rig)
 
 
 def sweep_arm(b, c, w, i, speed=0.22):
-    """A huge arm spinning flat over the road from a tower at its edge, sweeping across it once a turn."""
+    """A huge arm on a tower at the road's edge: it lies along the road, sweeps half round across it, and back."""
     x, y, z = c
     s = 1 if i % 2 == 0 else -1
     hub = (x, y + 8, z + s * (w / 2 + 12))
     cyl(b, "ArmTower", add(hub, (0, 2, 0)), 22, 18, STEEL, "Metal", b.scenery, collide=True)
     stripe_box(b, "ArmTowerBand", CF(add(hub, (0, -4, 0))), (19, 3, 19))
     root = b.prop_root("SweepArm")
-    rig = b.rig(root, "Spin", axis_frame(add(hub, (0, 2, 0)), (0, 1, 0)), speed * (1 if i % 2 else -1), 4,
-                phase=(i * 0.19) % 1, name="ArmSpin")
-    L = w + 16
-    for k in (-1, 1):
-        Pt(b, "SweepBar", CF(add(hub, (k * L / 2, 3, 0))), (L, 6, 6), (255, 210, 40), "SmoothPlastic", rig, query=True,
-           attrs={"ObbyHazard": "Knock"})
-    cyl(b, "ArmHub", add(hub, (0, 3, 0)), 10, 14, STEEL_LT, "Metal", rig)
+    # one arm, lying along the road (pointing on) at rest, sweeping half round across it and back: it never swings
+    # out behind its tower into whatever stands there
+    period = 1.0 / max(abs(speed), 0.05) * 0.9
+    rig = b.rig(root, "Hinge", axis_frame(add(hub, (0, 2, 0)), (0, 1, 0)), 180.0 * s, period, phase=(i * 0.19) % 1,
+                keys="0:0 0.12:0 0.5:1 0.62:1 1:0", name="ArmSweep")
+    L = w + 4
+    Pt(b, "SweepBar", CF(add(hub, (L / 2 + 6, 3, 0))), (L, 6, 6), (255, 210, 40), "SmoothPlastic", rig, query=True,
+       attrs={"ObbyHazard": "Knock"})
+    stripe_box(b, "SweepTip", CF(add(hub, (L + 6.2, 3, 0))), (0.6, 6.2, 6.2), parent=rig)
+    cyl(b, "ArmHub", add(hub, (0, 3, 0)), 10, 14, STEEL_LT, "Metal", rig, query=True, attrs={"ObbyHazard": "Knock"})
 
 
 def spark_gear(b, c, f, side, R=60.0, col=STEEL_LT, spin=0.06):
@@ -371,16 +380,17 @@ def _corridor_shell(r, L, w, rng):
         i = next(i for i in range(len(cum) - 1) if cum[i + 1] >= d)
         p = R2.lerp3(pts[i], pts[i + 1], (d - cum[i]) / max(cum[i + 1] - cum[i], 1e-6))
         f = RT.flat(sub(pts[i + 1], pts[i]))
-        gantry(b, p, f, w + 16, h=78, lamps=(k % 2 == 0))
+        # (posts and walls stand wide, clear of every hammer, arm and pusher that swings out over the road's edge)
+        gantry(b, p, f, w + 100, h=78, lamps=(k % 2 == 0))
         rt = right_of(f)
         fr = deck_frame(p, f)
         for s in (-1, 1):
-            q = add(p, add(mul(rt, s * (w / 2 + 26)), (0, 30, 0)))
+            q = add(p, add(mul(rt, s * (w / 2 + 66)), (0, 30, 0)))
             Pt(b, "CorridorWall", CF(q, fr.x, fr.y, fr.z), (2, 60, 80), STEEL_DK, "DiamondPlate", b.scenery)
             Pt(b, "CorridorWindow", CF(add(q, mul(rt, -s * 1.2)), fr.x, fr.y, fr.z), (0.4, 14, 50), ACC["hammer"], "Neon",
                b.scenery, transp=0.4)
         if k % 4 == 1:
-            spark_gear(b, p, f, (w / 2 + 70) * (1 if k % 8 == 1 else -1), R=55, col=STEEL_LT, spin=0.08)
+            spark_gear(b, p, f, (w / 2 + 130) * (1 if k % 8 == 1 else -1), R=50, col=STEEL_LT, spin=0.08)
         d += 90.0
         k += 1
 
@@ -407,7 +417,7 @@ def tilt_deck(r, label, L, w, amp_deg=8.0, period=4.2, phase=0.0):
         cyl(b, "TiltAxle", add(c, add(mul(f, k * (L / 2 + 1)), (0, -6, 0))), 8, 10, STEEL_LT, "Metal", b.scenery, axis=f)
         stripe_box(b, "AxleHousing", CF(add(c, add(mul(f, k * (L / 2 + 4)), (0, -14, 0))), fr.x, fr.y, fr.z), (14, 14, 8))
     for k in (-1, 1):
-        q = add(c, add(mul(rt, k * w * 0.35), (0, -30, 0)))
+        q = add(c, add(mul(rt, k * w * 0.35), (0, -44, 0)))
         cyl(b, "TiltPiston", q, 50, 6, STEEL_LT, "Metal", b.scenery)
     R2._special_line(b, r.p, add(r.p, mul(f, L + 4)), 6)
     b.samples.append(c + (w,))
@@ -428,9 +438,11 @@ def retract_deck(r, label, L, w, period=3.4, phase=0.0, side=1):
     Pt(b, "RetractDeck", CF(add(c, (0, -2, 0)), fr.x, fr.y, fr.z), (w, 4, L), b.skin.top, "SmoothPlastic", rig, collide=True)
     stripe_box(b, "RetractEdge", CF(add(c, (0, 0.07, 0)), fr.x, fr.y, fr.z), (w - 4, 0.12, 6), parent=rig)
     for k in (-1, 1):
-        q = add(c, add(mul(f, k * (L / 2 - 6)), mul(rt, side * (w / 2 + 30))))
-        cyl(b, "RetractRam", add(q, (0, -2, 0)), 50, 6, STEEL_LT, "Metal", b.scenery, axis=rt)
-        Pt(b, "RamHousing", CF(add(q, add(mul(rt, side * 26), (0, -2, 0))), fr.x, fr.y, fr.z), (14, 12, 14), STEEL, "Metal",
+        # (under the deck's whole path, and the housing past the end of its travel: nothing it slides through)
+        q0 = add(c, add(mul(f, k * (L / 2 - 6)), (0, -11, 0)))
+        far = 1.5 * w + 30
+        cyl(b, "RetractRam", add(q0, mul(rt, side * far / 2)), far, 5, STEEL_LT, "Metal", b.scenery, axis=rt)
+        Pt(b, "RamHousing", CF(add(q0, mul(rt, side * (far + 7))), fr.x, fr.y, fr.z), (14, 12, 14), STEEL, "Metal",
            b.scenery)
         lamp(b, add(c, add(mul(f, k * (L / 2 + 1)), add(mul(rt, -side * (w / 2 + 3)), (0, 3, 0)))))
     for p_ in (r.p, add(r.p, mul(f, L / 2 + 2)), add(r.p, mul(f, L + 4))):
@@ -458,20 +470,20 @@ def slot2(r, sk, rng):
     r.turn("Highway Curve", 60, 460, rails=True)
     R2.lay_strips(r, 60, 420, every=90, lanes=2)
     tilt_deck(r, "Rolling Span", 160, 70, amp_deg=10, period=3.6, phase=0.5)
-    road(r, "Junction", 160, w=200, cp=True, arrows_at=(80,))
+    road(r, "Junction", 160, w=300, cp=True, arrows_at=(80,))  # (the side routes start well clear of the turnstiles)
     junction = (r.p, r.f)
     # ---- the central path: moving platforms
-    R2.turnstile(r, "Spin Gate", 150, w=50, period=2.0, phase=0.0, col=STEEL)
+    R2.turnstile(r, "Spin Gate", 150, w=50, period=2.0, phase=0.0, col=STEEL, gap=6.0)
     road(r, "Central Pier", 70, w=60)
-    R2.gear_bridge(r, "Turntable", 90, 4.5, col=ACC["highway"], teeth_col=STEEL)
+    R2.gear_bridge(r, "Turntable", 90, 4.5, col=ACC["highway"], teeth_col=STEEL, gap=12.0)
     road(r, "Central Pier 2", 70, w=60)
-    R2.turnstile(r, "Spin Gate 2", 150, w=50, period=1.8, phase=0.3, col=STEEL)
+    R2.turnstile(r, "Spin Gate 2", 150, w=50, period=1.8, phase=0.3, col=STEEL, gap=6.0)
     road(r, "Merge Deck", 520, w=200, cp=True, arrows_at=(100, 400))
     merge0 = sub(r.p, mul(r.f, 520))
     # ---- the narrow side path: faster, harder jumps (right)
     p0, f = junction
     rt = right_of(f)
-    al = Alt(r, add(p0, mul(rt, 70)), f, 26, B=260.0)
+    al = Alt(r, add(p0, mul(rt, 125)), f, 26, B=260.0)
     accent(b, (255, 255, 255))
     al.o.plat("Side Rail", 100, 26)
     al.o.kick(0, side=10)
@@ -482,10 +494,10 @@ def slot2(r, sk, rng):
     lo, hi = al.o.pad_range(26)
     if gap - hi > 40:
         al.o.plat("Side Run", gap - (lo + hi) / 2 - 40, 20)
-    al.o.pad(26, side=-70)
+    al.o.pad(26, side=-125)
     al.done()
     # ---- the lower route: down onto unstable platforms, a shortcut back up (left)
-    al = Alt(r, add(p0, mul(rt, -70)), f, 60, B=230.0)
+    al = Alt(r, add(p0, mul(rt, -125)), f, 60, B=230.0)
     accent(b, (255, 150, 60))
     al.o.plat("Low Lane", 60, 60)
     al.o.drop(70, side=-30)
@@ -497,7 +509,7 @@ def slot2(r, sk, rng):
     lo, hi = al.o.pad_range(merge0[1] - al.r.p[1])
     if gap - hi > 40:
         al.o.plat("Low Run", gap - (lo + hi) / 2 - 20, 50)
-    al.o.pad(merge0[1] - al.r.p[1], side=100)
+    al.o.pad(merge0[1] - al.r.p[1], side=155)
     al.done()
     accent(b, ACC["highway"])
     r.turn("Off-Ramp Curve", -120, 460, dy=-60, rails=True)
@@ -741,7 +753,7 @@ def crusher_plates(b, c, w, i, period=3.2, L=46.0, H=38.0):
     x, y, z = c
     T = w / 2
     for s_ in (-1, 1):
-        home = (x, y + H / 2 + 0.5, z + s_ * (w / 2 + T / 2 + 3))
+        home = (x, y + H / 2 + 5.0, z + s_ * (w / 2 + T / 2 + 3))  # (foot above the rails it slides over)
         root = b.prop_root("CrusherPlate")
         rig = b.rig(root, "Slide", axis_frame(home, (0, 0, -s_)), w / 2 + 3, period, phase=(i * 0.29) % 1,
                     keys="0:0 0.45:0 0.53:1 0.64:1 0.9:0", name="Plate")
@@ -750,7 +762,7 @@ def crusher_plates(b, c, w, i, period=3.2, L=46.0, H=38.0):
         for k in (-1, 1):
             cyl(b, "PlateRod", add(home, (k * 12, 0, s_ * (T / 2 + 20))), 40, 7, STEEL_LT, "Metal", rig, axis=(0, 0, 1),
                 refl=0.3)
-        hz = (x, y + H / 2 + 2, z + s_ * (w / 2 + T + 30))
+        hz = (x, y + H / 2 + 5, z + s_ * (w / 2 + T + 30))
         Pt(b, "PlateHousing", CF(hz), (L + 16, H + 20, 22), STEEL_DK, "Metal", b.scenery, collide=True)
         stripe_box(b, "HousingBand", CF(add(hz, (0, H / 2 + 6, 0))), (L + 17, 3, 23))
         lamp(b, add(hz, (0, H / 2 + 12, 0)), col=(255, 200, 40), pulse=period / 2)
@@ -758,21 +770,23 @@ def crusher_plates(b, c, w, i, period=3.2, L=46.0, H=38.0):
 
 
 def lane_walls(b, c, w, i, period=2.4, H=26.0):
-    """Three lane walls rising out of the floor in turn (one lane at a time is shut)."""
+    """Three lane gates dropping from an overhead beam in turn (one lane at a time is shut)."""
     x, y, z = c
+    D = H + 6
     for k in range(3):
         zz = z - w / 2 + w * (k + 0.5) / 3
-        rest = (x, y - H / 2 - 4.5, zz)
+        rest = (x, y + 0.5 + H / 2 + D, zz)
         root = b.prop_root("LaneWall")
-        rig = b.rig(root, "Slide", axis_frame(rest, (0, 1, 0)), H + 4.5, period, phase=(k / 3.0 + i * 0.17) % 1,
-                    keys="0:0 0.5:0 0.58:1 0.82:1 0.9:0", name="Rise")
+        rig = b.rig(root, "Slide", axis_frame(rest, (0, -1, 0)), D, period, phase=(k / 3.0 + i * 0.17) % 1,
+                    keys="0:0 0.5:0 0.58:1 0.82:1 0.9:0", name="Drop")
         Pt(b, "LaneWall", CF(rest), (8, H, w / 3 - 2), ACC["crusher"], "SmoothPlastic", rig, query=True,
            attrs={"ObbyHazard": "Knock"})
-        stripe_box(b, "WallTop", CF(add(rest, (0, H / 2 + 0.3, 0))), (8.4, 0.6, w / 3 - 1.6), parent=rig)
-        lamp(b, (x, y + 44, zz), col=(255, 60, 40), pulse=period)
-    Pt(b, "WallBeam", CF((x, y + 48, z)), (6, 6, w + 30), STEEL, "Metal", b.scenery)
+        stripe_box(b, "WallFoot", CF(add(rest, (0, -H / 2 - 0.3, 0))), (8.4, 0.6, w / 3 - 1.6), parent=rig)
+        lamp(b, (x, y + H + D + 12, zz), col=(255, 60, 40), pulse=period)
+    top = H + D + 6
+    Pt(b, "WallBeam", CF((x, y + top, z)), (10, 8, w + 30), STEEL, "Metal", b.scenery)
     for s_ in (-1, 1):
-        Pt(b, "WallPost", CF((x, y + 24, z + s_ * (w / 2 + 12))), (6, 48, 6), STEEL, "Metal", b.scenery, collide=True)
+        Pt(b, "WallPost", CF((x, y + top / 2, z + s_ * (w / 2 + 12))), (6, top, 6), STEEL, "Metal", b.scenery, collide=True)
     Pt(b, "WallSlot", CF((x, y + 0.08, z)), (9, 0.12, w - 6), HAZ_K, "SmoothPlastic", b.scenery)
 
 
@@ -786,7 +800,7 @@ def grinder(b, c, w, i, d=22.0):
     parts = [zc] if k != 1 else [z - w / 3, z + w / 3]
     spanv = span if k != 1 else w / 3 - 2
     for zz in parts:
-        hub = (x, y + d / 2 + 0.5, zz)
+        hub = (x, y + d / 2 + 4.5, zz)  # (the teeth clear the road)
         root = b.prop_root("Grinder")
         rig = b.rig(root, "Spin", axis_frame(hub, (0, 0, 1)), 1.4 * (1 if i % 2 else -1), 1, name="Grind")
         cyl(b, "GrinderDrum", hub, spanv, d, (150, 150, 160), "DiamondPlate", rig, axis=(0, 0, 1), query=True,
@@ -884,10 +898,9 @@ def slot4(r, sk, rng):
     road(r, "Roller Pier", 60, w=W, cp=True)
     R2.belt_road(r, "Roller Bed", 300, 45.0, direction="back", w=W)
     r.along(grinder, [70, 150, 230], i0=0)
-    r.along(roller_bed, [30, 110, 190, 270], i0=0)
     road(r, "Piston Hall", 420, w=W, cp=True)
     pist = [(O.pusher, 80, 0), (side_hammer, 140, 1), (O.pusher, 190, 3), (sweep_arm, 260, 2), (O.pusher, 320, 2),
-            (side_hammer, 370, 5)]
+            (side_hammer, 320, 5)]
     for fn, d, k in pist:
         r.along(fn, [d], i0=k)
     p_out = r.p
@@ -1081,7 +1094,7 @@ def slot5(r, sk, rng):
     pier(r, "Span Pier", 70, cp=True)
     # 2. the sectional bridge: four short sections ticking round in turn
     for k in range(4):
-        R2.turnstile(r, "Section %d" % (k + 1), 120, w=50, period=2.0, ease=0.6, phase=k * 0.25, col=STEEL)
+        R2.turnstile(r, "Section %d" % (k + 1), 120, w=50, period=2.0, ease=0.6, phase=k * 0.25, col=STEEL, gap=6.0)
         if k < 3:
             pier(r, "Section Pier %d" % (k + 1), 30)
     pier(r, "Crossroads Pier", 110, cp=True, w=90)
@@ -1099,7 +1112,7 @@ def slot5(r, sk, rng):
     # 5. the big bend over the gear canyon: a turntable gear, the pendulum ferry
     r.turn("Canyon Bend", 30, 500, rails=True)
     R2.lay_strips(r, 40, 220, every=60, lanes=2)
-    R2.gear_bridge(r, "Gear Turntable", 110, 3.0, col=col, teeth_col=STEEL)
+    R2.gear_bridge(r, "Gear Turntable", 110, 3.0, col=col, teeth_col=STEEL, gap=12.0)
     pier(r, "Gear Pier", 50)
     r.turn("Canyon Bend 2", -60, 500, rails=True)
     R2.pendulum_ferry(r, "Pendulum Ferry", Lp=260.0, amp_deg=26.0, period=5.4, deck=(90.0, 70.0), col=col)
@@ -1147,11 +1160,11 @@ def slot5(r, sk, rng):
     al = Alt(r, add(p0, mul(right_of(f0), -30)), f0, 50, B=230.0)
     accent(b, (150, 200, 255))
     al.o.plat("Lower Gate", 30, 30)
-    al.o.drop(80.0, side=-110)
+    al.o.drop(80.0, side=-150)  # (clear of the crossroads turntable's sweep)
     al.o.plat("Lower Deck", 60, 50)
-    R2.gear_bridge(al.r, "Spinner", 38, 7.0, col=(150, 200, 255), teeth_col=STEEL)
+    R2.gear_bridge(al.r, "Spinner", 38, 7.0, col=(150, 200, 255), teeth_col=STEEL, gap=12.0)
     al.o.plat("Lower Hop", 50, 40)
-    R2.gear_bridge(al.r, "Spinner 2", 34, -8.0, col=(150, 200, 255), teeth_col=STEEL)
+    R2.gear_bridge(al.r, "Spinner 2", 34, -8.0, col=(150, 200, 255), teeth_col=STEEL, gap=12.0)
     up = ss_mid[1] - al.r.p[1]
     lo, hi = al.o.pad_range(up)
     gap = dot(sub(ss_mid, al.r.p), f0)
@@ -1171,17 +1184,20 @@ def wrecking_ball(b, c, w, i, H=72.0, lane=None, along=False, amp=58.0, period=3
     x, y, z = c
     zz = z if lane is None else z + lane * w / 3
     pivot = (x, y + H, zz)
+    # the frame stands clear of the ball's whole swing
+    reach = 0.0 if along else (H - d / 2 - 3) * math.sin(math.radians(amp)) + d / 2 + 8
+    hw = max(w / 2 + 10, reach)
     for s_ in (-1, 1):
         for k in (-1, 1):
             # A-frame legs leaning in to the beam
-            foot = (x + k * 16, y - 2, z + s_ * (w / 2 + 10))
-            top = (x, y + H + 4, z + s_ * (w / 2 + 6))
+            foot = (x + k * 16, y - 2, z + s_ * hw)
+            top = (x, y + H + 4, z + s_ * (hw - 4))
             cyl(b, "FrameLeg", R2.lerp3(foot, top, 0.5), math.dist(foot, top), 5, STEEL, "Metal", b.scenery,
                 axis=unit(sub(top, foot)))
-        stripe_box(b, "FrameFoot", CF((x, y + 2, z + s_ * (w / 2 + 10))), (40, 4, 8))
-        lamp(b, (x, y + H + 10, z + s_ * (w / 2 + 6)), col=(255, 120, 40), pulse=period / 2)
-    Pt(b, "FrameBeam", CF((x, y + H + 6, z)), (8, 8, w + 24), STEEL_DK, "Metal", b.scenery)
-    stripe_box(b, "BeamStripe", CF((x, y + H + 1.6, z)), (8.4, 0.8, w + 20))
+        stripe_box(b, "FrameFoot", CF((x, y + 2, z + s_ * hw)), (40, 4, 8))
+        lamp(b, (x, y + H + 10, z + s_ * (hw - 4)), col=(255, 120, 40), pulse=period / 2)
+    Pt(b, "FrameBeam", CF((x, y + H + 6, z)), (8, 8, 2 * hw + 4), STEEL_DK, "Metal", b.scenery)
+    stripe_box(b, "BeamStripe", CF((x, y + H + 1.6, z)), (8.4, 0.8, 2 * hw))
     cyl(b, "PivotBlock", (x, y + H + 1, zz), 10, 10, STEEL_LT, "Metal", b.scenery, axis=(1, 0, 0) if not along else (0, 0, 1))
     root = b.prop_root("WreckingBall")
     axis = (0, 0, 1) if along else (1, 0, 0)
@@ -1196,8 +1212,12 @@ def wrecking_ball(b, c, w, i, H=72.0, lane=None, along=False, amp=58.0, period=3
     bc = (x, y + H - L - d / 2, zz)
     ball(b, "WreckingBall", bc, d, col or STEEL_DK, "Metal", rig, query=True, attrs={"ObbyHazard": "Knock"}, refl=0.2)
     ringz(b, bc, d / 2 + 0.4, ACC["wreck"], "Neon", th=2.0, axis=axis, parent=rig, name="BallBand")
+    for k in range(6):
+        a = TAU * k / 6
+        e = unit((math.cos(a), 0.35 * (1 if k % 2 else -1), math.sin(a)))
+        cyl(b, "BallStud", add(bc, mul(e, d / 2)), 4, d * 0.16, STEEL_LT, "Metal", rig, axis=e)
     cyl(b, "BallEye", (x, bc[1] + d / 2 + 1, zz), 4, 6, STEEL, "Metal", rig, axis=(0, 1, 0))
-    impact_zone(b, (x, y, zz), (1, 0, 0), (w if not along else w / 3 + 6), 18 if not along else 60)
+
 
 
 def ball_pair(b, c, w, i):
@@ -1400,8 +1420,9 @@ def mech_tower(b, C, y0, y1, col, rng):
         k += 1
     cyl(b, "TowerCap", (x, y1 + 20, z), 40, 140, STEEL_DK, "Metal", b.scenery)
     lamp(b, (x, y1 + 46, z), col=(255, 60, 40), d=12.0, pulse=1.0)
-    for j, yy in enumerate(range(int(y0 + 300), int(y1), 150)):
-        big_gear(b, (x, yy, z), 128, (0, 1, 0), STEEL_LT if j % 2 else col, spin=0.05 * (1 if j % 2 else -1))
+    for j, yy in enumerate(range(int(y0 + 300), int(y1) - 200, 150)):
+        if yy < y1 - 400:  # (only well under the spiral: none through its spokes)
+            big_gear(b, (x, yy, z), 92, (0, 1, 0), STEEL_LT if j % 2 else col, spin=0.05 * (1 if j % 2 else -1))
 
 
 def spokes(b, C, pts, every=90.0, R_in=100.0):
@@ -1459,12 +1480,12 @@ def slot7(r, sk, rng):
     road(r, "Exit Tunnel", 340, w=80, boosts=3, every=40, cp=True)
     tunnel(b, p0, f, 340, 80, col)
     # the banked slalom through gantries and arms
-    r.turn("Slalom", 45, 400, bank=10, rails=True)
+    r.turn("Slalom", 45, 400, rails=True)
     r.along(sweep_arm, [160], i0=0)
-    r.turn("Slalom 2", -90, 400, bank=10, rails=True, cp=True)
+    r.turn("Slalom 2", -90, 400, rails=True, cp=True)
     r.along(O.pusher, [120, 320], i0=1)
     r.along(sweep_arm, [450], i0=1)
-    r.turn("Slalom 3", 45, 400, bank=10, rails=True)
+    r.turn("Slalom 3", 45, 400, rails=True)
     R2.lay_strips(r, 40, 260, every=70, lanes=2)
     lifts(r, 2, 100.0, label="Tower Lift")
     road(r, "Spiral Entry 2", 200, w=80, boosts=3, every=40, cp=True)
@@ -1477,7 +1498,7 @@ def slot7(r, sk, rng):
 
 
 # ===================================================================== 10. the giant fan tunnel
-def fan(b, c, w, i, R=60.0, n=3, speed=0.3, off=0.0, hub_h=None, col=None, ring=True):
+def fan(b, c, w, i, R=50.0, n=3, speed=0.3, off=0.0, hub_h=None, col=None, ring=True):
     """A giant fan turning in the duct across the road: blades sweep down through the road (SHREDDED); go through
     between them. off moves the hub sideways, so its blades cover one side more than the other."""
     x, y, z = c
@@ -1535,7 +1556,7 @@ def shutter(b, c, w, i, period=2.6):
     for k, s_ in enumerate((-1, 1)):
         rest = (x, y + 74, z + s_ * w / 4)
         root = b.prop_root("Shutter")
-        rig = b.rig(root, "Slide", axis_frame(rest, (0, -1, 0)), 60.0, period, phase=(k * 0.5 + i * 0.13) % 1,
+        rig = b.rig(root, "Slide", axis_frame(rest, (0, -1, 0)), 57.5, period, phase=(k * 0.5 + i * 0.13) % 1,
                     keys="0:0 0.45:0 0.55:1 0.75:1 0.85:0", name="Close")
         for j in range(5):
             Pt(b, "ShutterSlat", CF(add(rest, (0, -12 + j * 6, 0))), (4, 5, w / 2 - 2), STEEL_LT if j % 2 else STEEL, "Metal",
@@ -1545,7 +1566,7 @@ def shutter(b, c, w, i, period=2.6):
     Pt(b, "ShutterBox", CF((x, y + 96, z)), (12, 16, w + 10), STEEL_DK, "Metal", b.scenery)
 
 
-def duct(b, p0, f, L, w, h=130.0, col=None, step=40.0):
+def duct(b, p0, f, L, w, h=130.0, col=None, step=40.0, doors=(True, True)):
     """A square steel duct round the straight road: walls with vent grilles, roof ribs, light strips."""
     col = col or ACC["fan"]
     rt = right_of(f)
@@ -1567,8 +1588,10 @@ def duct(b, p0, f, L, w, h=130.0, col=None, step=40.0):
             Pt(b, "DuctRib", CF(add(c, (0, h - 4, 0)), fr.x, fr.y, fr.z), (w + 30, 6, 6), STEEL, "Metal", b.scenery)
         d += step
         k += 1
-    door_frame(b, p0, f, w / 2 + 16, h, col)
-    door_frame(b, add(p0, mul(f, L)), f, w / 2 + 16, h, col)
+    if doors[0]:
+        door_frame(b, p0, f, w / 2 + 16, h, col)
+    if doors[1]:
+        door_frame(b, add(p0, mul(f, L)), f, w / 2 + 16, h, col)
 
 
 def fan_art(b, src, f, w):
@@ -1597,13 +1620,13 @@ def slot8(r, sk, rng):
     p0, f = r.p, r.f
     road(r, "Fan Duct", 540, w=W, cp=True)
     r.along(fan, [100], i0=0, n=2, speed=0.25)
-    r.along(fan, [220], i0=1, n=3, speed=0.3, off=18.0)
-    r.along(fan, [340], i0=2, n=3, speed=0.4, off=-18.0)
+    r.along(fan, [220], i0=1, n=3, speed=0.3, off=18.0, R=32.0)
+    r.along(fan, [340], i0=2, n=3, speed=0.4, off=-18.0, R=32.0)
     r.along(fan, [460], i0=3, n=4, speed=0.28)
     # 2. the shutters
     road(r, "Shutter Run", 320, w=W, cp=True)
     r.along(shutter, [90, 180, 270], i0=0)
-    duct(b, p0, f, 860, W, col=col)
+    duct(b, p0, f, 860, W, col=col, doors=(True, False))  # (the split duct's own doorway follows: it is wider)
     # 3. the split duct: three lanes, three small fans in each row
     p0 = r.p
     r.w = 150.0
@@ -1624,7 +1647,7 @@ def slot8(r, sk, rng):
     # 5. the close fans: a fast run of fans close together, then out into the open air
     p0, f = r.p, r.f
     road(r, "Close Fans", 340, w=W, boosts=3, every=50, cp=True)
-    r.along(fan, [60, 115, 170, 225, 280], i0=0, R=56.0, n=3, speed=0.45)
+    r.along(fan, [60, 115, 170, 225, 280], i0=0, R=48.0, n=3, speed=0.45)
     duct(b, p0, f, 340, W, col=col)
     road(r, "Fan Exit", 120, w=W, boosts=3, every=30)
     R2.ramp_jump(r, "Open Air Jump", deg=22, drop=90, w_land=120, slope=3, land_min=360, cp=True)
@@ -1637,7 +1660,7 @@ def slot8(r, sk, rng):
         fan_art(b, src, r.f, 80)
         o.plat("Updraft Deck %d" % (k + 1), 140, 80, cp=(k == 1))
     road(r, "Vent Run", 180, w=W, boosts=2, every=60)
-    r.along(fan, [100], i0=5, R=56.0, n=4, speed=0.35)
+    r.along(fan, [100], i0=5, R=48.0, n=4, speed=0.35)
     r.log("end")
     return ["Fan Duct", "Shutters", "Split Duct", "Pipe Bend", "Close Fans", "Open Air Jump", "Updraft Fans"]
 
@@ -1824,7 +1847,7 @@ def finish_arch(b, c, f, w):
         for k in range(8):
             lamp(b, add(q, add(mul(rt, -s_ * 11.6), (0, 20 + k * 16, 0))), col=[(255, 230, 90), (255, 90, 60)][k % 2], d=5.0,
                  pulse=0.5 + 0.08 * k)
-        big_gear(b, add(q, (0, H + 26, 0)), 34, f, ACC["final"], spin=0.12 * s_)
+        big_gear(b, add(q, (0, H + 44, 0)), 30, f, ACC["final"], spin=0.12 * s_)
         cyl(b, "Beacon", add(q, (0, H + 70, 0)), 10, 10, (255, 230, 90), "Neon", b.scenery)
         for k in range(6):
             a = TAU * k / 6

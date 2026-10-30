@@ -39,7 +39,8 @@ def solidify(b):
                 n += 1
             continue
         thin_ok = d.cls == "WedgePart" and min(sz) >= 0.9
-        if (min(sz) < 3 and not thin_ok) or max(sz) < 10:
+        # (posts, poles, bollards and lamps a car can reach are solid too: nothing it can see is a ghost)
+        if (min(sz) < 1.5 and not thin_ok) or max(sz) < 5:
             continue
         d.set("CanCollide", True)
         d.set("CanQuery", True)

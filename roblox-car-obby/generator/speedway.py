@@ -1,7 +1,7 @@
-"""Obby 2, the Extreme Speedway: levels 11-20 (the game's course 2), one continuous stunt course over a deep canyon.
+"""Obby 2, the Extreme Speedway: levels 11-20 (the game's course 2), one continuous stunt course high in the sky.
 
-Dark metal roads with neon orange and electric-blue edges, glowing boost strips, giant rings on the jump lines, a
-canyon far below to make every jump look enormous. It is about speed: huge ramps, chained jumps, three-way splits,
+Dark metal roads with neon orange and electric-blue edges, glowing boost strips, giant rings on the jump lines. No
+background scenery: just the course in the sky. It is about speed: huge ramps, chained jumps, three-way splits,
 risky shortcuts, near misses. Nothing waits: no presses, no lifts that crawl, no doors.
 
 Main route: the racing line. Alternate routes are laid by their own turtles (mech.Alt) and add no racing line; their
@@ -71,7 +71,7 @@ class Speedway(Skin):
                 d += 34
 
     def under(self, b, top, w, i):
-        """A slim tapered pylon down into the canyon, with a neon band."""
+        """A slim tapered pylon under the road, with a neon band."""
         if getattr(b, "no_under", False):
             return
         x, y, z = top
@@ -97,6 +97,15 @@ class Speedway(Skin):
 
     def environment(self, b):
         pass
+
+
+def tint(b, col):
+    """The stage's own colours: the course-wide orange and blue become this stage's neon and its second colour."""
+    if col == ORANGE and getattr(b, "stage_glow", None):
+        return b.stage_glow
+    if col == BLUE and getattr(b, "stage_glow2", None):
+        return b.stage_glow2
+    return col
 
 
 def accent(b, top=None, glow=None):
@@ -129,7 +138,7 @@ def speed_lines(r, every=60.0):
         rt = right_of(f)
         for s_ in (-1, 1):
             q = add(p, add(mul(rt, s_ * (w / 2 + 6)), (0, 6 + (k % 3) * 5, 0)))
-            Pt(b, "SpeedLine", CF(q, *_axes(f)), (0.5, 0.5, 34), [WHITE, BLUE, b.skin.glow][k % 3], "Neon", b.scenery,
+            Pt(b, "SpeedLine", CF(q, *_axes(f)), (0.5, 0.5, 34), [WHITE, tint(b, BLUE), b.skin.glow][k % 3], "Neon", b.scenery,
                transp=0.25)
         d += every
         k += 1
@@ -137,7 +146,7 @@ def speed_lines(r, every=60.0):
 
 def giant_ring(b, c, R, axis, col=None, spin=0.0, th=10.0):
     """A giant floating ring: steel band, neon inner and outer glow, light clamps."""
-    col = col or b.skin.glow
+    col = tint(b, col or b.skin.glow)
     import showcase as SC
     rig = SC.spin(b, c, axis, spin, 0.0, "RingSpin") if spin else b.scenery
     ringz(b, c, R, METAL, "Metal", th=th, axis=axis, parent=rig, name="GiantRing")
@@ -149,7 +158,7 @@ def giant_ring(b, c, R, axis, col=None, spin=0.0, th=10.0):
     for k in range(6):
         t = TAU * k / 6
         d = add(mul(e1, math.cos(t)), mul(e2, math.sin(t)))
-        ball(b, "RingLight", add(c, mul(d, R + th * 0.6)), th * 0.9, [BLUE, ORANGE][k % 2], "Neon", rig)
+        ball(b, "RingLight", add(c, mul(d, R + th * 0.6)), th * 0.9, [tint(b, BLUE), tint(b, ORANGE)][k % 2], "Neon", rig)
 
 
 def flight(lip, H, V, t):
@@ -209,6 +218,7 @@ def coin_arc(b, lip, d, V, n=6, t0=0.15, t1=0.85, T=None):
 
 def neon_arch(b, c, f, w, col, h=40.0, label_col=None):
     """A bright arch over the road (route colours, milestones)."""
+    col = tint(b, col)
     rt = right_of(f)
     fr = deck_frame(c, f)
     for s_ in (-1, 1):
@@ -235,56 +245,41 @@ def milestone(b, c, f, w):
             MX.lamp(b, add(q, mul(d, 9)), col=[ORANGE, BLUE, WHITE][k % 3], d=3.5, pulse=0.5 + 0.1 * k)
 
 
-def canyon(b, rng, depth=1100.0):
-    """The canyon far below: walls either side, rock spires, a glowing river on the floor. All of it stays well under
-    the kill floors and well away from the track."""
-    xs = sorted(b.samples, key=lambda s: s[0])
-    floor_y = Y0 - depth
-    x = X0
-    while x < b.X1:
-        xb = min(x + 240, b.X1)
-        near = [s for s in xs if x - 300 <= s[0] <= xb + 300]
-        zlo = min([s[2] - s[3] / 2 for s in near] + [ZC - 200]) - 650
-        zhi = max([s[2] + s[3] / 2 for s in near] + [ZC + 200]) + 650
-        ylo = min([s[1] for s in near] + [Y0]) - 360
-        cx = (x + xb) / 2
-        for zz, s_ in ((zlo, -1), (zhi, 1)):
-            # terraces stepping up and away from the river: the canyon's sides
-            for k in range(3):
-                h = depth * (0.22 + 0.13 * k) + rng.uniform(-40, 40)
-                top = min(floor_y + h, ylo - 80 * (2 - k))
-                wdt = rng.uniform(150, 220)
-                zc_ = zz + s_ * (wdt / 2 + k * 170)
-                col = ROCK[(k + int(x) // 240) % len(ROCK)]
-                box(b, "CanyonWall", (cx, (floor_y + top) / 2, zc_), (xb - x, top - floor_y, wdt), col, "Sandstone")
-                box(b, "CanyonLedge", (cx, top + 3, zc_ - s_ * rng.uniform(0, 20)), (xb - x, 6, wdt * rng.uniform(0.5, 0.9)),
-                    ROCK[(k + 1) % len(ROCK)], "Sandstone")
-        if rng.random() < 0.55 and xb - x > 200:
-            zs = rng.uniform(zlo + 120, zhi - 120)
-            h = rng.uniform(depth * 0.15, depth * 0.35)
-            top = min(floor_y + h, ylo - 120)
-            for k in range(3):
-                s = rng.uniform(50, 90) * (1 - 0.22 * k)
-                y0 = floor_y + (top - floor_y) * k / 3
-                y1 = floor_y + (top - floor_y) * (k + 1) / 3
-                box(b, "RockSpire", (cx + rng.uniform(-30, 30), (y0 + y1) / 2, zs + rng.uniform(-15, 15)), (s, y1 - y0, s),
-                    ROCK[k % len(ROCK)], "Sandstone", yaw=rng.uniform(0, 1.5))
-        box(b, "CanyonFloor", (cx, floor_y - 10, (zlo + zhi) / 2), (xb - x, 20, zhi - zlo + 400), (96, 54, 40), "Sand")
-        box(b, "River", (cx, floor_y + 0.6, (zlo + zhi) / 2 + 60 * math.sin(cx / 900.0)), (xb - x, 1, 70), (40, 170, 255),
-            "Neon")
-        x = xb
+# every stage its own look: road tint, neon, and the second colour its machines wear
+THEMES = {
+    11: ((34, 36, 46), ORANGE, (255, 210, 120)),      # boost blast: graphite and fire orange
+    12: ((24, 32, 54), BLUE, WHITE),                  # splitter: navy and electric blue
+    13: ((38, 24, 52), (255, 60, 170), (90, 220, 255)),  # pinball: a purple table, magenta and cyan lights
+    14: ((28, 40, 56), (40, 225, 255), WHITE),        # skyline: steel blue and cyan
+    15: ((34, 28, 54), (150, 90, 255), ORANGE),       # rolling thunder: violet
+    16: ((50, 34, 30), (255, 80, 30), (255, 190, 90)),  # cracking canyon: rust and lava
+    17: ((26, 42, 36), (120, 255, 90), BLUE),         # mega ramp cascade: lime
+    18: ((16, 16, 22), (255, 40, 60), (255, 80, 200)),  # laser slalom: black and laser red
+    19: ((42, 36, 24), (255, 200, 40), ORANGE),       # speed frenzy: gold
+    20: ((30, 34, 46), WHITE, ORANGE),                # grand finale: white light
+}
 
 
 def stage(r, sk, title, label, top, glow):
+    """Name the stage and dress it in its own colours (THEMES by level; top and glow are the fallback)."""
     b = r.b
     sk.title = title
     b.gate_label = label
+    t = THEMES.get(b.level_id)
+    if t:
+        top, glow = t[0], t[1]
+        b.stage_glow2 = t[2]
+    else:
+        b.stage_glow2 = WHITE
+    b.stage_glow = glow
+    sk.edge = glow
+    sk.gate_text = glow
     accent(b, top, glow)
 
 
 def finish_stage(r, rng):
-    """Every stage: the canyon under it."""
-    canyon(r.b, rng)
+    """Every stage ends here (no background scenery: just the course)."""
+    pass
 
 
 def end_on_line(r, label, margin=180.0):
@@ -329,7 +324,7 @@ def slot11(r, sk, rng):
     R2.lay_strips(al2.r, 40, far - near + 200, every=50, lanes=1)
     b.no_under = False
     al.done()
-    accent(b, glow=ORANGE)
+    accent(b, glow=b.stage_glow)
     # the carve: a banked S at full boost (the sky shortcut drops back in after it)
     r.turn("Boost Carve", 20, 420, rails=True)
     r.turn("Boost Carve 2", -40, 420, rails=True)
@@ -411,7 +406,7 @@ def slot12(r, sk, rng):
     o.plat("Hop Deck 5", 60, 56)
     o.drop(36, side=20, label="Hop 6")
     o.plat("Hop Landing", 40, 70)
-    accent(b, glow=BLUE)
+    accent(b, glow=b.stage_glow)
     r.w = 380.0
     merge0 = r.p
     road(r, "Merge Plaza", 160, w=380, cp=True, boosts=3, every=40, arrows_at=(80,))
@@ -448,7 +443,7 @@ def slot12(r, sk, rng):
     al.o.plat("Risk End", 30, 26)
     al.o.drop(60.0, side=dot(sub(after0, al.r.p), right_of(f)) * 0.9)
     al.done()
-    accent(b, glow=BLUE)
+    accent(b, glow=b.stage_glow)
     # ---- the crossover: the road splits again round a giant pylon; the high way crosses over the low way
     r.w = 200.0
     road(r, "Crossover Fork", 100, w=200, cp=True)
@@ -475,7 +470,7 @@ def slot12(r, sk, rng):
     big = add(add(fork, mul(f, 2 * 420 * math.sin(math.radians(22)) * 1.0)), (0, -260, 0))
     cyl(b, "CrossPylon", big, 380, 40, DARK, "Metal", b.scenery)
     cyl(b, "CrossPylonGlow", add(big, (0, 150, 0)), 6, 44, ORANGE, "Neon", b.scenery)
-    accent(b, glow=BLUE)
+    accent(b, glow=b.stage_glow)
     # ---- the lane dash: barriers close one side lane at a time, the centre stays open
     road(r, "Lane Dash", 420, w=120, dy=54, boosts=3, every=45, cp=False, lines=True)
     for k, d in enumerate((70, 150, 230, 310, 390)):
@@ -496,17 +491,25 @@ def slot12(r, sk, rng):
 # ===================================================================== 3. the giant pinball run
 def pop_bumper(b, c, d=22.0, col=None):
     """A padded pinball bumper on the road: touch it and it bounces you away."""
-    col = col or ORANGE
+    col = tint(b, col or ORANGE)
     cyl(b, "PopBumper", add(c, (0, 6, 0)), 12, d, WHITE, "SmoothPlastic", b.hazards, query=True,
         attrs={"ObbyHazard": "Knock"})
+    cyl(b, "BumperRing", add(c, (0, 6, 0)), 3, d + 1.4, METAL, "Metal", b.scenery, refl=0.4)
+    cyl(b, "BumperBand", add(c, (0, 9.6, 0)), 1.4, d + 0.6, col, "Neon", b.scenery)
     cyl(b, "BumperCap", add(c, (0, 12.4, 0)), 1.2, d * 0.8, col, "Neon", b.scenery)
+    ball(b, "BumperDome", add(c, (0, 13.2, 0)), d * 0.45, WHITE, "Glass", b.scenery, transp=0.2)
     cyl(b, "BumperSkirt", add(c, (0, 1.2, 0)), 2.4, d + 4, col, "Neon", b.scenery)
     cyl(b, "BumperBase", add(c, (0, 0.3, 0)), 0.6, d + 8, DARK, "Metal", b.scenery)
+    for k in range(4):
+        a = TAU * k / 4 + 0.4
+        ball(b, "BumperStud", add(c, (math.cos(a) * (d / 2 + 3), 1.6, math.sin(a) * (d / 2 + 3))), 2.0, METAL, "Metal",
+             b.scenery)
 
 
 def bumper_field(r, spots, w, rng):
     """Bumpers on the road just laid at (distance, lateral) spots, kept clear of the racing line in the middle."""
     for k, (d, lat) in enumerate(spots):
+        lat = max(-(w / 2 - 34), min(w / 2 - 34, lat))  # (off the slingshot banks at the edges)
         p, f = MX.at_road(r, d)
         pop_bumper(r.b, add(p, mul(right_of(f), lat)), d=rng.uniform(18, 26), col=[ORANGE, BLUE, WHITE][k % 3])
 
@@ -527,7 +530,7 @@ def sling_banks(r, w, every=140.0, L=110.0):
             yy = add(mul(y_, math.cos(ang)), mul(x_, -math.sin(ang)))
             xx = cross(yy, z_)
             Pt(b, "Ramp", CF(q, xx, yy, z_), (22, 4, L), DARK, "Metal", b.scenery, collide=True)
-            Pt(b, "SlingGlow", CF(add(q, mul(yy, 2.1)), xx, yy, z_), (20, 0.2, L - 6), [ORANGE, BLUE][int(d) // 140 % 2],
+            Pt(b, "SlingGlow", CF(add(q, mul(yy, 2.1)), xx, yy, z_), (20, 0.2, L - 6), tint(b, [ORANGE, BLUE][int(d) // 140 % 2]),
                "Neon", b.scenery)
         d += every
 
@@ -536,7 +539,7 @@ def spinner(b, c, w, i, R=None, n=3, speed=0.16, side=1):
     """A big spinning star at the road's edge; its arms sweep across the road (gaps between them)."""
     x, y, z = c
     R = R or w * 0.75
-    hub = (x, y + 5, z + side * (w / 2 - 6))
+    hub = (x, y + 9, z + side * (w / 2 - 6))  # (arms clear the rails as they sweep out over the edge)
     root = b.prop_root("Spinner")
     rig = b.rig(root, "Spin", axis_frame(hub, (0, 1, 0)), speed * (1 if i % 2 else -1), 1, phase=(i * 0.31) % 1,
                 name="StarSpin")
@@ -546,9 +549,11 @@ def spinner(b, c, w, i, R=None, n=3, speed=0.16, side=1):
         q = add(hub, mul(d, R / 2))
         Pt(b, "SpinnerArm", CF(q, cross(UP, d), UP, d), (6, 8, R), WHITE, "SmoothPlastic", rig, query=True,
            attrs={"ObbyHazard": "Knock"})
-        Pt(b, "SpinnerStripe", CF(add(q, (0, 4.2, 0)), cross(UP, d), UP, d), (6.4, 0.4, R - 4), [ORANGE, BLUE][k % 2], "Neon", rig)
-    cyl(b, "SpinnerHub", hub, 12, 18, DARK, "Metal", rig)
-    cyl(b, "HubGlow", add(hub, (0, 6.2, 0)), 0.6, 14, ORANGE, "Neon", rig)
+        Pt(b, "SpinnerStripe", CF(add(q, (0, 4.2, 0)), cross(UP, d), UP, d), (6.4, 0.4, R - 4), tint(b, [ORANGE, BLUE][k % 2]),
+           "Neon", rig)
+        ball(b, "SpinnerTip", add(hub, mul(d, R - 2)), 5, tint(b, BLUE), "Neon", rig)
+    cyl(b, "SpinnerHub", hub, 12, 18, DARK, "Metal", rig, query=True, attrs={"ObbyHazard": "Knock"})
+    cyl(b, "HubGlow", add(hub, (0, 6.2, 0)), 0.6, 14, tint(b, ORANGE), "Neon", rig)
 
 
 def flippers(b, c, w, i, L=None, period=2.2):
@@ -556,7 +561,7 @@ def flippers(b, c, w, i, L=None, period=2.2):
     x, y, z = c
     L = L or w * 0.36
     for k, s_ in enumerate((-1, 1)):
-        post = (x, y + 4, z + s_ * (w / 2 - 6))
+        post = (x, y + 7, z + s_ * (w / 2 - 6))
         root = b.prop_root("Flipper")
         rig = b.rig(root, "Hinge", axis_frame(post, (0, 1, 0)), -50.0 * s_, period, phase=(k * 0.5 + i * 0.17) % 1,
                     keys="0:0 0.4:0 0.5:1 0.65:1 0.85:0", name="Flip")
@@ -565,8 +570,8 @@ def flippers(b, c, w, i, L=None, period=2.2):
         Pt(b, "FlipperArm", CF(R2.lerp3(post, tip, 0.5), cross(UP, d), UP, d), (7, 7, L), WHITE, "SmoothPlastic", rig, query=True,
            attrs={"ObbyHazard": "Knock"})
         Pt(b, "FlipperGlow", CF(add(R2.lerp3(post, tip, 0.5), (0, 3.6, 0)), cross(UP, d), UP, d), (7.4, 0.3, L - 2),
-           [ORANGE, BLUE][k], "Neon", rig)
-        cyl(b, "FlipperPost", add(post, (0, 2, 0)), 14, 12, DARK, "Metal", b.scenery)
+           tint(b, [ORANGE, BLUE][k]), "Neon", rig)
+        cyl(b, "FlipperPost", add(post, (0, -1, 0)), 14, 12, DARK, "Metal", b.scenery)
 
 
 def slot13(r, sk, rng):
@@ -586,9 +591,9 @@ def slot13(r, sk, rng):
     sling_banks(r, 200)
     # 3. spinners and flippers
     road(r, "Spinner Alley", 300, w=120, cp=True)
-    r.along(spinner, [70], i0=0, side=1)
-    r.along(spinner, [170], i0=1, side=-1)
-    r.along(flippers, [260], i0=0)
+    r.along(spinner, [100], i0=0, side=1, R=78.0)
+    r.along(spinner, [195], i0=1, side=-1, R=78.0)
+    r.along(flippers, [288], i0=0)
     # 4. ramp shots: angled ramps fling the car left and right between raised platforms
     o = O.Obby(r, 290)
     o.plat("Shot Deck", 60, 70)
@@ -625,7 +630,8 @@ def slot13(r, sk, rng):
 
 # ===================================================================== 4. the skyline leap
 def sky_tower(b, base, top_y, R, col, rng, collide=True, spire=True):
-    """A giant futuristic tower rising out of the canyon: stacked drums, neon bands, a lit crown."""
+    """A giant futuristic tower: stacked drums, neon bands, lit window rings, a lit crown."""
+    col = tint(b, col)
     x, y0, z = base
     y = y0
     k = 0
@@ -634,6 +640,9 @@ def sky_tower(b, base, top_y, R, col, rng, collide=True, spire=True):
         rr = R * (1.0 if k % 2 == 0 else 0.86)
         cyl(b, "TowerDrum", (x, y + h / 2, z), h, 2 * rr, DARK if k % 2 else DARK2, "Metal", b.scenery, collide=collide)
         cyl(b, "TowerBand", (x, y + h - 1, z), 2, 2 * rr + 2, [col, WHITE][k % 2], "Neon", b.scenery, collide=False)
+        if h > 40:
+            cyl(b, "TowerWindows", (x, y + h * 0.5, z), h * 0.3, 2 * rr + 0.6, tint(b, BLUE), "Glass", b.scenery,
+                collide=False, transp=0.35)
         y += h
         k += 1
     if spire:
@@ -653,7 +662,8 @@ def slot14(r, sk, rng):
     for k, d in enumerate((60, 140, 220, 300)):
         p, f = MX.at_road(r, d)
         q = add(p, mul(right_of(f), (1 if k % 2 == 0 else -1) * 48))
-        sky_tower(b, (q[0], Y0 - 700, q[2]), p[1] + 220 + 60 * (k % 2), 18, [ORANGE, BLUE][k % 2], rng)
+        sky_tower(b, (q[0], p[1], q[2]), p[1] + 220 + 60 * (k % 2), 18, [ORANGE, BLUE][k % 2], rng)
+        cyl(b, "TowerRoot", (q[0], p[1] - 4.2 - 90, q[2]), 180, 32, DARK2, "Metal", b.scenery)
     # 2. up: two launch pads onto the skyline deck
     o = O.Obby(r, 280)
     o.plat("Launch Deck", 90, 100)
@@ -692,14 +702,12 @@ def slot14(r, sk, rng):
         sky_tower(b, (q[0], Y0 - 700, q[2]), lip[1] + 160, 16, RED, rng)
     al.done()
     # where the needle lands: far down the landing runway, on its right half
-    accent(b, glow=BLUE)
+    accent(b, glow=b.stage_glow)
     # 5. the skyline bend round a tower, then rooftop hops
     r.w = 120.0
     r.turn("Skyline Bend", 30, 330, bank=10, rails=True)
     r.turn("Skyline Bend 2", -60, 330, bank=10, rails=True)
     R2.lay_strips(r, 40, 340, every=60, lanes=2)
-    c_b = r.centre
-    sky_tower(b, (c_b[0], Y0 - 700, c_b[2]), r.p[1] + 260, 40, ORANGE, rng, collide=False)
     r.turn("Skyline Bend 3", 30, 330, bank=10, rails=True)
     road(r, "Rooftop Run", 100, w=100, boosts=3, every=30)
     for k in range(3):
@@ -729,14 +737,14 @@ def gate_ring(b, c, f, R, y_min, col, roll=0.0, n=20):
         nrm = unit(cross(f, d))
         q = R2.lerp3(p0, p1, 0.5)
         Pt(b, "GateRing", CF(q, f, nrm, d), (8, 10, math.dist(p0, p1) + 1.5), DARK, "Metal", b.scenery)
-        Pt(b, "GateRingGlow", CF(add(q, mul(nrm, -5.2)), f, nrm, d), (6, 0.4, math.dist(p0, p1) + 1.5), col if k % 2 else WHITE,
+        Pt(b, "GateRingGlow", CF(add(q, mul(nrm, -5.2)), f, nrm, d), (6, 0.4, math.dist(p0, p1) + 1.5), tint(b, col) if k % 2 else WHITE,
            "Neon", b.scenery)
 
 
 def line_marks(r, every=14.0, col=None):
     """Coloured dashes down the racing line of the road just laid (the fastest line)."""
     b = r.b
-    col = col or b.skin.glow
+    col = tint(b, col or b.skin.glow)
     pts = r.last[0]
     tot = sum(math.dist(a_, c_) for a_, c_ in zip(pts, pts[1:]))
     d = 10.0
@@ -812,15 +820,15 @@ def crack_span(r, label, L, W, delay=0.3, rate=95.0, cell=40.0, cp=False):
     n = int(round(L / cell))
     for i in range(1, n):
         q = add(p0, add(mul(f, i * cell), (0, 0.05, 0)))
-        Pt(r.b, "CrackGlow", CF(q, *_axes(f)), (W - 4, 0.1, 0.8), ORANGE, "Neon", r.b.scenery)
+        Pt(r.b, "CrackGlow", CF(q, *_axes(f)), (W - 4, 0.1, 0.8), tint(r.b, ORANGE), "Neon", r.b.scenery)
     for s_ in (-1, 1):
         Pt(r.b, "CrackEdge", CF(add(R2.lerp3(p0, p1, 0.5), add(mul(rt, s_ * (W / 2 + 1)), (0, -1, 0))), *_axes(f)),
-           (2, 4, L), ORANGE, "Neon", r.b.scenery)
+           (2, 4, L), tint(r.b, ORANGE), "Neon", r.b.scenery)
     return r
 
 
 def mesa(b, top, w, L, f, rng):
-    """A rock mesa rising out of the canyon under a landing, its top just under the road."""
+    """A rock mesa under a landing, its top just under the road."""
     for k in range(3):
         s = 1.0 - 0.18 * k
         h = 120 + k * 110
@@ -855,11 +863,11 @@ def slot16(r, sk, rng):
     crack_span(r, "Breakaway Bridge", 720, 80, delay=0.18, rate=140.0)
     for d in range(40, 720, 120):
         for s_ in (-1, 1):
-            cyl(b, "BridgeCable", add(add(head, mul(f, d)), add(mul(rt, s_ * 44), (0, 60, 0))), 120, 1.2, METAL, "Metal",
+            cyl(b, "BridgeCable", add(add(head, mul(f, d)), add(mul(rt, s_ * 46), (0, 62, 0))), 120, 1.2, METAL, "Metal",
                 b.scenery)
     for d in (0, 720):
         for s_ in (-1, 1):
-            q = add(add(head, mul(f, d)), mul(rt, s_ * 50))
+            q = add(add(head, mul(f, d)), mul(rt, s_ * 112))
             cyl(b, "BridgeTower", add(q, (0, -60, 0)), 300, 12, DARK, "Metal", b.scenery)
             MX.lamp(b, add(q, (0, 92, 0)), col=ORANGE, d=5.0, pulse=0.8)
     r.w = 200.0
@@ -881,7 +889,7 @@ def slot16(r, sk, rng):
     al.o.plat("Ledge Run", max(40.0, gap - (lo + hi) / 2), 60)
     al.o.pad(up, side=dot(sub(merge, al.r.p), rt) * 0.9)
     al.done()
-    accent(b, glow=ORANGE)
+    accent(b, glow=b.stage_glow)
     # 4. the crumbling launch: cracking road straight onto a big jump over the canyon
     crack_span(r, "Crumbling Run", 200, 110, delay=0.3)
     road(r, "Launch Plate", 100, w=110, boosts=3, every=24, arrows_at=(60,))
@@ -950,7 +958,7 @@ def slot17(r, sk, rng):
     al2.o.drop(al2.r.p[1] - (land2_end[1] + 3), side=dot(sub(land2_end, al2.r.p), rt) * 0.9)
     al2.done()
     al.done()
-    accent(b, glow=BLUE)
+    accent(b, glow=b.stage_glow)
     # the curved road on from the landing, straight into the pads
     r.w = 120.0
     r.turn("Cascade Curve", 20, 420, bank=12, rails=True)
@@ -1206,7 +1214,7 @@ def slot20(r, sk, rng):
     road(r, "Reprise Field", 300, w=130, cp=True)
     R2.lay_strips(r, 20, 280, every=70, lanes=1)
     bumper_field(r, [(45, -45), (80, 40), (120, -35), (160, 50)], 130, rng)
-    r.along(spinner, [235], i0=5, side=1, speed=0.2)
+    r.along(spinner, [255], i0=5, side=1, speed=0.2, R=70.0)
     road(r, "Reprise Hop Run", 90, w=W, boosts=3, every=26)
     for k in range(2):
         MX.hop(r, "Reprise Hop %d" % (k + 1), drop=16.0, deg=11.0, land_extra=50.0)

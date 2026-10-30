@@ -185,9 +185,10 @@ def saw(b, c, w, i, period=2.2, d=26.0):
     root = b.prop_root("Saw")
     z0 = z - w / 2 + d / 2 + 1
     amp = max(w - d - 2, 1.0)
-    slide = b.rig(root, "Slide", axis_frame((x, y + d / 2 + 1, z0), (0, 0, 1)), amp, period, phase=(i * 0.37) % 1,
+    hy = y + d / 2 + 4  # (the teeth clear the platform)
+    slide = b.rig(root, "Slide", axis_frame((x, hy, z0), (0, 0, 1)), amp, period, phase=(i * 0.37) % 1,
                   name="SawSlide")
-    hub = (x, y + d / 2 + 1, z0)
+    hub = (x, hy, z0)
     spin = b.rig(slide, "Spin", axis_frame(hub, (1, 0, 0)), 1.6, 1, name="SawSpin")
     cyl(b, "SawBlade", hub, 1.4, d, (190, 196, 205), "Metal", spin, query=True, attrs={"ObbyHazard": "Shred"}, refl=0.4)
     for k in range(12):
@@ -206,13 +207,13 @@ def pusher(b, c, w, i, period=1.8):
     s = 1 if i % 2 == 0 else -1
     L = 30.0
     root = b.prop_root("Pusher")
-    home = (x, y + 9, z - s * (w / 2 + L / 2 + 1))
+    home = (x, y + 14, z - s * (w / 2 + L / 2 + 1))  # (above the rails it pushes over)
     rig = b.rig(root, "Slide", axis_frame(home, (0, 0, s)), w * 0.75, period, phase=(i * 0.29) % 1,
                 keys="0:0 0.45:0 0.55:1 0.7:1 0.95:0", name="Punch")
     sk = b.skin
     Pt(b, "PusherBlock", CF(home), (34, 18, L), sk.danger, "SmoothPlastic", rig, query=True, attrs={"ObbyHazard": "Knock"})
     Pt(b, "PusherFace", CF(add(home, (0, 0, s * (L / 2 + 0.3)))), (36, 20, 0.6), (255, 220, 60), "Neon", rig)
-    Pt(b, "PusherHousing", CF((x, y + 10, z - s * (w / 2 + L + 6))), (40, 24, 16), sk.body, sk.body_mat, b.scenery,
+    Pt(b, "PusherHousing", CF((x, y + 14, z - s * (w / 2 + L + 6))), (40, 24, 16), sk.body, sk.body_mat, b.scenery,
        collide=True)
 
 

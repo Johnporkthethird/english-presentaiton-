@@ -275,7 +275,7 @@ def m_rot_door(b, st, d, rng):
     R = w / 2 + 16
     for i in range(n):
         x = x0 + 80 + i * 130
-        hub = (x, st.y + R - 2, st.z)
+        hub = (x, st.y + R + 1.5, st.z)  # the blades' corners clear the deck (they used to turn through it)
         rig = spin(b, hub, (1, 0, 0), rng.choice([-1, 1]) * (0.16 + 0.08 * d), rng.random(), "RotDoor")
         k = 10
         gap = rng.randrange(k)
@@ -284,11 +284,11 @@ def m_rot_door(b, st, d, rng):
                 continue
             a = TAU * (j + 0.5) / k
             dv = (0, math.cos(a), math.sin(a))
-            P(b, "DoorBlade", deck_frame(add(hub, mul(dv, R / 2 + 2)), dv, up=(1, 0, 0)),
-              (2 * (R / 2 + 2) * math.sin(math.pi / k) * 1.9, 3, R - 2), b.theme["danger"], "Neon", parent=rig, query=True,
+            P(b, "DoorBlade", deck_frame(add(hub, mul(dv, R / 2)), dv, up=(1, 0, 0)),
+              (2 * (R / 2 + 2) * math.sin(math.pi / k) * 1.9, 3, R - 6), b.theme["danger"], "Neon", parent=rig, query=True,
               transp=0.25, attrs={"ObbyHazard": "Knock"})
         P(b, "DoorHub", axis_frame(hub, (1, 0, 0)), (4, 10, 10), b.theme["edge"], "Neon", parent=rig)
-        hoop(b, hub, (1, 0, 0), R + 2, b.theme["edge"], n=24, th=1.4)
+        hoop(b, hub, (1, 0, 0), R + 0.6, b.theme["edge"], n=24, th=1.4)
     b.line(x0 + L - 6, st.y, st.z)
     st.x = x0 + L
 
@@ -329,7 +329,7 @@ def m_cross(b, st, d, rng):
         a = TAU * k / 4
         f = (math.cos(a), 0, math.sin(a))
         V2.block(b, add(c, mul(f, R / 2 + 12)), R - 20, aw, fwd=f, parent=rig, name="Arm")
-    tile(b, c, 48, h=20)
+    tile(b, c, 30, h=20)  # (inside the arms' sweep: they start 22 out)
     for x in (c[0] - R, c[0], c[0] + R):
         b.line(x, st.y, st.z)
     st.x = c[0] + R + 4
@@ -399,12 +399,12 @@ def _turntable_body(b, st, d, rng):
             continue
         a = TAU * (i + 0.5) / k
         dv = (math.cos(a), 0, math.sin(a))
-        mid = add(c, mul(dv, R / 2 + 8))
-        P(b, "Sector", deck_frame(sub(mid, (0, THICK / 2, 0)), dv), (2 * R * math.sin(math.pi / k) + 1, THICK, R - 16),
+        mid = add(c, mul(dv, R / 2 + 5.5))
+        P(b, "Sector", deck_frame(sub(mid, (0, THICK / 2, 0)), dv), (2 * R * math.sin(math.pi / k) + 1, THICK, R - 21),
           pal["top"] if i % 2 else pal["body"], pal["top_mat"], parent=rig, collide=True)
-        P(b, "SectorRim", deck_frame(add(c, add(mul(dv, R - 1), (0, 0.3, 0))), (-dv[2], 0, dv[0])),
+        P(b, "SectorRim", deck_frame(add(c, add(mul(dv, R - 6), (0, 0.3, 0))), (-dv[2], 0, dv[0])),
           (1.4, 0.5, 2 * R * math.sin(math.pi / k)), pal["edge"], "Neon", parent=rig)
-    tile(b, c, 36, h=10)
+    tile(b, c, 22, h=10)  # (inside the sectors' sweep: they start 16 out)
     b.samples.append((c[0], st.y, st.z, 2 * R))
     for x in (c[0] - R, c[0], c[0] + R):
         b.line(x, st.y, st.z)

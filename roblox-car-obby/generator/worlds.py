@@ -263,8 +263,9 @@ class Gears(World):
         n = 12
         for k in range(n):
             a = TAU * k / n
-            part(b, "Tooth", CF((top[0] + math.cos(a) * s * 0.5, top[1] - 4, top[2] + math.sin(a) * s * 0.5)) * rot_y(-a),
-                 (s * 0.14, 8, s * 0.13), pal["top"], "Metal", rig, True)
+            # (inlaid in the rim: teeth out past the disc turned into the decks that meet it)
+            part(b, "Tooth", CF((top[0] + math.cos(a) * s * 0.4, top[1] - 3.95, top[2] + math.sin(a) * s * 0.4)) * rot_y(-a),
+                 (s * 0.1, 8.1, s * 0.13), pal["body"], "Metal", rig, True)
         cyl(b, "Hub", (top[0], top[1] + 0.05, top[2]), 0.1, s * 0.3, pal["body"], "Metal", rig)
         for k in range(5):
             a = TAU * k / 5
@@ -444,11 +445,13 @@ class Crystals(World):
                     glass=hsv(h, 0.3, 1), body_mat="Basalt", top_mat="Slate", clock=17.7, bloom=0.8, hue=h)
 
     def hexcol(self, b, top, s, h, parent, collide=True):
-        for a in (0, math.pi / 3, 2 * math.pi / 3):
-            part(b, "Column", CF(sub(top, (0, h / 2, 0))) * rot_y(a), (s, h, s / math.sqrt(3)), b.theme["body"], "Basalt", parent,
-                 collide)
-            part(b, "ColumnTop", CF(add(top, (0, 0.06, 0))) * rot_y(a), (s - 1.4, 0.12, s / math.sqrt(3) - 0.8), b.theme["top"],
-                 "Slate", parent)
+        # (the three boxes of a hexagon overlap: their tops step down 0.16 each, so no two faces share a plane)
+        for i, a in enumerate((0, math.pi / 3, 2 * math.pi / 3)):
+            dh = 0.16 * i
+            part(b, "Column", CF(sub(top, (0, (h + dh) / 2, 0))) * rot_y(a), (s, h - dh, s / math.sqrt(3)),
+                 b.theme["body"], "Basalt", parent, collide)
+            part(b, "ColumnTop", CF(add(top, (0, 0.06 - dh, 0))) * rot_y(a), (s - 1.4 - 0.3 * i, 0.12, s / math.sqrt(3) - 0.8),
+                 b.theme["top"], "Slate", parent)
 
     def plat(self, b, top, s, rng, parent=None):
         pal = b.theme
@@ -669,11 +672,11 @@ class Snow(World):
         for k in range(6):
             a = TAU * k / 6
             f = (math.cos(a), 0, math.sin(a))
-            part(b, "Arm", deck_frame(sub(add(top, mul(f, s * 0.36)), (0, 1.5, 0)), f), (s * 0.13, 3, s * 0.5), pal["body"],
+            part(b, "Arm", deck_frame(sub(add(top, mul(f, s * 0.3)), (0, 1.5, 0)), f), (s * 0.13, 3, s * 0.4), pal["body"],
                  "Ice", parent, True)
             for sgn in (-1, 1):
                 g = unit(add(f, mul((-f[2], 0, f[0]), sgn * 0.9)))
-                part(b, "Branch", deck_frame(sub(add(top, add(mul(f, s * 0.4), mul(g, s * 0.07))), (0, 1.4, 0)), g),
+                part(b, "Branch", deck_frame(sub(add(top, add(mul(f, s * 0.36), mul(g, s * 0.07))), (0, 1.4, 0)), g),
                      (s * 0.06, 2.4, s * 0.16), pal["body"], "Ice", parent)
         sample(b, top, s)
 

@@ -237,7 +237,22 @@ def main():
         length = rbxl.attrs(unit)["Length"]
         builder_ = epic.build_level if lid in SHOWCASE else levels3.build_level
         b, used, title, theme = builder_(fac, unit, lvl, lid, length, tpl)
+        # tidy: nothing decorative across the racing line; every visible bit of a moving machine hurts like it;
+        # no decorative spinner sweeping through something solid
+        import audit
+        gone = audit.clear_line(lvl, b.course_path_ordered()[1], detach)
+        n_hz, n_rm = audit.tidy(lvl, detach)
+        if gone or n_hz or n_rm:
+            print("   tidy L%03d: %d off the line %s, %d machine parts made to hurt, %d clashing decorations out"
+                  % (lid, len(gone), sorted(set(gone))[:6], n_hz, n_rm))
+        swept, stopped, left = audit.clear_sweeps(lvl, b.course_path_ordered()[1], detach)
+        if swept or stopped or left:
+            print("   tidy L%03d: %d scenery parts a machine moved through out %s; %d show rigs stopped %s; left %s"
+                  % (lid, len(swept), sorted(set(swept))[:6], len(stopped), sorted(set(stopped))[:4], sorted(set(left))[:6]))
         zf0, zf1 = (0, 0) if os.environ.get("FAST") else polish.fix(lvl)
+        gone2 = audit.clear_line(lvl, b.course_path_ordered()[1], detach)  # (again, after the z-fight fixes)
+        if gone2:
+            print("   tidy L%03d after polish: %d off the line %s" % (lid, len(gone2), sorted(set(gone2))[:6]))
         centre_props(lvl)
         if zf1:
             for (oa, pa, fa), (ob, pb, fb) in polish.conflicts(lvl, 0.02)[:12]:

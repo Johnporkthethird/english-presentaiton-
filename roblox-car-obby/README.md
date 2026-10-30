@@ -47,15 +47,33 @@ track and its machines. The ten course slots run straight into each other:
   - The `ObbyAssembler` position list now also moves `ClockRest` and `BrickFace` with a level, so rotors and brick walls work in any slot.
   - The level exporter marks brick walls as moving parts, so the validator does not count them as blocking the road.
 - Code: `generator/mech.py` has the whole course; `generator/obby.py` has the links between platforms.
-- The validator reports 0 issues on levels 1-10. **Not tested in Roblox Studio.**
+- The validator reports 0 issues on levels 1-10, and the clipping audit is clean (see below). **Not tested in
+  Roblox Studio.**
 - Levels 21-100 are still the earlier object-world versions below.
 
 ## Levels 11-20: Obby 2, the Extreme Speedway
 
-A second, completely different course: a futuristic stunt playground high above a deep canyon. Roads are dark metal
-with neon orange and electric-blue edges and boost strips built into them. Giant rings hang over the jump lines. The
-canyon below has terraced walls, rock spires and a glowing river, so every jump looks enormous. It is all speed: huge
-ramps, chained jumps, risky shortcuts and near misses. There are no presses, slow lifts or doors to wait for.
+A second, completely different course: a futuristic stunt playground high in the sky. Roads are dark metal with
+neon edges and boost strips built into them, and giant rings hang over the jump lines. There is no background
+scenery, only the course.
+
+Each stage has its own colours:
+
+| Stage | Colours |
+|-------|---------|
+| Boost Blast | graphite and fire orange |
+| Splitter | navy and electric blue |
+| Pinball Run | a purple table with magenta and cyan |
+| Skyline Leap | steel blue and cyan |
+| Rolling Thunder | violet |
+| Cracking Canyon | rust and lava |
+| Mega Ramp Cascade | lime |
+| Laser Slalom | black and laser red |
+| Speed Frenzy | gold |
+| Grand Finale | white |
+
+It is all speed: huge ramps, chained jumps, risky shortcuts and near misses. There are no presses, slow lifts or doors
+to wait for.
 
 | Stage | Level | What is in it |
 |-------|-------|---------------|
@@ -85,6 +103,40 @@ ramps, chained jumps, risky shortcuts and near misses. There are no presses, slo
 - **Code:** `generator/speedway.py`. Checkpoints use the game's `CarObbyCheckpoint` system.
 - The validator reports 0 issues on levels 11-20 (and 1-10). It flies every jump and alternate-route jump at the
   slowest and fastest take-off speeds. **Not tested in Roblox Studio.**
+
+## Clipping audit and tidy pass (all levels)
+
+`generator/audit.py` checks a built place for parts that clip into each other:
+- **Moving parts:** every moving machine (prop rigs, nested, and the clock-rotor bridges) is swept through its whole
+  motion using the game's own maths. It reports anything that comes to pass through a solid part.
+- **Through the road:** decorations that stick up through a road surface.
+- **Ghosts:** visible parts of a dangerous machine that a car would drive straight through.
+
+Levels 1-20 audit clean. The one leftover is a thin floor decal on a sloped road.
+
+The older levels (21-100) had machines sweeping into their neighbours. These are fixed at the source:
+- **Turntables:** sectors now end inside the disc. Their corners used to cut a few studs into the decks on either side.
+- **Rotating doors:** the hub is higher and the blades shorter, so they no longer turn through the deck.
+- **Hub posts:** the posts under turntables and spinning crosses are smaller, so the moving parts clear them.
+- **Gear platforms:** the teeth are inlaid in the rim.
+- **Snowflake platforms:** the arms end at the platform's edge.
+
+Every build also runs a tidy pass on every level, 1 to 100:
+- **Clear the line:** decorations across the racing line are removed (the validator's own drive-through test). This
+  fixed the trees, castle merlons, clouds, gems and lamps in the car's way in the older levels.
+- **Every bit hurts:** every visible piece of a moving machine (hammer arms, hubs, chains, rods) hurts like the
+  machine itself, so nothing on a machine can be driven through.
+- **No clipping decorations:** a purely decorative spinner that still sweeps through something solid is taken out.
+- **Clear the sweeps:** small fixed scenery that a machine moves through (a post beside a turntable, a wall a blade
+  passes) is removed. The road, checkpoints and big structure are never removed. A harmless show machine (a gear
+  platform) that would turn through road is stopped instead.
+- **Solid scenery:** scenery you can reach (posts, poles, bollards, lamps) is solid.
+
+To run the audit:
+
+```bash
+python3 generator/audit.py generator out.rbxl 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+```
 
 ## How the levels are built
 

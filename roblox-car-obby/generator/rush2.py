@@ -460,7 +460,7 @@ def gear_bridge(r, label, R, rpm, gap=3.0, col=(196, 160, 80), mat="Metal", teet
         d = (math.cos(a), 0.0, math.sin(a))
         fr = CF(add(c, add(mul(d, R * 0.58), (0, 0.15, 0))), d, UP, (-d[2], 0, d[0]))
         Pt(b, "GearSpoke", fr, (R * 0.6, 0.3, 6), b.skin.edge, "Neon", m)
-    cyl(b, "GearAxle", add(c, (0, -120, 0)), 230, 24, (90, 80, 70), "Metal", b.scenery)
+    cyl(b, "GearAxle", add(c, (0, -122, 0)), 230, 24, (90, 80, 70), "Metal", b.scenery)  # (just under the turning deck)
     a0, a1 = add(r.p, mul(f, gap)), add(r.p, mul(f, gap + 2 * R))
     _special_line(b, a0, a1, 8)
     b.samples.append(c + (2 * R,))

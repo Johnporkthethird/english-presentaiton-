@@ -204,9 +204,13 @@ def round_fix(root):
     return n
 
 
+GROW_MAX = 0.45  # (no solid part's top face is pushed up further than this in all: more puts steps in the road)
+
+
 def fix(root, passes=60):
     """Resolve every fight. Returns (fights found at the start, fights left)."""
     first = None
+    grown = {}
     for _ in range(4):
         if not round_fix(root):
             break
@@ -229,7 +233,21 @@ def fix(root, passes=60):
                 continue
             key = (id(front[1]), front[2][6], front[2][7])
             if key not in need or need[key][2] < delta:
-                need[key] = (front[1], front[2], delta)
-        for p, f, delta in need.values():
+                need[key] = (front[1], front[2], delta, back[1], back[2])
+        moved = False
+        for key, (p, f, delta, bp, bf) in need.items():
+            top = bool(p.get("CanCollide")) and f[0][1] > 0.7
+            if top and grown.get(key, 0.0) + delta > GROW_MAX:
+                # (a road top that may not rise further: sink the other face instead, a little)
+                bkey = (id(bp), bf[6], bf[7], "sink")
+                if grown.get(bkey, 0.0) + delta <= GROW_MAX:
+                    grown[bkey] = grown.get(bkey, 0.0) + delta
+                    _extend(bp, bf, -delta)
+                    moved = True
+                continue
+            grown[key] = grown.get(key, 0.0) + delta
             _extend(p, f, delta)
+            moved = True
+        if not moved:
+            break
     return first, len(conflicts(root, 0.02)) + len(round_conflicts(root))

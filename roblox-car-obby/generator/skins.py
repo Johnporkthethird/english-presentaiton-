@@ -58,8 +58,10 @@ def cone(b, name, base, h, d, color, mat="SmoothPlastic", parent=None, n=5, down
 
 
 def hexcol(b, name, top, s, h, color, mat, parent=None, collide=True):
+    # (the three overlapping boxes step down 0.16 each: no shared top plane to flicker)
     for i, a in enumerate((0, math.pi / 3, 2 * math.pi / 3)):
-        Pt(b, name, CF(sub(top, (0, h / 2, 0))) * rot_y(a), (s, h, s / math.sqrt(3)), color, mat, parent,
+        dh = 0.16 * i
+        Pt(b, name, CF(sub(top, (0, h / 2 + dh, 0))) * rot_y(a), (s, h, s / math.sqrt(3)), color, mat, parent,
            collide=collide and i == 0, query=collide)
 
 
@@ -200,8 +202,8 @@ class Skin:
                 continue
             a = TAU * (i + 0.5) / k
             dv = (math.cos(a), 0, math.sin(a))
-            mid = add(c, mul(dv, R / 2 + 8))
-            Pt(b, "Sector", deck_frame(sub(mid, (0, THICK / 2, 0)), dv), (2 * R * math.sin(math.pi / k) - 0.4, THICK, R - 16),
+            mid = add(c, mul(dv, R / 2 + 5.5))
+            Pt(b, "Sector", deck_frame(sub(mid, (0, THICK / 2, 0)), dv), (2 * R * math.sin(math.pi / k) - 0.4, THICK, R - 21),
                self.top if i % 2 else self.body, self.top_mat, rig, collide=True)
 
     def spin_deck(self, b, rig, c, L, w):
@@ -470,14 +472,14 @@ class SugarRush(Skin):
                 continue
             a = TAU * (i + 0.5) / k
             dv = (math.cos(a), 0, math.sin(a))
-            mid = add(c, mul(dv, R / 2 + 8))
+            mid = add(c, mul(dv, R / 2 + 5.5))
             col = self.PASTEL[i % len(self.PASTEL)]
-            Pt(b, "Sector", deck_frame(sub(mid, (0, 2.5, 0)), dv), (2 * R * math.sin(math.pi / k) - 0.4, 5, R - 16), col,
+            Pt(b, "Sector", deck_frame(sub(mid, (0, 2.5, 0)), dv), (2 * R * math.sin(math.pi / k) - 0.4, 5, R - 21), col,
                "SmoothPlastic", rig, collide=True, refl=0.12)
             Pt(b, "SectorSwirl", deck_frame(add(mid, (0, 0.04, 0)), dv) * rot_y(0.5),
-               (2.5, 0.08, R - 22), (255, 255, 255), "SmoothPlastic", rig)
+               (2.5, 0.08, R - 27), (255, 255, 255), "SmoothPlastic", rig)
         cyl(b, "Stick", sub(c, (0, 60, 0)), 110, 6, (255, 255, 255), "SmoothPlastic")
-        ringz(b, sub(c, (0, 0.5, 0)), R + 0.6, (255, 255, 255), "SmoothPlastic", th=4.0, parent=rig, name="LollyRim")
+        ringz(b, sub(c, (0, 0.5, 0)), R - 4.4, (255, 255, 255), "SmoothPlastic", th=4.0, parent=rig, name="LollyRim")
 
     def belt(self, b, c, L, w, side, sp):
         Pt(b, "Belt", (sub(c, (0, 3, 0))), (L, 6, w), (34, 22, 28), "SmoothPlastic", collide=True, refl=0.12,
@@ -1619,9 +1621,9 @@ class Frostbite(Skin):
         for k in range(6):
             a = TAU * k / 6
             f = (math.cos(a), 0, math.sin(a))
-            Pt(b, "Arm", deck_frame(sub(add(top, mul(f, s * 0.36)), (0, 1.6, 0)), f), (s * 0.14, 3.2, s * 0.5), self.ICE,
+            Pt(b, "Arm", deck_frame(sub(add(top, mul(f, s * 0.3)), (0, 1.6, 0)), f), (s * 0.14, 3.2, s * 0.4), self.ICE,
                "Ice", parent, collide=collide, refl=0.1)
-            for t in (0.25, 0.4):
+            for t in (0.22, 0.36):
                 for sg in (-1, 1):
                     g = unit(add(f, mul((-f[2], 0, f[0]), sg * 0.9)))
                     Pt(b, "Branch", deck_frame(sub(add(top, add(mul(f, s * t), mul(g, s * 0.06))), (0, 1.5, 0)), g),

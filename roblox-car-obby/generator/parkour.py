@@ -726,10 +726,10 @@ def m_turntable(b, st, d, rng):
             continue
         a = TAU * (i + 0.5) / k
         dv = (math.cos(a), 0, math.sin(a))
-        mid = add(c, mul(dv, R / 2 + 8))
-        P(b, "Sector", deck_frame(sub(mid, (0, THICK / 2, 0)), dv), (2 * R * math.sin(math.pi / k) + 1, THICK, R - 16),
+        mid = add(c, mul(dv, R / 2 + 5.5))
+        P(b, "Sector", deck_frame(sub(mid, (0, THICK / 2, 0)), dv), (2 * R * math.sin(math.pi / k) + 1, THICK, R - 21),
           pal["top"] if i % 2 else pal["body"], pal["top_mat"], parent=rig, collide=True)
-        P(b, "SectorRim", deck_frame(add(c, add(mul(dv, R - 1), (0, 0.3, 0))), (-dv[2], 0, dv[0])),
+        P(b, "SectorRim", deck_frame(add(c, add(mul(dv, R - 6), (0, 0.3, 0))), (-dv[2], 0, dv[0])),
           (1.4, 0.5, 2 * R * math.sin(math.pi / k)), pal["edge"], "Neon", parent=rig)
     pillar(b, c, 18, h=10)
     b.samples.append((c[0], st.y, st.z, 2 * R))
