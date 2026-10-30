@@ -253,6 +253,10 @@ def main():
         gone2 = audit.clear_line(lvl, b.course_path_ordered()[1], detach)  # (again, after the z-fight fixes)
         if gone2:
             print("   tidy L%03d after polish: %d off the line %s" % (lid, len(gone2), sorted(set(gone2))[:6]))
+        swept2, stopped2, _ = audit.clear_sweeps(lvl, b.course_path_ordered()[1], detach)  # (polish grows faces)
+        if swept2 or stopped2:
+            print("   tidy L%03d after polish: %d swept scenery out %s, %d show rigs stopped"
+                  % (lid, len(swept2), sorted(set(swept2))[:6], len(stopped2)))
         centre_props(lvl)
         if zf1:
             for (oa, pa, fa), (ob, pb, fb) in polish.conflicts(lvl, 0.02)[:12]:
